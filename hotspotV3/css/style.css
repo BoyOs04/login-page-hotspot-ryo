@@ -212,12 +212,12 @@ a {
 
 #bgCanvas,
 #bgCanvas-container {
-  z-index: 0;
+  z-index: 1;
   pointer-events: none;
 }
 
 #bgCanvas-container canvas {
-  z-index: 0;
+  z-index: 1;
   pointer-events: none;
 }
 
@@ -2155,3 +2155,28 @@ table a {
     transition-duration: 0.01ms !important;
   }
 }
+
+/* ========== BOKEH LAYER ========== */
+/* Three.js canvas sits between the page background and the UI. */
+#bgCanvas,
+#bgCanvas-container {
+  z-index: 1;
+}
+
+#bgCanvas-container canvas {
+  z-index: 1;
+}
+
+/* Keep the login card and controls above the bokeh layer. */
+.ie-fixMinHeight,
+.main {
+  z-index: 2;
+}
+
+#clock-box,
+.setting,
+.toast,
+.hover-popup {
+  z-index: 3;
+}
+

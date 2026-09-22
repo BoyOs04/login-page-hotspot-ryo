@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Hotspot Login</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Roboto', sans-serif;
+      background: linear-gradient(135deg, wheat, #fffaf0, #f5deb3);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .container {
+      background: linear-gradient(135deg, wheat, #fffaf0, #f5deb3);
+      border-radius: 16px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+      padding: 30px 20px;
+      width: 100%;
+      max-width: 400px;
+      animation: fadeInUp 0.8s ease both;
+      overflow: hidden;
+    }
+
+    h1 {
+      text-align: center;
+      color: #5c4033;
+      margin-bottom: 20px;
+      font-size: 22px;
+    }
+
+    .carousel {
+      display: flex;
+      transition: transform 0.3s ease;
+    }
+
+    .qr-card {
+      flex: 0 0 100%;
+      padding: 20px;
+      text-align: center;
+    }
+
+    .qr-card .qr-label {
+      font-size: 18px;
+      font-weight: bold;
+      color: #8b4513;
+      margin-bottom: 15px;
+    }
+
+    .qrcode a {
+      display: inline-block;
+      border-radius: 10px;
+      overflow: hidden;
+    }
+
+    .qrcode img {
+      width: 170px;
+      height: 170px;
+      display: block;
+    }
+
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>QR Login Hotspot</h1>
+    <div class="carousel" id="carousel">
+      <div class="qr-card">
+        <div class="qr-label">1. Family</div>
+        <div class="qrcode">
+          <a href="http://gateway.linelejan-rumagit.net/login?username=family&password=family1234">
+            <div id="qr1"></div>
+          </a>
+        </div>
+      </div>
+      <div class="qr-card">
+        <div class="qr-label">2. Juan</div>
+        <div class="qrcode">
+          <a href="http://gateway.linelejan-rumagit.net/login?username=juan&password=juan123">
+            <div id="qr2"></div>
+          </a>
+        </div>
+      </div>
+      <div class="qr-card">
+        <div class="qr-label">3. Andrew</div>
+        <div class="qrcode">
+          <a href="http://gateway.linelejan-rumagit.net/login?username=andrew&password=andrew1234">
+            <div id="qr3"></div>
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    new QRCode(document.getElementById("qr1"), {
+      text: "http://gateway.linelejan-rumagit.net/login?username=family&password=family1234",
+      width: 210,
+      height: 210
+    });
+
+    new QRCode(document.getElementById("qr2"), {
+      text: "http://gateway.linelejan-rumagit.net/login?username=juan&password=juan123",
+      width: 210,
+      height: 210
+    });
+
+    new QRCode(document.getElementById("qr3"), {
+      text: "http://gateway.linelejan-rumagit.net/login?username=andrew&password=andrew1234",
+      width: 210,
+      height: 210
+    });
+
+    let currentCard = 0;
+    const carousel = document.getElementById('carousel');
+    const totalCards = carousel.children.length;
+
+    function updateCarousel() {
+      carousel.style.transform = `translateX(-${currentCard * 100}%)`;
+    }
+
+    let startX = 0;
+    carousel.addEventListener('touchstart', (e) => {
+      startX = e.touches[0].clientX;
+    });
+
+    carousel.addEventListener('touchend', (e) => {
+      const endX = e.changedTouches[0].clientX;
+      if (startX - endX > 50 && currentCard < totalCards - 1) {
+        currentCard++;
+        updateCarousel();
+      } else if (endX - startX > 50 && currentCard > 0) {
+        currentCard--;
+        updateCarousel();
+      }
+    });
+  </script>
+</body>
+</html>

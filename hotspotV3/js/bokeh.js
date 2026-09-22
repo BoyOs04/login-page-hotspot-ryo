@@ -1,9 +1,8 @@
 /* =========================================================
-   bokeh.js - Interactive 2D Bokeh Background
+   bokeh.js - Interactive 2D Wheat Bokeh Background
    Engine: Canvas2D
-   - reliable on GitHub Pages + MikroTik captive portal
-   - transparent layer between background and UI
-   - soft shadow
+   - animated wheat gradient base
+   - soft/high-visibility bokeh
    - random drifting movement
    - pointer/touch interaction
    - lightweight for mobile
@@ -22,11 +21,26 @@
     maxSpeedY: 0.28,
     targetFPS: 30,
     maxPixelRatio: 1.35,
+
     interactionRadius: 210,
-    interactionStrength: 22,
+    interactionStrength: 26,
     interactionEase: 0.075,
-    pulseAmount: 0.045,
-    wrapPadding: 260
+    pulseAmount: 0.055,
+    wrapPadding: 260,
+
+    gradientTargetMinMs: 4200,
+    gradientTargetMaxMs: 7800
+  };
+
+  const WHEAT = {
+    baseA: '#f5deb3',
+    baseB: '#e7c48f',
+    baseC: '#d4a574',
+    baseD: '#fff3d6',
+    glowA: 'rgba(255, 248, 226, 0.82)',
+    glowB: 'rgba(245, 222, 179, 0.60)',
+    glowC: 'rgba(222, 184, 135, 0.34)',
+    shadow: 'rgba(92, 51, 18, 0.12)'
   };
 
   let canvas = null;
@@ -41,6 +55,36 @@
   let running = true;
 
   const frameInterval = 1000 / CONFIG.targetFPS;
+
+  const gradientBlobs = [
+    {
+      x: 0.18,
+      y: 0.20,
+      tx: 0.18,
+      ty: 0.20,
+      radius: 0.72,
+      phase: Math.random() * Math.PI * 2,
+      nextTarget: 0
+    },
+    {
+      x: 0.78,
+      y: 0.28,
+      tx: 0.78,
+      ty: 0.28,
+      radius: 0.66,
+      phase: Math.random() * Math.PI * 2,
+      nextTarget: 0
+    },
+    {
+      x: 0.58,
+      y: 0.78,
+      tx: 0.58,
+      ty: 0.78,
+      radius: 0.76,
+      phase: Math.random() * Math.PI * 2,
+      nextTarget: 0
+    }
+  ];
 
   function getCanvas() {
     const existing = document.getElementById('bgCanvas');
@@ -78,6 +122,124 @@
     return Math.random() * (max - min) + min;
   }
 
+  function retargetGradientBlob(blob, time) {
+    if (time < blob.nextTarget) return;
+
+    blob.tx = random(0.08, 0.92);
+    blob.ty = random(0.08, 0.92);
+    blob.nextTarget =
+      time +
+      random(
+        CONFIG.gradientTargetMinMs,
+        CONFIG.gradientTargetMaxMs
+      );
+  }
+
+  function updateGradientBlobs(time) {
+    for (const blob of gradientBlobs) {
+      retargetGradientBlob(blob, time);
+
+      blob.x += (blob.tx - blob.x) * 0.0028;
+      blob.y += (blob.ty - blob.y) * 0.0028;
+
+      // Adds a slow organic movement on top of the random targets.
+      blob.x += Math.sin(time * 0.00013 + blob.phase) * 0.00055;
+      blob.y += Math.cos(time * 0.00011 + blob.phase) * 0.00045;
+
+      blob.x = Math.max(-0.15, Math.min(1.15, blob.x));
+      blob.y = Math.max(-0.15, Math.min(1.15, blob.y));
+    }
+  }
+
+  function drawAnimatedBackground(time) {
+    updateGradientBlobs(time);
+
+    const angle =
+      time * 0.000035 +
+      Math.sin(time * 0.00012) * 0.35;
+
+    const length = Math.hypot(width, height);
+    const cx = width * 0.5;
+    const cy = height * 0.5;
+
+    const x1 = cx - Math.cos(angle) * length;
+    const y1 = cy - Math.sin(angle) * length;
+    const x2 = cx + Math.cos(angle) * length;
+    const y2 = cy + Math.sin(angle) * length;
+
+    const baseGradient = ctx.createLinearGradient(
+      x1, y1, x2, y2
+    );
+
+    baseGradient.addColorStop(0, WHEAT.baseA);
+    baseGradient.addColorStop(0.42, WHEAT.baseB);
+    baseGradient.addColorStop(0.72, WHEAT.baseC);
+    baseGradient.addColorStop(1, WHEAT.baseD);
+
+    ctx.fillStyle = baseGradient;
+    ctx.fillRect(0, 0, width, height);
+
+    const blobColors = [
+      WHEAT.glowA,
+      WHEAT.glowB,
+      WHEAT.glowC
+    ];
+
+    gradientBlobs.forEach((blob, index) => {
+      const x = blob.x * width;
+      const y = blob.y * height;
+      const radius =
+        Math.max(width, height) * blob.radius;
+
+      const radial = ctx.createRadialGradient(
+        x,
+        y,
+        0,
+        x,
+        y,
+        radius
+      );
+
+      radial.addColorStop(0, blobColors[index]);
+      radial.addColorStop(0.48, blobColors[index]);
+      radial.addColorStop(1, 'rgba(255,255,255,0)');
+
+      ctx.fillStyle = radial;
+      ctx.fillRect(
+        x - radius,
+        y - radius,
+        radius * 2,
+        radius * 2
+      );
+    });
+
+    // Very subtle edge shading keeps the center visually soft.
+    const vignette = ctx.createRadialGradient(
+      cx,
+      cy,
+      Math.min(width, height) * 0.18,
+      cx,
+      cy,
+      Math.max(width, height) * 0.82
+    );
+
+    vignette.addColorStop(
+      0,
+      'rgba(255,255,255,0)'
+    );
+    vignette.addColorStop(
+      0.72,
+      'rgba(92,51,18,0.015)'
+    );
+    vignette.addColorStop(
+      1,
+      WHEAT.shadow
+    );
+
+    ctx.fillStyle = vignette;
+    ctx.fillRect(0, 0, width, height);
+  }
+
   function createParticle() {
     const centerX = width / 2;
     const centerY = height / 2;
@@ -88,7 +250,9 @@
 
     if (Math.random() < 0.82) {
       const angle = random(0, Math.PI * 2);
-      const distance = Math.pow(Math.random(), 1.7) * radius;
+      const distance =
+        Math.pow(Math.random(), 1.7) * radius;
+
       x = centerX + Math.cos(angle) * distance;
       y = centerY + Math.sin(angle) * distance;
     } else {
@@ -107,7 +271,7 @@
       phaseX: random(0, Math.PI * 2),
       phaseY: random(0, Math.PI * 2),
       pulsePhase: random(0, Math.PI * 2),
-      baseAlpha: random(0.42, 0.68),
+      baseAlpha: random(0.70, 0.88),
       interactionX: 0,
       interactionY: 0
     };
@@ -123,7 +287,10 @@
   function drawParticle(particle, time) {
     const pulse =
       1 +
-      Math.sin(time * 0.0012 + particle.pulsePhase) *
+      Math.sin(
+        time * 0.0012 +
+        particle.pulsePhase
+      ) *
       CONFIG.pulseAmount;
 
     const size = particle.size * pulse;
@@ -136,7 +303,10 @@
     let targetX = 0;
     let targetY = 0;
 
-    if (distance > 0 && distance < CONFIG.interactionRadius) {
+    if (
+      distance > 0 &&
+      distance < CONFIG.interactionRadius
+    ) {
       const force =
         (1 - distance / CONFIG.interactionRadius) *
         CONFIG.interactionStrength;
@@ -158,25 +328,25 @@
 
     // Thin warm shadow.
     const shadowGradient = ctx.createRadialGradient(
-      x + 6,
-      y + 8,
+      x + 7,
+      y + 9,
       0,
-      x + 6,
-      y + 8,
+      x + 7,
+      y + 9,
       radius
     );
 
     shadowGradient.addColorStop(
       0,
-      'rgba(92,51,18,0.20)'
+      'rgba(92,51,18,0.26)'
     );
     shadowGradient.addColorStop(
-      0.45,
-      'rgba(92,51,18,0.11)'
+      0.42,
+      'rgba(92,51,18,0.17)'
     );
     shadowGradient.addColorStop(
-      0.75,
-      'rgba(92,51,18,0.045)'
+      0.72,
+      'rgba(92,51,18,0.075)'
     );
     shadowGradient.addColorStop(
       1,
@@ -185,10 +355,16 @@
 
     ctx.fillStyle = shadowGradient;
     ctx.beginPath();
-    ctx.arc(x + 6, y + 8, radius, 0, Math.PI * 2);
+    ctx.arc(
+      x + 7,
+      y + 9,
+      radius,
+      0,
+      Math.PI * 2
+    );
     ctx.fill();
 
-    // Main soft bokeh.
+    // High-visibility soft bokeh.
     const glowGradient = ctx.createRadialGradient(
       x,
       y,
@@ -202,19 +378,23 @@
 
     glowGradient.addColorStop(
       0,
-      `rgba(255,255,255,${Math.min(alpha + 0.22, 0.90)})`
+      `rgba(255,255,255,${Math.min(alpha + 0.12, 0.98)})`
     );
     glowGradient.addColorStop(
-      0.22,
+      0.20,
       `rgba(255,252,244,${alpha})`
     );
     glowGradient.addColorStop(
-      0.46,
-      'rgba(255,255,255,0.20)'
+      0.44,
+      'rgba(255,255,255,0.34)'
     );
     glowGradient.addColorStop(
       0.68,
-      'rgba(255,250,240,0.075)'
+      'rgba(255,250,240,0.14)'
+    );
+    glowGradient.addColorStop(
+      0.88,
+      'rgba(255,255,255,0.035)'
     );
     glowGradient.addColorStop(
       1,
@@ -240,7 +420,8 @@
 
     const delta =
       Math.min(
-        ((time - lastFrame) || frameInterval) / frameInterval,
+        ((time - lastFrame) || frameInterval) /
+          frameInterval,
         2
       );
 
@@ -248,29 +429,49 @@
 
     ctx.clearRect(0, 0, width, height);
 
+    drawAnimatedBackground(time);
+
     const seconds = time * 0.001;
 
     for (const particle of particles) {
       particle.x += particle.vx * delta;
       particle.y += particle.vy * delta;
 
-      // Non-linear drift so particles do not move in straight lines.
       particle.x +=
-        Math.sin(seconds * particle.driftX + particle.phaseX) *
+        Math.sin(
+          seconds * particle.driftX +
+          particle.phaseX
+        ) *
         0.28 *
         delta;
 
       particle.y +=
-        Math.cos(seconds * particle.driftY + particle.phaseY) *
+        Math.cos(
+          seconds * particle.driftY +
+          particle.phaseY
+        ) *
         0.24 *
         delta;
 
-      const pad = particle.size + CONFIG.wrapPadding;
+      const pad =
+        particle.size +
+        CONFIG.wrapPadding;
 
-      if (particle.x < -pad) particle.x = width + pad;
-      if (particle.x > width + pad) particle.x = -pad;
-      if (particle.y < -pad) particle.y = height + pad;
-      if (particle.y > height + pad) particle.y = -pad;
+      if (particle.x < -pad) {
+        particle.x = width + pad;
+      }
+
+      if (particle.x > width + pad) {
+        particle.x = -pad;
+      }
+
+      if (particle.y < -pad) {
+        particle.y = height + pad;
+      }
+
+      if (particle.y > height + pad) {
+        particle.y = -pad;
+      }
 
       drawParticle(particle, time);
     }
@@ -304,38 +505,66 @@
 
     resize();
 
-    window.addEventListener('resize', resize, { passive: true });
+    window.addEventListener(
+      'resize',
+      resize,
+      { passive: true }
+    );
 
     window.addEventListener(
       'pointermove',
-      event => setPointer(event.clientX, event.clientY),
+      event =>
+        setPointer(
+          event.clientX,
+          event.clientY
+        ),
       { passive: true }
     );
 
     window.addEventListener(
       'touchmove',
       event => {
-        const touch = event.touches && event.touches[0];
-        if (touch) setPointer(touch.clientX, touch.clientY);
+        const touch =
+          event.touches &&
+          event.touches[0];
+
+        if (touch) {
+          setPointer(
+            touch.clientX,
+            touch.clientY
+          );
+        }
       },
       { passive: true }
     );
 
     window.addEventListener(
       'mouseleave',
-      () => setPointer(width / 2, height / 2),
+      () =>
+        setPointer(
+          width / 2,
+          height / 2
+        ),
       { passive: true }
     );
 
     requestAnimationFrame(animate);
   }
 
-  window.addEventListener('beforeunload', () => {
-    running = false;
-  }, { once: true });
+  window.addEventListener(
+    'beforeunload',
+    () => {
+      running = false;
+    },
+    { once: true }
+  );
 
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', init, { once: true });
+    document.addEventListener(
+      'DOMContentLoaded',
+      init,
+      { once: true }
+    );
   } else {
     init();
   }

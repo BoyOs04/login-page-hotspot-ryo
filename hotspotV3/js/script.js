@@ -107,9 +107,10 @@ window.quickLogin = function() {
     }
 
     // Isi form login secara langsung.
-    // Jangan redirect dengan ?username=...&password=...
-    // karena RouterOS HTTP-CHAP membutuhkan proses hash
-    // chap-id + password + chap-challenge sebelum submit.
+    // Jangan kirim password melalui query string.
+    // Jika RouterOS menyediakan chap-id/challenge,
+    // onSubmit=doLogin() akan mengubah password menjadi
+    // MD5(chap-id + password + chap-challenge).
     loginForm.username.value = targetUser;
     loginForm.password.value = targetPass;
 
@@ -118,10 +119,10 @@ window.quickLogin = function() {
     setTimeout(() => {
       if (typeof loginForm.requestSubmit === 'function') {
         loginForm.requestSubmit();
+      } else if (typeof window.doLogin === 'function') {
+        window.doLogin();
       } else {
-        // Fallback untuk browser captive portal lama.
-        const event = new Event('submit', { cancelable: true });
-        loginForm.dispatchEvent(event);
+        loginForm.submit();
       }
     }, 300);
 
@@ -196,7 +197,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
       if (navigator.clipboard && window.isSecureContext) {
         navigator.clipboard.writeText(text).then(() => {
-          showToast(`Berhasil disalin!`, 1000);
+          showToast('Berhasil disalin!', 1000);
         }).catch(() => fallbackCopy(text));
       } else {
         fallbackCopy(text);
@@ -239,6 +240,39 @@ document.addEventListener('DOMContentLoaded', () => {
 
   /* --- ERROR HANDLING DARI MIKROTIK --- */
   const loginForm = document.forms['login'];
+
+  /* --- QUICK LOGIN DARI main.html --- */
+  if (loginForm && typeof AppConfig !== 'undefined' && AppConfig.vouchers) {
+    const params = new URLSearchParams(window.location.search);
+    const quickCode = (params.get('quick') || '').toLowerCase().trim();
+
+    if (quickCode && AppConfig.vouchers[quickCode]) {
+      const account = AppConfig.vouchers[quickCode];
+
+      loginForm.username.value = account.user;
+      loginForm.password.value = account.pass;
+
+      // Hapus parameter quick/history setelah mengambil kode,
+      // sehingga password tidak tertinggal di URL/history browser.
+      if (window.history && typeof window.history.replaceState === 'function') {
+        const cleanUrl = window.location.pathname +
+          (window.location.search.includes('dst=') ? '?' + window.location.search.split('&').filter(p => !p.startsWith('quick=')).join('&').replace(/^\?/, '') : '') +
+          window.location.hash;
+        window.history.replaceState({}, document.title, cleanUrl);
+      }
+
+      setTimeout(() => {
+        if (typeof loginForm.requestSubmit === 'function') {
+          loginForm.requestSubmit();
+        } else if (typeof window.doLogin === 'function') {
+          window.doLogin();
+        } else {
+          loginForm.submit();
+        }
+      }, 150);
+    }
+  }
+
   if (loginForm) {
     loginForm.addEventListener('submit', (e) => {
       const username = (loginForm.username ? loginForm.username.value : '').trim();

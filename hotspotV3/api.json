@@ -1,13 +1,15 @@
 {
    "captive": $(if logged-in == 'yes')false$(else)true$(endif),
    "user-portal-url": "$(link-login-only)",
-   "venue-info-url": "https://www.google.com",
 $(if session-timeout-secs != 0)
    "seconds-remaining": $(session-timeout-secs),
 $(endif)
 $(if remain-bytes-total)
    "bytes-remaining": $(remain-bytes-total),
+$(else)
+   "bytes-remaining": 0,
 $(endif)
+   "limit-bytes-total": $(limit-bytes-total),
    "can-extend-session": true,
    "x-android-use-custom-tabs": 361335020
 }

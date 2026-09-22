@@ -107,7 +107,7 @@
       phaseX: random(0, Math.PI * 2),
       phaseY: random(0, Math.PI * 2),
       pulsePhase: random(0, Math.PI * 2),
-      baseAlpha: random(0.22, 0.48),
+      baseAlpha: random(0.42, 0.68),
       interactionX: 0,
       interactionY: 0
     };
@@ -168,15 +168,15 @@
 
     shadowGradient.addColorStop(
       0,
-      'rgba(92,51,18,0.13)'
+      'rgba(92,51,18,0.20)'
     );
     shadowGradient.addColorStop(
       0.45,
-      'rgba(92,51,18,0.075)'
+      'rgba(92,51,18,0.11)'
     );
     shadowGradient.addColorStop(
       0.75,
-      'rgba(92,51,18,0.025)'
+      'rgba(92,51,18,0.045)'
     );
     shadowGradient.addColorStop(
       1,
@@ -202,7 +202,7 @@
 
     glowGradient.addColorStop(
       0,
-      `rgba(255,255,255,${Math.min(alpha + 0.20, 0.80)})`
+      `rgba(255,255,255,${Math.min(alpha + 0.22, 0.90)})`
     );
     glowGradient.addColorStop(
       0.22,
@@ -210,11 +210,11 @@
     );
     glowGradient.addColorStop(
       0.46,
-      'rgba(255,255,255,0.13)'
+      'rgba(255,255,255,0.20)'
     );
     glowGradient.addColorStop(
       0.68,
-      'rgba(255,250,240,0.045)'
+      'rgba(255,250,240,0.075)'
     );
     glowGradient.addColorStop(
       1,

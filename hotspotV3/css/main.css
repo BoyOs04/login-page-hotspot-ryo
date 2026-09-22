@@ -1,68 +1,9 @@
+/* =========================================================
+   main.css - Legacy compatibility layer
 
-/* File: css/main.css */
-/* ===== GLOBAL RESET ===== */
-* { margin:0; padding:0; box-sizing:border-box; }
-body {
-  height:100vh;
-  background: linear-gradient(135deg, wheat, #fffaf0, #f5deb3);
-  font-family: 'Roboto', sans-serif;
-  position: relative;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-.menu-toggle {
-  position:absolute; top:20px; right:20px; cursor:pointer; z-index:100;
-}
-.menu-toggle img {
-  width:28px; height:28px;
-  filter: brightness(0) invert(1);
-  transition: transform 0.3s ease;
-}
-.menu-toggle img:hover { transform: rotate(90deg); }
-.dropdown {
-  position:absolute; top:65px; right:20px;
-  background-color:wheat; border-radius:8px;
-  display:none; flex-direction:column;
-  box-shadow: inset 0 4px 12px rgba(0,0,0,0.2);
-  overflow:hidden;
-}
-.dropdown.show { display:flex; animation:slideDown 0.3s ease forwards; }
-@keyframes slideDown {
-  from { opacity:0; transform: translateY(-10px) scale(0.95); }
-  to   { opacity:1; transform: translateY(0) scale(1); }
-}
-.dropdown a {
-  display:flex; align-items:center; padding:12px 16px;
-  text-decoration:none; color:white;
-  transition: background 0.3s ease;
-}
-.dropdown a:hover { background-color:#5c3312; }
-.icon-custom {
-  width:20px; height:20px; margin-right:8px;
-  filter: brightness(0) invert(1);
-}
-.logo-container {
-  position:absolute; top:50%; left:50%; transform:translate(-50%, -50%);
-}
-.logo-container img {
-  width:150px; cursor:pointer;
-  transition: transform 0.3s ease;
-}
-.logo-container img:hover { transform: scale(1.05); }
+   Halaman HotSpot aktif menggunakan css/style.css.
+   File ini dipertahankan agar halaman lama yang masih
+   memanggil css/main.css otomatis memakai desain yang sama.
+========================================================= */
 
-/* Toast styling if needed */
-.toast {
-  position: fixed;
-  bottom: 20px;
-  left: 50%;
-  transform: translateX(-50%);
-  background: rgba(0,0,0,0.7);
-  color: #fff;
-  padding: 8px 16px;
-  border-radius: 4px;
-  opacity: 0;
-  transition: opacity 0.3s ease;
-  z-index: 200;
-}
-.toast.show { opacity: 1; }
+@import url("./style.css");

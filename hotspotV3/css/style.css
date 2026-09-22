@@ -102,6 +102,17 @@
   --dark-glass-toast: rgba(30, 24, 19, 0.78);
   --color-text-muted: #666666;
 
+  /* ===== PALETTE UTAMA ===== */
+  --color-bg-1: #f5e6d3;
+  --color-bg-2: #d4a574;
+  --color-cream: #fffaf0;
+  --color-brown: #8b4513;
+  --color-brown-dark: #5c3312;
+  --color-text: #333333;
+  --color-danger: #c0392b;
+  --color-warning: #f39c12;
+  --color-success: #2ecc71;
+
   /* ===== KOMPATIBILITAS VARIABEL LAMA ===== */
   --bg-1: var(--color-bg-1);
   --bg-2: var(--color-bg-2);
@@ -127,6 +138,7 @@
   /* ===== TRANSITION ===== */
   --ease: cubic-bezier(0.4, 0, 0.2, 1);
 }
+
 
 
 

@@ -33,14 +33,19 @@
   };
 
   const WHEAT = {
-    baseA: '#f5deb3',
-    baseB: '#e7c48f',
-    baseC: '#d4a574',
-    baseD: '#fff3d6',
-    glowA: 'rgba(255, 248, 226, 0.82)',
-    glowB: 'rgba(245, 222, 179, 0.60)',
-    glowC: 'rgba(222, 184, 135, 0.34)',
-    shadow: 'rgba(92, 51, 18, 0.12)'
+    // Dominant wheat / caramel palette.
+    baseA: '#fff1cf',
+    baseB: '#e8b96f',
+    baseC: '#b87532',
+    baseD: '#f7dca5',
+
+    // Stronger highlight colors for the moving background.
+    glowA: 'rgba(255, 244, 205, 0.92)',
+    glowB: 'rgba(245, 196, 105, 0.72)',
+    glowC: 'rgba(183, 113, 43, 0.48)',
+
+    // Warm brown depth.
+    shadow: 'rgba(92, 51, 18, 0.18)'
   };
 
   let canvas = null;

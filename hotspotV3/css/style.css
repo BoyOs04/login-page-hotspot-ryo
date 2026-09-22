@@ -113,6 +113,8 @@
   --color-warning: #f39c12;
   --color-success: #2ecc71;
 
+  --danger-shadow: rgba(192, 57, 43, 0.08);
+
   /* ===== KOMPATIBILITAS VARIABEL LAMA ===== */
   --bg-1: var(--color-bg-1);
   --bg-2: var(--color-bg-2);
@@ -138,6 +140,7 @@
   /* ===== TRANSITION ===== */
   --ease: cubic-bezier(0.4, 0, 0.2, 1);
 }
+
 
 
 

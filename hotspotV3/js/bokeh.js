@@ -43,7 +43,7 @@ import * as THREE from './three.module.min.js';
   /* ===== WARNA DARI CSS :root ===== */
   function getThemeColor() {
     const root = getComputedStyle(document.documentElement);
-    const value = root.getPropertyValue('--color-wheat').trim();
+    const value = root.getPropertyValue('--wheat').trim();
 
     if (/^#[0-9a-fA-F]{6}$/.test(value)) {
       return value;
@@ -125,12 +125,17 @@ import * as THREE from './three.module.min.js';
     );
     camera.position.z = 10;
 
-    renderer = new THREE.WebGLRenderer({
-      canvas,
-      alpha: true,
-      antialias: false,
-      powerPreference: 'low-power'
-    });
+    try {
+      renderer = new THREE.WebGLRenderer({
+        canvas,
+        alpha: true,
+        antialias: false,
+        powerPreference: 'low-power'
+      });
+    } catch (error) {
+      console.warn('Three.js WebGL tidak tersedia; background bokeh dilewati.', error);
+      return;
+    }
 
     renderer.setPixelRatio(
       Math.min(window.devicePixelRatio || 1, CONFIG.maxPixelRatio)

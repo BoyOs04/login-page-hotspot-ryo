@@ -7,11 +7,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet" />
   <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
   <style>
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
 
     body {
       font-family: 'Roboto', sans-serif;
@@ -41,10 +37,7 @@
       font-size: 22px;
     }
 
-    .carousel {
-      display: flex;
-      transition: transform 0.3s ease;
-    }
+    .carousel { display: flex; transition: transform 0.3s ease; }
 
     .qr-card {
       flex: 0 0 100%;
@@ -72,20 +65,15 @@
     }
 
     @keyframes fadeInUp {
-      from {
-        opacity: 0;
-        transform: translateY(30px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
+      from { opacity: 0; transform: translateY(30px); }
+      to { opacity: 1; transform: translateY(0); }
     }
   </style>
 </head>
 <body>
   <div class="container">
     <h1>QR Login Hotspot</h1>
+
     <div class="carousel" id="carousel">
       <div class="qr-card">
         <div class="qr-label">1. Family</div>
@@ -95,14 +83,16 @@
           </a>
         </div>
       </div>
+
       <div class="qr-card">
         <div class="qr-label">2. Juan</div>
         <div class="qrcode">
-          <a href="http://gateway.linelejan-rumagit.net/login?username=juan&password=juan123">
+          <a href="http://gateway.linelejan-rumagit.net/login?username=juan&password=juan1234">
             <div id="qr2"></div>
           </a>
         </div>
       </div>
+
       <div class="qr-card">
         <div class="qr-label">3. Andrew</div>
         <div class="qrcode">
@@ -122,7 +112,7 @@
     });
 
     new QRCode(document.getElementById("qr2"), {
-      text: "http://gateway.linelejan-rumagit.net/login?username=juan&password=juan123",
+      text: "http://gateway.linelejan-rumagit.net/login?username=juan&password=juan1234",
       width: 210,
       height: 210
     });

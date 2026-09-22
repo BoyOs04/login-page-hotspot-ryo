@@ -212,12 +212,12 @@ a {
 
 #bgCanvas,
 #bgCanvas-container {
-  z-index: 1;
+  z-index: 0;
   pointer-events: none;
 }
 
 #bgCanvas-container canvas {
-  z-index: 1;
+  z-index: 0;
   pointer-events: none;
 }
 
@@ -2157,14 +2157,14 @@ table a {
 }
 
 /* ========== BOKEH LAYER ========== */
-/* Three.js canvas sits between the page background and the UI. */
+/* Canvas menjadi background animasi, sementara konten HTML tetap
+   berada di atasnya. Ini juga menjaga placeholder MikroTik seperti
+   $(if chap-id) tetap terlihat pada preview GitHub Pages. */
 #bgCanvas,
-#bgCanvas-container {
-  z-index: 1;
-}
-
+#bgCanvas-container,
 #bgCanvas-container canvas {
-  z-index: 1;
+  z-index: 0;
+  pointer-events: none;
 }
 
 /* Keep the login card and controls above the bokeh layer. */

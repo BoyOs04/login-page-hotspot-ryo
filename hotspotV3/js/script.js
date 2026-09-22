@@ -36,31 +36,31 @@ function fallbackCopy(text) {
 /* =====================================================
    3. Fungsi: Jam Interaktif (Mode Normal & Mode Zona Waktu)
 ===================================================== */
-let is12HourFormat = false; 
-let tzMode = false;         
-let currentTzIdx = 0;       
+let is12HourFormat = false;
+let tzMode = false;
+let currentTzIdx = 0;
 
 const tzList = [
   { id: 'Asia/Jakarta', label: 'WIB' },
   { id: 'Asia/Makassar', label: 'WITA' },
   { id: 'Asia/Jayapura', label: 'WIT' },
-  { id: 'America/Chicago', label: 'Texas (CT)' },   
-  { id: 'America/New_York', label: 'Florida (ET)' } 
+  { id: 'America/Chicago', label: 'Texas (CT)' },
+  { id: 'America/New_York', label: 'Florida (ET)' }
 ];
 
 function updateClock() {
   const timeEl = document.getElementById('clock-time');
   const dateEl = document.getElementById('clock-date');
   if (!timeEl || !dateEl) return;
-  
+
   const now = new Date();
-  
-  let timeOptions = { 
-    hour: '2-digit', 
-    minute: '2-digit', 
+
+  let timeOptions = {
+    hour: '2-digit',
+    minute: '2-digit',
     second: '2-digit',
-    fractionalSecondDigits: 3, 
-    hour12: is12HourFormat     
+    fractionalSecondDigits: 3,
+    hour12: is12HourFormat
   };
 
   if (tzMode) {
@@ -69,13 +69,13 @@ function updateClock() {
 
   const locale = is12HourFormat ? 'en-US' : 'id-ID';
   let timeString = now.toLocaleTimeString(locale, timeOptions);
-  
+
   if (tzMode) {
     timeString = `${timeString} ${tzList[currentTzIdx].label}`;
   }
-  
+
   timeEl.textContent = timeString;
-  
+
   let dateOptions = { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' };
   if (tzMode) {
     dateOptions.timeZone = tzList[currentTzIdx].id;
@@ -89,27 +89,42 @@ function updateClock() {
 window.quickLogin = function() {
   const kode = prompt("Masukkan kode akses:");
   if (!kode) return;
-  
+
   const userChoice = kode.toLowerCase().trim();
-  const vouchers = (typeof AppConfig !== 'undefined' && AppConfig.vouchers) ? AppConfig.vouchers : {};
-  
+  const vouchers = (typeof AppConfig !== 'undefined' && AppConfig.vouchers)
+    ? AppConfig.vouchers
+    : {};
+
   if (vouchers[userChoice]) {
     const targetUser = vouchers[userChoice].user;
     const targetPass = vouchers[userChoice].pass;
 
+    const loginForm = document.forms['login'];
+
+    if (!loginForm || !loginForm.username || !loginForm.password) {
+      showToast("Form login tidak ditemukan!", 2000);
+      return;
+    }
+
+    // Isi form login secara langsung.
+    // Jangan redirect dengan ?username=...&password=...
+    // karena RouterOS HTTP-CHAP membutuhkan proses hash
+    // chap-id + password + chap-challenge sebelum submit.
+    loginForm.username.value = targetUser;
+    loginForm.password.value = targetPass;
+
     showToast("Menghubungkan " + userChoice.toUpperCase() + "...", 1000);
-    
+
     setTimeout(() => {
-      const loginForm = document.forms['login'];
-      const loginUrl = loginForm ? loginForm.action : '';
-      
-      if (loginUrl) {
-          window.location.href = loginUrl + "?username=" + encodeURIComponent(targetUser) + "&password=" + encodeURIComponent(targetPass);
+      if (typeof loginForm.requestSubmit === 'function') {
+        loginForm.requestSubmit();
       } else {
-          showToast("URL Login tidak ditemukan!", 2000);
+        // Fallback untuk browser captive portal lama.
+        const event = new Event('submit', { cancelable: true });
+        loginForm.dispatchEvent(event);
       }
-    }, 500);
-    
+    }, 300);
+
   } else {
     showToast("Kode tidak terdaftar!", 1000);
   }
@@ -119,10 +134,10 @@ window.quickLogin = function() {
    5. Inisialisasi Saat Halaman Siap
 ===================================================== */
 document.addEventListener('DOMContentLoaded', () => {
-  
+
   /* --- SETUP JAM INTERAKTIF --- */
   // PERBAIKAN: Diubah dari 1ms ke 50ms agar HP tidak panas/lag
-  setInterval(updateClock, 50); 
+  setInterval(updateClock, 50);
   updateClock();
 
   const clockBox = document.getElementById('clock-box');
@@ -134,17 +149,17 @@ document.addEventListener('DOMContentLoaded', () => {
     const startPress = () => {
       isLongPress = false;
       pressTimer = setTimeout(() => {
-        isLongPress = true; 
-        tzMode = !tzMode;   
+        isLongPress = true;
+        tzMode = !tzMode;
 
         if (tzMode) {
-          currentTzIdx = 0; 
+          currentTzIdx = 0;
           showToast("Mode Zona Waktu: Aktif", 1000);
         } else {
           showToast("Kembali ke Waktu Lokal Asli", 1000);
         }
         updateClock();
-      }, 500); 
+      }, 500);
     };
 
     const endPress = () => {
@@ -153,31 +168,32 @@ document.addEventListener('DOMContentLoaded', () => {
         if (tzMode) {
           currentTzIdx = (currentTzIdx + 1) % tzList.length;
           showToast(`Berubah ke: ${tzList[currentTzIdx].label}`, 1000);
-          updateClock(); 
+          updateClock();
         } else {
           is12HourFormat = !is12HourFormat;
           showToast(is12HourFormat ? "Format 12 Jam (AM/PM)" : "Format 24 Jam", 1000);
-          updateClock(); 
+          updateClock();
         }
       }
-      isLongPress = false; 
+      isLongPress = false;
     };
 
     clockBox.addEventListener('touchstart', () => { isTouch = true; startPress(); }, {passive: true});
     clockBox.addEventListener('touchend', () => { if (isTouch) endPress(); });
     clockBox.addEventListener('mousedown', () => { if (!isTouch) startPress(); });
     clockBox.addEventListener('mouseup', () => { if (!isTouch) endPress(); });
-    clockBox.addEventListener('mouseleave', () => clearTimeout(pressTimer)); 
+    clockBox.addEventListener('mouseleave', () => clearTimeout(pressTimer));
   }
 
   /* --- SETUP COPY MANUAL --- */
   document.querySelectorAll('.ico[data-copy]').forEach(icon => {
     icon.style.cursor = 'pointer';
     icon.addEventListener('click', (e) => {
-      e.preventDefault(); e.stopPropagation();
+      e.preventDefault();
+      e.stopPropagation();
       const text = icon.getAttribute('data-copy');
       if (!text) return;
-      
+
       if (navigator.clipboard && window.isSecureContext) {
         navigator.clipboard.writeText(text).then(() => {
           showToast(`Berhasil disalin!`, 1000);
@@ -192,12 +208,20 @@ document.addEventListener('DOMContentLoaded', () => {
   const popup = document.getElementById('custom-hover-popup');
   document.querySelectorAll('.interactive-text').forEach(text => {
     text.addEventListener('mouseenter', () => {
-      if (popup) { popup.textContent = text.getAttribute('data-popup'); popup.style.display = 'block'; }
+      if (popup) {
+        popup.textContent = text.getAttribute('data-popup');
+        popup.style.display = 'block';
+      }
     });
     text.addEventListener('mousemove', (e) => {
-      if (popup) { popup.style.left = e.clientX + 'px'; popup.style.top = (e.clientY - 10) + 'px'; }
+      if (popup) {
+        popup.style.left = e.clientX + 'px';
+        popup.style.top = (e.clientY - 10) + 'px';
+      }
     });
-    text.addEventListener('mouseleave', () => { if (popup) popup.style.display = 'none'; });
+    text.addEventListener('mouseleave', () => {
+      if (popup) popup.style.display = 'none';
+    });
     text.addEventListener('click', (e) => {
       e.stopPropagation();
       if (popup) {
@@ -205,11 +229,13 @@ document.addEventListener('DOMContentLoaded', () => {
         popup.style.display = 'block';
         popup.style.left = e.clientX + 'px';
         popup.style.top = (e.clientY - 30) + 'px';
-        setTimeout(() => popup.style.display = 'none', 1000); 
+        setTimeout(() => popup.style.display = 'none', 1000);
       }
     });
   });
-  document.addEventListener('click', () => { if (popup) popup.style.display = 'none'; });
+  document.addEventListener('click', () => {
+    if (popup) popup.style.display = 'none';
+  });
 
   /* --- ERROR HANDLING DARI MIKROTIK --- */
   const loginForm = document.forms['login'];

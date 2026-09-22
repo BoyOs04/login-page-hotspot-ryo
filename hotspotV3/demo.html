@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HotSpot UI Demo</title>
+<link rel="stylesheet" href="css/style.css">
+<style>
+  .demo-nav {
+    position: fixed;
+    top: 18px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 20;
+    display: flex;
+    gap: 8px;
+    padding: 8px;
+    border: 1px solid rgba(255,255,255,.45);
+    border-radius: 999px;
+    background: rgba(255,250,240,.55);
+    backdrop-filter: blur(14px);
+    box-shadow: 0 10px 30px rgba(72,42,18,.15);
+  }
+  .demo-nav button {
+    border: 0;
+    border-radius: 999px;
+    padding: 9px 14px;
+    background: transparent;
+    color: var(--brown-dark);
+    cursor: pointer;
+    font: inherit;
+  }
+  .demo-nav button.active {
+    background: var(--brown);
+    color: var(--cream);
+  }
+  .demo-view { display:none; width:100%; }
+  .demo-view.active { display:block; }
+  .demo-note {
+    margin-top: 16px;
+    font-size: .78rem;
+    color: var(--muted);
+    text-align:center;
+  }
+  .demo-status { margin-top: 18px; }
+  .demo-status table { margin-bottom: 18px; }
+  .demo-qr {
+    display:flex;
+    justify-content:center;
+    margin:16px 0;
+  }
+  .demo-qr canvas, .demo-qr img {
+    border-radius:12px;
+    background:#fff;
+    padding:8px;
+  }
+  @media(max-width:600px){
+    .demo-nav { top:10px; max-width:calc(100% - 20px); overflow:auto; }
+    .demo-nav button { white-space:nowrap; padding:8px 11px; }
+  }
+</style>
+</head>
+<body>
+
+<div id="bgCanvas-container"><canvas id="bgCanvas"></canvas></div>
+
+<nav class="demo-nav" aria-label="Demo navigation">
+  <button class="active" data-view="home">Home</button>
+  <button data-view="login">Login</button>
+  <button data-view="status">Status</button>
+  <button data-view="qr">QR</button>
+</nav>
+
+<div class="ie-fixMinHeight">
+  <div class="main">
+
+    <section id="view-home" class="demo-view active">
+      <div class="logo-container">
+        <img src="img/favicon.png" alt="Logo" class="logo">
+      </div>
+      <div class="wrap">
+        <h1>HOME</h1>
+        <p class="info">Preview UI HotSpot MikroTik</p>
+        <div class="info bt"><a href="#" data-go="login">Login User</a></div>
+        <div class="info bt"><a href="#" data-go="qr">QR Login</a></div>
+        <div class="info bt"><a href="#" data-go="status">Lihat Status</a></div>
+        <p class="demo-note">DEMO FRONTEND — tidak terhubung ke MikroTik.</p>
+      </div>
+    </section>
+
+    <section id="view-login" class="demo-view">
+      <div class="logo-container">
+        <img src="img/favicon.png" alt="Logo" class="logo">
+        <div class="login-instructions">
+          <h1>HOME</h1>
+          <p>Silakan masukkan <span class="interactive-text" id="popupUser">username</span> dan <span class="interactive-text" id="popupPass">password</span></p>
+        </div>
+      </div>
+
+      <div class="wrap">
+        <form id="demoLoginForm">
+          <label class="input-container">
+            <img src="img/user.svg" alt="User" class="ico">
+            <input type="text" id="demoUser" placeholder=" Username..." required>
+          </label>
+          <label class="input-container">
+            <img src="img/password.svg" alt="Password" class="ico">
+            <input type="password" id="demoPass" placeholder=" Password..." required>
+          </label>
+          <button type="submit" class="btn-submit">HUBUNGKAN</button>
+        </form>
+        <div class="info bt"><a href="#" id="quickDemo">Gunakan Voucher</a></div>
+        <p class="demo-note">Login disimulasikan di browser.</p>
+      </div>
+    </section>
+
+    <section id="view-status" class="demo-view">
+      <div class="wrap demo-status">
+        <h1>STATUS</h1>
+        <table>
+          <tr><td>Username</td><td>demo-user</td></tr>
+          <tr><td>IP address</td><td>192.168.88.10</td></tr>
+          <tr><td>Bytes up / down</td><td>12.4 MB / 184.7 MB</td></tr>
+          <tr><td>Connected</td><td>00:42:18</td></tr>
+        </table>
+        <div class="progress-box">
+          <div class="progress-title">
+            <span>Sisa Kuota:</span>
+            <span id="demoQuota">750 MB / 1 GB</span>
+          </div>
+          <div class="progress-bg"><div id="demoBar" class="progress-bar" style="width:73.2%"></div></div>
+        </div>
+        <div class="info bt"><a href="#" id="demoLogout">Log out</a></div>
+      </div>
+    </section>
+
+    <section id="view-qr" class="demo-view">
+      <div class="wrap">
+        <h1>QR LOGIN</h1>
+        <div class="demo-qr" id="demoQR"></div>
+        <p class="info">Scan untuk membuka login HotSpot.</p>
+        <p class="demo-note">QR dibuat dari library lokal.</p>
+      </div>
+    </section>
+
+  </div>
+</div>
+
+<div id="toast" class="toast"></div>
+<div id="custom-hover-popup" class="hover-popup"></div>
+
+<script src="js/qrcode.min.js"></script>
+<script type="module" src="js/bokeh.js"></script>
+<script>
+const views = document.querySelectorAll('.demo-view');
+const navButtons = document.querySelectorAll('.demo-nav button');
+
+function showView(name) {
+  views.forEach(v => v.classList.toggle('active', v.id === 'view-' + name));
+  navButtons.forEach(b => b.classList.toggle('active', b.dataset.view === name));
+  if (name === 'qr' && !document.querySelector('#demoQR canvas, #demoQR img')) {
+    new QRCode(document.getElementById('demoQR'), {
+      text: location.href,
+      width: 210,
+      height: 210
+    });
+  }
+}
+
+navButtons.forEach(btn => btn.addEventListener('click', () => showView(btn.dataset.view)));
+document.querySelectorAll('[data-go]').forEach(a => {
+  a.addEventListener('click', e => {
+    e.preventDefault();
+    showView(a.dataset.go);
+  });
+});
+
+function toast(message) {
+  const el = document.getElementById('toast');
+  el.textContent = message;
+  el.classList.add('show');
+  setTimeout(() => el.classList.remove('show'), 1600);
+}
+
+document.getElementById('demoLoginForm').addEventListener('submit', e => {
+  e.preventDefault();
+  const user = document.getElementById('demoUser').value.trim();
+  toast('Login demo: ' + user);
+});
+
+document.getElementById('quickDemo').addEventListener('click', e => {
+  e.preventDefault();
+  document.getElementById('demoUser').value = 'tamu';
+  document.getElementById('demoPass').value = '!guest';
+  toast('Voucher demo terisi');
+});
+
+document.getElementById('demoLogout').addEventListener('click', e => {
+  e.preventDefault();
+  toast('Logout demo');
+  showView('home');
+});
+
+document.getElementById('popupUser').dataset.popup = 'Gunakan: tamu';
+document.getElementById('popupPass').dataset.popup = 'Perhatikan: !guest';
+</script>
+</body>
+</html>

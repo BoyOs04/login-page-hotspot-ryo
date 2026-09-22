@@ -7,11 +7,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet" />
   <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
   <style>
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
 
     body {
       font-family: 'Roboto', sans-serif;
@@ -41,10 +37,7 @@
       font-size: 22px;
     }
 
-    .carousel {
-      display: flex;
-      transition: transform 0.3s ease;
-    }
+    .carousel { display: flex; transition: transform 0.3s ease; }
 
     .qr-card {
       flex: 0 0 100%;
@@ -72,14 +65,8 @@
     }
 
     @keyframes fadeInUp {
-      from {
-        opacity: 0;
-        transform: translateY(30px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
+      from { opacity: 0; transform: translateY(30px); }
+      to { opacity: 1; transform: translateY(0); }
     }
   </style>
 </head>
@@ -90,11 +77,12 @@
       <div class="qr-card">
         <div class="qr-label">1. Tamu</div>
         <div class="qrcode">
-          <a href="http://gateway.linelejan-rumagit.net/login?username=tamu&password=tamu1">
+          <a href="http://gateway.linelejan-rumagit.net/login?username=tamu&password=%21guest">
             <div id="qr1"></div>
           </a>
         </div>
       </div>
+
       <div class="qr-card">
         <div class="qr-label">2. Game</div>
         <div class="qrcode">
@@ -103,6 +91,7 @@
           </a>
         </div>
       </div>
+
       <div class="qr-card">
         <div class="qr-label">3. Juan</div>
         <div class="qrcode">
@@ -111,6 +100,7 @@
           </a>
         </div>
       </div>
+
       <div class="qr-card">
         <div class="qr-label">4. Andrew</div>
         <div class="qrcode">
@@ -124,7 +114,7 @@
 
   <script>
     new QRCode(document.getElementById("qr1"), {
-      text: "http://gateway.linelejan-rumagit.net/login?username=tamu&password=tamu1",
+      text: "http://gateway.linelejan-rumagit.net/login?username=tamu&password=%21guest",
       width: 210,
       height: 210
     });
@@ -155,7 +145,6 @@
       carousel.style.transform = `translateX(-${currentCard * 100}%)`;
     }
 
-    // Swipe Gesture
     let startX = 0;
     carousel.addEventListener('touchstart', (e) => {
       startX = e.touches[0].clientX;

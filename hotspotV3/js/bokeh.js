@@ -40,21 +40,21 @@
   };
 
   const WHEAT = {
-    // Main wheat / gold / caramel palette.
-    baseA: '#fff1cf',
-    baseB: '#e8b96f',
-    baseC: '#b87532',
-    baseD: '#f7dca5',
+    // Pure wheat + white palette.
+    baseA: '#ffffff',
+    baseB: '#fffaf0',
+    baseC: '#f5deb3',
+    baseD: '#ffffff',
 
-    // Moving highlight blobs.
-    glowA: 'rgba(255, 244, 205, 0.92)',
-    glowB: 'rgba(245, 196, 105, 0.72)',
-    glowC: 'rgba(183, 113, 43, 0.48)',
+    // White / wheat moving highlights.
+    glowA: 'rgba(255, 255, 255, 0.94)',
+    glowB: 'rgba(245, 222, 179, 0.76)',
+    glowC: 'rgba(255, 255, 255, 0.54)',
 
-    // Touch highlight and depth.
-    touchGlow: 'rgba(255, 226, 150, 0.58)',
-    touchCore: 'rgba(255, 247, 214, 0.34)',
-    shadow: 'rgba(92, 51, 18, 0.18)'
+    // Touch highlight and subtle wheat depth.
+    touchGlow: 'rgba(255, 255, 255, 0.60)',
+    touchCore: 'rgba(245, 222, 179, 0.40)',
+    shadow: 'rgba(139, 69, 19, 0.12)'
   };
 
   let canvas = null;

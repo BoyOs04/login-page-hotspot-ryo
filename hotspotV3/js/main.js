@@ -31,19 +31,22 @@ function chooseUser(){
 
   u = u.toLowerCase().trim();
 
-  // PERBAIKAN: Menggunakan relative path agar dinamis (tidak hardcoded domain)
+  // Kirim hanya alias akun ke login.html.
+  // Password tidak lagi dikirim melalui URL.
   const loginMap = {
-    ryo: "/login?username=ryoline&password=claudio04",
-    rl: "/login?username=ryoline&password=claudio04",
-    andrew: "/login?username=andrew&password=andrew1234",
-    juan: "/login?username=juan&password=juan1234",
-    fam: "/login?username=family&password=family1234"
+    ryo: "ryo",
+    rl: "ryo",
+    andrew: "andrew",
+    juan: "juan",
+    fam: "fam"
   };
 
-  if(loginMap[u]){
+  const quickCode = loginMap[u];
+
+  if(quickCode){
     showToast("Menghubungkan...",1500);
     setTimeout(()=>{
-      window.location.href = loginMap[u];
+      window.location.href = "/login?quick=" + encodeURIComponent(quickCode);
     },500);
   }else{
     showToast("User tidak dikenal!",3000);

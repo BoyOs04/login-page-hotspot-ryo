@@ -31,8 +31,9 @@ function chooseUser(){
 
   u = u.toLowerCase().trim();
 
-  // Kirim hanya alias akun ke login.html.
-  // Password tidak lagi dikirim melalui URL.
+  // Alias dipetakan ke kode Quick Login.
+  // URL login diambil dari variabel yang disediakan oleh login.html/main.html,
+  // bukan hardcoded ke /login.
   const loginMap = {
     ryo: "ryo",
     rl: "ryo",
@@ -42,15 +43,26 @@ function chooseUser(){
   };
 
   const quickCode = loginMap[u];
+  const hotspotConfig = window.HotspotConfig || {};
+  const loginBase = hotspotConfig.loginLink || hotspotConfig.loginUrl || "";
 
-  if(quickCode){
-    showToast("Menghubungkan...",1500);
-    setTimeout(()=>{
-      window.location.href = "/login?quick=" + encodeURIComponent(quickCode);
-    },500);
-  }else{
+  if(!quickCode){
     showToast("User tidak dikenal!",3000);
+    return;
   }
+
+  if(!loginBase){
+    showToast("URL Login HotSpot tidak tersedia!",3000);
+    return;
+  }
+
+  showToast("Menghubungkan...",1500);
+
+  setTimeout(()=>{
+    const separator = loginBase.includes("?") ? "&" : "?";
+    window.location.href =
+      loginBase + separator + "quick=" + encodeURIComponent(quickCode);
+  },500);
 }
 
 /* ===== CLOSE DROPDOWN ON OUTSIDE CLICK ===== */

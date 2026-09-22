@@ -38,9 +38,20 @@ a {
   text-decoration: none;
 }
 
+#bgCanvas {
+  position: fixed !important;
+  inset: 0;
+  z-index: 0;
+  width: 100vw !important;
+  height: 100vh !important;
+  display: block;
+  pointer-events: none;
+}
+
 .background {
   position: fixed;
   inset: 0;
+  z-index: 0;
   overflow: hidden;
   pointer-events: none;
 }

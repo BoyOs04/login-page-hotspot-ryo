@@ -77,7 +77,7 @@
       <div class="qr-card">
         <div class="qr-label">1. Tamu</div>
         <div class="qrcode">
-          <a href="http://gateway.linelejan-rumagit.net/login?username=tamu&password=%21guest">
+          <a id="login1" href="#">
             <div id="qr1"></div>
           </a>
         </div>
@@ -86,7 +86,7 @@
       <div class="qr-card">
         <div class="qr-label">2. Game</div>
         <div class="qrcode">
-          <a href="http://gateway.linelejan-rumagit.net/login?username=game&password=game">
+          <a id="login2" href="#">
             <div id="qr2"></div>
           </a>
         </div>
@@ -95,7 +95,7 @@
       <div class="qr-card">
         <div class="qr-label">3. Juan</div>
         <div class="qrcode">
-          <a href="http://gateway.linelejan-rumagit.net/login?username=juan&password=juan1234">
+          <a id="login3" href="#">
             <div id="qr3"></div>
           </a>
         </div>
@@ -104,7 +104,7 @@
       <div class="qr-card">
         <div class="qr-label">4. Andrew</div>
         <div class="qrcode">
-          <a href="http://gateway.linelejan-rumagit.net/login?username=andrew&password=andrew1234">
+          <a id="login4" href="#">
             <div id="qr4"></div>
           </a>
         </div>
@@ -113,28 +113,32 @@
   </div>
 
   <script>
-    new QRCode(document.getElementById("qr1"), {
-      text: "http://gateway.linelejan-rumagit.net/login?username=tamu&password=%21guest",
-      width: 210,
-      height: 210
-    });
+    const loginBase = "$(link-login-only)";
 
-    new QRCode(document.getElementById("qr2"), {
-      text: "http://gateway.linelejan-rumagit.net/login?username=game&password=game",
-      width: 210,
-      height: 210
-    });
+    const credentials = [
+      { id: "1", user: "tamu", pass: "!guest" },
+      { id: "2", user: "game", pass: "game" },
+      { id: "3", user: "juan", pass: "juan1234" },
+      { id: "4", user: "andrew", pass: "andrew1234" }
+    ];
 
-    new QRCode(document.getElementById("qr3"), {
-      text: "http://gateway.linelejan-rumagit.net/login?username=juan&password=juan1234",
-      width: 210,
-      height: 210
-    });
+    function makeLoginUrl(user, pass) {
+      const separator = loginBase.includes("?") ? "&" : "?";
+      return loginBase +
+        separator +
+        "username=" + encodeURIComponent(user) +
+        "&password=" + encodeURIComponent(pass);
+    }
 
-    new QRCode(document.getElementById("qr4"), {
-      text: "http://gateway.linelejan-rumagit.net/login?username=andrew&password=andrew1234",
-      width: 210,
-      height: 210
+    credentials.forEach(account => {
+      const url = makeLoginUrl(account.user, account.pass);
+      document.getElementById("login" + account.id).href = url;
+
+      new QRCode(document.getElementById("qr" + account.id), {
+        text: url,
+        width: 210,
+        height: 210
+      });
     });
 
     let currentCard = 0;

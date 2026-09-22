@@ -8,8 +8,8 @@
   --bg-1: #f5e6d3;
   --bg-2: #d4a574;
   --cream: #fffaf0;
-  --wheat: #f5deb3;
-  --wheat-deep: #deb887;
+  --wheat: var(--color-wheat);
+  --wheat-deep: var(--color-wheat-deep);
   --brown: #8b4513;
   --brown-dark: #5c3312;
   --text: #333333;
@@ -30,6 +30,7 @@
 }
 
 /* ========== RESET & BASE ========== */
+/* Elemen global: reset box model dan perilaku dasar halaman. */
 *,
 *::before,
 *::after {
@@ -49,6 +50,7 @@ html {
   font-family: 'Roboto', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
 }
 
+/* Body: latar utama dan posisi seluruh UI HotSpot. */
 body {
   min-height: 100vh;
   min-height: 100dvh;
@@ -60,8 +62,8 @@ body {
   overflow-y: auto;
   color: var(--text);
   background:
-    radial-gradient(circle at 15% 15%, rgba(255,255,255,0.72), transparent 34%),
-    radial-gradient(circle at 85% 80%, rgba(222,184,135,0.30), transparent 38%),
+    radial-gradient(circle at 15% 15%, var(--glass-highlight-bg), transparent 34%),
+    radial-gradient(circle at 85% 80%, var(--clock-deep), transparent 38%),
     linear-gradient(135deg, var(--bg-1) 0%, var(--cream) 46%, var(--wheat) 100%);
 }
 
@@ -81,6 +83,7 @@ a {
 }
 
 /* ========== ANIMATED BACKGROUND ========== */
+/* Background canvas: animasi berada di belakang seluruh konten. */
 #bgCanvas,
 #bgCanvas-container,
 #bgCanvas-container canvas {
@@ -102,6 +105,7 @@ a {
 }
 
 /* ========== SHARED PAGE CONTAINER ========== */
+/* Wrapper halaman: menjaga konten tetap terpusat dan responsif. */
 .ie-fixMinHeight {
   width: 100%;
   min-height: 100vh;
@@ -114,6 +118,7 @@ a {
   z-index: 2;
 }
 
+/* Kartu utama: panel glassmorphism untuk login/status/error/logout. */
 .main {
   width: min(92vw, 430px);
   max-width: 430px;
@@ -145,9 +150,9 @@ a {
   border-radius: calc(var(--radius-lg) - 1px);
   background: linear-gradient(
     135deg,
-    rgba(255,255,255,0.28),
+    var(--glass-shine),
     transparent 45%,
-    rgba(255,255,255,0.10)
+    var(--border-white-soft)
   );
   pointer-events: none;
   z-index: -1;
@@ -158,19 +163,21 @@ a {
   margin-top: 8px;
 }
 
+/* Logo container: area pembungkus logo halaman. */
 .logo-container {
   width: 100%;
   text-align: center;
   margin: 0 auto 16px;
 }
 
+/* Logo standar: dipakai halaman login dan halaman informasi. */
 .logo {
   display: block;
   width: 80px;
   height: auto;
   margin: 0 auto 14px;
   object-fit: contain;
-  filter: drop-shadow(0 8px 18px rgba(92, 51, 18, 0.16));
+  filter: drop-shadow(0 8px 18px var(--shadow-brown-logo));
 }
 
 /* Main page logo hanya untuk main.html.
@@ -187,7 +194,7 @@ a {
   margin: 0 auto;
   object-fit: contain;
   cursor: pointer;
-  filter: drop-shadow(0 10px 24px rgba(92, 51, 18, 0.20));
+  filter: drop-shadow(0 10px 24px var(--shadow-brown-logo-hover));
   transition:
     transform 0.4s var(--ease),
     filter 0.4s var(--ease);
@@ -195,10 +202,11 @@ a {
 
 .menu-toggle ~ .logo-container img:hover {
   transform: scale(1.06) rotate(3deg);
-  filter: drop-shadow(0 16px 30px rgba(92, 51, 18, 0.28));
+  filter: drop-shadow(0 16px 30px var(--shadow-brown-logo-active));
 }
 
 /* ========== LOGIN TEXT ========== */
+/* Instruksi login: teks bantuan di atas form. */
 .login-instructions {
   font-size: 14px;
   line-height: 1.65;
@@ -217,7 +225,7 @@ a {
 
 .login-instructions p {
   margin: 8px 0 0;
-  color: #5b5b5b;
+  color: var(--color-text-soft);
 }
 
 .main > .wrap > h1 {
@@ -231,7 +239,7 @@ a {
   font-size: clamp(26px, 7vw, 34px);
   line-height: 1.1;
   font-weight: 700;
-  text-shadow: 0 3px 10px rgba(92, 51, 18, 0.18);
+  text-shadow: 0 3px 10px var(--shadow-brown-text);
 }
 
 .menu-toggle ~ .logo-container p {
@@ -241,11 +249,12 @@ a {
 }
 
 /* ========== INTERACTIVE USER/PASSWORD TEXT ========== */
+/* Teks interaktif: username/password yang dapat dipanggil tooltip. */
 .interactive-text {
   color: var(--brown);
   font-weight: 700;
   cursor: help;
-  border-bottom: 1px dashed rgba(139, 69, 19, 0.48);
+  border-bottom: 1px dashed var(--border-brown-dashed);
   transition:
     color 0.25s ease,
     border-color 0.25s ease;
@@ -259,26 +268,27 @@ a {
 }
 
 .interactive-text:focus-visible {
-  outline: 2px solid rgba(139, 69, 19, 0.30);
+  outline: 2px solid var(--focus-brown);
   outline-offset: 3px;
 }
 
 /* ========== TOOLTIP ========== */
+/* Tooltip: popup informasi saat teks interaktif disentuh/di-hover. */
 .hover-popup {
   position: fixed;
   display: none;
   max-width: min(280px, calc(100vw - 24px));
   padding: 9px 12px;
-  border: 1px solid rgba(255,255,255,0.18);
+  border: 1px solid var(--border-glass-faint);
   border-radius: 9px;
-  background: rgba(30, 24, 19, 0.90);
-  color: #ffffff;
+  background: var(--dark-glass-bg);
+  color: var(--color-white);
   font-size: 12px;
   line-height: 1.45;
   text-align: center;
   white-space: normal;
   overflow-wrap: anywhere;
-  box-shadow: 0 10px 24px rgba(0,0,0,0.22);
+  box-shadow: 0 10px 24px var(--shadow-black-md);
   -webkit-backdrop-filter: blur(8px);
   backdrop-filter: blur(8px);
   pointer-events: none;
@@ -294,17 +304,19 @@ a {
   width: 10px;
   height: 10px;
   transform: translateX(-50%) rotate(45deg);
-  background: rgba(30, 24, 19, 0.90);
-  border-right: 1px solid rgba(255,255,255,0.10);
-  border-bottom: 1px solid rgba(255,255,255,0.10);
+  background: var(--dark-glass-bg);
+  border-right: 1px solid var(--border-white-soft);
+  border-bottom: 1px solid var(--border-white-soft);
 }
 
 /* ========== FORM ========== */
+/* Form: wadah field login. */
 form {
   width: 100%;
   margin: 20px 0;
 }
 
+/* Input container: posisi ikon dan field. */
 .input-container {
   position: relative;
   display: block;
@@ -341,6 +353,7 @@ form {
   display: block;
 }
 
+/* Field username/password: gaya input utama HotSpot. */
 input[type="text"],
 input[type="password"] {
   width: 100%;
@@ -352,17 +365,17 @@ input[type="password"] {
   background:
     linear-gradient(
       135deg,
-      rgba(255,248,220,0.42),
-      rgba(255,250,240,0.30)
+      var(--input-bg),
+      var(--glass-bg-menu-hover)
     );
-  color: #2d2d2d;
+  color: var(--color-input-text);
   font: inherit;
   font-size: 15px;
   line-height: 1.35;
   caret-color: var(--brown);
   box-shadow:
-    inset 0 1px 1px rgba(255,255,255,0.60),
-    0 4px 14px rgba(72,42,18,0.06);
+    inset 0 1px 1px var(--input-highlight),
+    0 4px 14px var(--shadow-brown-xs);
   -webkit-backdrop-filter: blur(10px);
   backdrop-filter: blur(10px);
   transition:
@@ -378,30 +391,30 @@ input[type="password"]:hover {
   background:
     linear-gradient(
       135deg,
-      rgba(255,248,220,0.66),
-      rgba(255,250,240,0.54)
+      var(--input-bg-hover),
+      var(--input-bg-hover-soft)
     );
 }
 
 input[type="text"]:focus,
 input[type="password"]:focus {
-  border-color: rgba(205,133,63,0.84);
+  border-color: var(--border-focus);
   background:
     linear-gradient(
       135deg,
-      rgba(255,250,240,0.90),
-      rgba(255,248,220,0.82)
+      var(--input-bg-focus),
+      var(--input-bg-focus-soft)
     );
   box-shadow:
-    0 0 0 4px rgba(245,222,179,0.24),
-    0 9px 24px rgba(72,42,18,0.13),
-    inset 0 1px 2px rgba(255,255,255,0.75);
+    0 0 0 4px var(--focus-ring),
+    0 9px 24px var(--shadow-input-focus),
+    inset 0 1px 2px var(--input-highlight-focus);
   transform: translateY(-1px);
 }
 
 input[type="text"]::placeholder,
 input[type="password"]::placeholder {
-  color: rgba(92,51,18,0.48);
+  color: var(--placeholder);
   opacity: 1;
   transition:
     color 0.2s ease,
@@ -411,44 +424,45 @@ input[type="password"]::placeholder {
 
 input[type="text"]:focus::placeholder,
 input[type="password"]:focus::placeholder {
-  color: rgba(92,51,18,0.28);
+  color: var(--placeholder-focus);
   transform: translateX(5px);
   opacity: 0.75;
 }
 
 input[type="text"]:invalid:not(:focus):not(:placeholder-shown),
 input[type="password"]:invalid:not(:focus):not(:placeholder-shown) {
-  border-color: rgba(192,57,43,0.50);
+  border-color: var(--danger-border-strong);
   box-shadow:
-    0 0 0 3px rgba(192,57,43,0.08),
-    0 5px 15px rgba(192,57,43,0.08);
+    0 0 0 3px var(--danger-shadow),
+    0 5px 15px var(--danger-shadow);
 }
 
 /* ========== BUTTON ========== */
+/* Tombol submit: tombol login utama. */
 .btn-submit,
 input[type="submit"] {
   width: min(100%, 260px);
   min-height: 46px;
   margin: 4px auto 0;
   padding: 12px 20px;
-  border: 1px solid rgba(139,69,19,0.16);
+  border: 1px solid var(--border-brown-button);
   border-radius: 11px;
   background:
     linear-gradient(
       120deg,
-      #f5deb3 0%,
-      #deb887 48%,
-      #f5deb3 100%
+      var(--color-wheat) 0%,
+      var(--color-wheat-deep) 48%,
+      var(--color-wheat) 100%
     );
-  color: #3b2b21;
+  color: var(--color-text-button);
   font: inherit;
   font-size: 14px;
   font-weight: 700;
   letter-spacing: 0.45px;
   cursor: pointer;
   box-shadow:
-    0 6px 14px rgba(92,51,18,0.16),
-    inset 0 1px 0 rgba(255,255,255,0.45);
+    0 6px 14px var(--shadow-brown-sm),
+    inset 0 1px 0 var(--clock-highlight);
   transition:
     transform 0.25s var(--ease),
     box-shadow 0.25s var(--ease),
@@ -460,13 +474,13 @@ input[type="submit"]:hover {
   transform: translateY(-2px);
   filter: brightness(1.02);
   box-shadow:
-    0 9px 20px rgba(92,51,18,0.22),
-    inset 0 1px 0 rgba(255,255,255,0.52);
+    0 9px 20px var(--shadow-button-hover),
+    inset 0 1px 0 var(--button-highlight-hover);
 }
 
 .btn-submit:focus-visible,
 input[type="submit"]:focus-visible {
-  outline: 3px solid rgba(139,69,19,0.24);
+  outline: 3px solid var(--border-focus-brown);
   outline-offset: 3px;
 }
 
@@ -474,11 +488,12 @@ input[type="submit"]:focus-visible {
 input[type="submit"]:active {
   transform: translateY(0);
   box-shadow:
-    0 3px 8px rgba(92,51,18,0.17),
-    inset 0 1px 2px rgba(92,51,18,0.10);
+    0 3px 8px var(--shadow-button-active),
+    inset 0 1px 2px var(--shadow-button-inset);
 }
 
 /* ========== INFO / LINKS ========== */
+/* Info text: keterangan kecil dan link pendukung. */
 .info {
   margin: 9px 0;
   color: var(--muted);
@@ -527,6 +542,7 @@ input[type="submit"]:active {
 }
 
 /* ========== ERROR ========== */
+/* Error message: area untuk pesan kesalahan login. */
 .error-message {
   min-height: 20px;
   margin-top: 10px;
@@ -541,29 +557,30 @@ input[type="submit"]:active {
 }
 
 .error-message.alert {
-  background: rgba(231,76,60,0.10);
-  border: 1px solid rgba(231,76,60,0.22);
+  background: var(--color-danger-bg);
+  border: 1px solid var(--color-danger-border);
   animation: shake 0.5s ease;
 }
 
 /* ========== TABLES: STATUS / LOGOUT ========== */
+/* Table: tabel informasi status/logout. */
 table {
   width: 100%;
   margin: 18px 0;
   border-collapse: separate;
   border-spacing: 0;
   overflow: hidden;
-  border: 1px solid rgba(255,255,255,0.38);
+  border: 1px solid var(--table-highlight);
   border-radius: 14px;
-  background: rgba(255,250,240,0.30);
-  box-shadow: inset 0 1px 0 rgba(255,255,255,0.38);
+  background: var(--glass-bg-menu-hover);
+  box-shadow: inset 0 1px 0 var(--table-highlight);
   -webkit-backdrop-filter: blur(10px);
   backdrop-filter: blur(10px);
 }
 
 td {
   padding: 11px 12px;
-  border-bottom: 1px solid rgba(139,69,19,0.10);
+  border-bottom: 1px solid var(--border-brown-soft);
   font-size: 12px;
   line-height: 1.45;
   vertical-align: middle;
@@ -575,13 +592,13 @@ tr:last-child td {
 
 td:first-child {
   width: 42%;
-  color: #6f5746;
+  color: var(--color-text-table-label);
   font-weight: 600;
   text-align: left;
 }
 
 td:last-child {
-  color: #332820;
+  color: var(--color-text-table-value);
   font-weight: 600;
   text-align: right;
   overflow-wrap: anywhere;
@@ -595,18 +612,19 @@ table a {
 }
 
 /* ========== STATUS QUOTA ========== */
+/* Progress box: panel pemantauan kuota. */
 .progress-box {
   width: 100%;
   margin: 16px 0;
   padding: 13px;
-  border: 1px solid rgba(255,255,255,0.44);
+  border: 1px solid var(--border-glass-bright);
   border-radius: 13px;
-  background: rgba(255,255,255,0.45);
+  background: var(--clock-highlight);
   color: var(--text);
   text-align: left;
   box-shadow:
-    inset 0 1px 0 rgba(255,255,255,0.55),
-    0 5px 14px rgba(72,42,18,0.06);
+    inset 0 1px 0 var(--table-highlight-strong),
+    0 5px 14px var(--shadow-brown-xs);
 }
 
 .progress-title {
@@ -625,28 +643,31 @@ table a {
   font-variant-numeric: tabular-nums;
 }
 
+/* Progress background: jalur bar kuota. */
 .progress-bg {
   width: 100%;
   height: 11px;
   overflow: hidden;
   border-radius: 999px;
-  background: rgba(92,51,18,0.13);
-  box-shadow: inset 0 1px 2px rgba(0,0,0,0.08);
+  background: var(--progress-bg);
+  box-shadow: inset 0 1px 2px var(--progress-inset);
 }
 
+/* Progress bar: nilai pemakaian/kuota tersisa. */
 .progress-bar {
   width: 0%;
   height: 100%;
   min-width: 0;
   border-radius: inherit;
   background: var(--success);
-  box-shadow: 0 1px 4px rgba(46,204,113,0.28);
+  box-shadow: 0 1px 4px var(--success-shadow);
   transition:
     width 0.6s var(--ease),
     background 0.35s ease;
 }
 
 /* ========== MAIN PAGE MENU ========== */
+/* Menu toggle: tombol hamburger halaman utama. */
 .menu-toggle {
   position: fixed;
   top: max(14px, env(safe-area-inset-top));
@@ -659,8 +680,8 @@ table a {
   justify-content: center;
   border: 1px solid rgba(255,255,255,0.32);
   border-radius: 50%;
-  background: rgba(255,250,240,0.18);
-  box-shadow: 0 8px 20px rgba(72,42,18,0.10);
+  background: var(--glass-bg-menu-toggle);
+  box-shadow: 0 8px 20px var(--shadow-menu);
   -webkit-backdrop-filter: blur(12px);
   backdrop-filter: blur(12px);
   cursor: pointer;
@@ -672,20 +693,22 @@ table a {
 
 .menu-toggle:hover {
   transform: scale(1.07);
-  background: rgba(255,250,240,0.30);
-  box-shadow: 0 10px 24px rgba(72,42,18,0.18);
+  background: var(--glass-bg-menu-hover);
+  box-shadow: 0 10px 24px var(--shadow-menu-hover);
 }
 
 .menu-toggle:active {
   transform: scale(0.96);
 }
 
-.menu-toggle .icon-custom {
+.menu-toggle /* Icon: ikon SVG/PNG umum pada menu dan kontrol. */
+.icon-custom {
   width: 28px;
   height: 28px;
   margin: 0;
 }
 
+/* Dropdown: menu navigasi yang dibuka oleh hamburger. */
 .dropdown {
   position: fixed;
   top: calc(72px + env(safe-area-inset-top));
@@ -693,15 +716,15 @@ table a {
   width: min(235px, calc(100vw - 28px));
   z-index: 999;
   padding: 8px;
-  border: 1px solid rgba(255,255,255,0.42);
+  border: 1px solid var(--border-glass);
   border-radius: 15px;
   background:
     linear-gradient(
       135deg,
-      rgba(245,222,179,0.84),
-      rgba(255,250,240,0.78)
+      var(--glass-menu-wheat),
+      var(--glass-menu-cream)
     );
-  box-shadow: 0 18px 38px rgba(72,42,18,0.20);
+  box-shadow: 0 18px 38px var(--shadow-clock-hover);
   -webkit-backdrop-filter: blur(18px) saturate(135%);
   backdrop-filter: blur(18px) saturate(135%);
   opacity: 0;
@@ -744,8 +767,8 @@ table a {
 }
 
 .dropdown a:hover {
-  color: #332820;
-  background: rgba(222,184,135,0.38);
+  color: var(--color-text-table-value);
+  background: var(--dropdown-hover-bg);
   transform: translateX(-2px);
 }
 
@@ -754,7 +777,7 @@ table a {
 }
 
 .dropdown a:focus-visible {
-  outline: 2px solid rgba(139,69,19,0.26);
+  outline: 2px solid var(--dropdown-focus);
   outline-offset: 1px;
 }
 
@@ -776,7 +799,7 @@ table a {
     opacity 0.25s ease,
     transform 0.3s var(--ease),
     filter 0.25s ease;
-  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.18));
+  filter: drop-shadow(0 2px 4px var(--icon-shadow));
 }
 
 .icon-custom:hover {
@@ -795,6 +818,7 @@ table a {
 }
 
 /* ========== CLOCK BOX ========== */
+/* Clock box: panel jam dan tanggal. */
 #clock-box {
   position: fixed;
   top: max(14px, env(safe-area-inset-top));
@@ -803,18 +827,18 @@ table a {
   min-width: 126px;
   max-width: calc(100vw - 120px);
   padding: 9px 13px;
-  border: 1px solid rgba(139,69,19,0.28);
+  border: 1px solid var(--border-clock);
   border-radius: 13px;
   background:
     linear-gradient(
       135deg,
-      rgba(245,222,179,0.42),
-      rgba(255,250,240,0.34),
-      rgba(222,184,135,0.30)
+      var(--clock-wheat),
+      var(--clock-cream),
+      var(--clock-deep)
     );
   box-shadow:
-    0 9px 24px rgba(72,42,18,0.16),
-    inset 0 1px 0 rgba(255,255,255,0.45);
+    0 9px 24px var(--shadow-clock),
+    inset 0 1px 0 var(--clock-highlight);
   -webkit-backdrop-filter: blur(14px) saturate(125%);
   backdrop-filter: blur(14px) saturate(125%);
   text-align: center;
@@ -828,8 +852,8 @@ table a {
 #clock-box:hover {
   transform: translateY(-1px);
   box-shadow:
-    0 11px 26px rgba(72,42,18,0.20),
-    inset 0 1px 0 rgba(255,255,255,0.55);
+    0 11px 26px var(--shadow-clock-hover),
+    inset 0 1px 0 var(--table-highlight-strong);
 }
 
 #clock-time {
@@ -845,12 +869,13 @@ table a {
   margin-top: 3px;
   font-size: 11px;
   line-height: 1.3;
-  color: #5f5147;
+  color: var(--color-text-clock);
   opacity: 0.88;
   white-space: nowrap;
 }
 
 /* ========== TOAST ========== */
+/* Toast: notifikasi sementara di bagian bawah layar. */
 .toast {
   position: fixed;
   left: 50%;
@@ -862,15 +887,15 @@ table a {
   z-index: 10000;
   visibility: hidden;
   opacity: 0;
-  border: 1px solid rgba(255,255,255,0.16);
+  border: 1px solid var(--toast-border);
   border-radius: 11px;
-  background: rgba(30,24,19,0.78);
-  color: #ffffff;
+  background: var(--dark-glass-toast);
+  color: var(--color-white);
   text-align: center;
   font-size: 13px;
   line-height: 1.4;
   overflow-wrap: anywhere;
-  box-shadow: 0 10px 25px rgba(0,0,0,0.22);
+  box-shadow: 0 10px 25px var(--shadow-black-md);
   -webkit-backdrop-filter: blur(10px);
   backdrop-filter: blur(10px);
   pointer-events: none;

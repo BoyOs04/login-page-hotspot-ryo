@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="pragma" content="no-cache">
+    <meta http-equiv="expires" content="-1">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login Hotspot</title>
+    <link rel="stylesheet" href="css/style.css">
+    
+    <!-- PENTING: Pastikan file md5.js benar-benar ada di folder yang sama dengan login.html -->
+    <!-- Jika md5.js ada di dalam folder js, ubah menjadi: <script src="js/md5.js"></script> -->
+    <script src="md5.js"></script>
+    <script src="js/config.js"></script>
+</head>
+<body>
+
+    <div id="bgCanvas-container">
+        <canvas id="bgCanvas"></canvas>
+    </div>
+
+    <div id="clock-box">
+        <div id="clock-time">00:00:00</div>
+        <div id="clock-date"> </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            if(typeof AppConfig === 'undefined') return;
+
+            const popupUser = document.getElementById('popupUser');
+            const popupPass = document.getElementById('popupPass');
+            if(popupUser) popupUser.setAttribute('data-popup', 'Gunakan: ' + AppConfig.tamuUser);
+            if(popupPass) popupPass.setAttribute('data-popup', 'Perhatikan : ' + AppConfig.tamuPass);
+
+            const copyUserBtn = document.getElementById('copyUserBtn');
+            const copyPassBtn = document.getElementById('copyPassBtn');
+            if(copyUserBtn) {
+                copyUserBtn.setAttribute('data-copy', AppConfig.tamuUser);
+                copyUserBtn.setAttribute('title', "Klik untuk copy '" + AppConfig.tamuUser + "'");
+            }
+            if(copyPassBtn) {
+                copyPassBtn.setAttribute('data-copy', AppConfig.tamuPass);
+                copyPassBtn.setAttribute('title', "Klik untuk copy password");
+            }
+        });
+    </script>
+
+    $(if chap-id)
+    <form name="sendin" action="$(link-login-only)" method="post" style="display:none">
+        <input type="hidden" name="username" />
+        <input type="hidden" name="password" />
+        <input type="hidden" name="dst" value="$(link-orig)" />
+        <input type="hidden" name="popup" value="false" />
+    </form>
+    
+    <!-- PERBAIKAN BUG CHAP -->
+    <script>
+        function doLogin(e) {
+            // 1. Cegah form utama (PAP) terkirim secara default
+            if (e) e.preventDefault(); 
+            
+            try {
+                var username = document.login.username.value;
+                var password = document.login.password.value;
+                
+                // 2. Validasi kosong
+                if (username === '' || password === '') {
+                    if (typeof showToast === "function") showToast("Username dan Password wajib diisi!");
+                    return false;
+                }
+
+                // 3. Cek apakah fungsi hexMD5 dari md5.js berhasil dimuat
+                if (typeof hexMD5 === 'undefined') {
+                    alert("Error: File md5.js tidak terbaca! Pastikan file md5.js ada di folder yang benar di MikroTik Anda.");
+                    return false;
+                }
+
+                // 4. Proses enkripsi CHAP dan submit form tersembunyi (sendin)
+                document.sendin.username.value = username;
+                document.sendin.password.value = hexMD5('$(chap-id)' + password + '$(chap-challenge)');
+                document.sendin.submit();
+                
+            } catch (err) {
+                console.error("CHAP Error:", err);
+                alert("Terjadi kesalahan sistem saat enkripsi CHAP.");
+            }
+            
+            return false; // Wajib return false agar form 'login' tidak ikut tersubmit
+        }
+    </script>
+    $(endif)
+
+    <div class="ie-fixMinHeight">
+        <div class="main">
+            
+            <div class="logo-container">
+                <img src="img/favicon.png" alt="Logo" class="logo" onerror="this.style.display='none'">
+                <div class="login-instructions">
+                    <h1>HOME</h1>
+                    <p>
+                        Silakan masukkan <span class="interactive-text" id="popupUser">username</span> 
+                        dan <span class="interactive-text" id="popupPass">password</span> untuk menggunakan Internet
+                    </p>
+                </div>
+            </div>
+
+            <div class="wrap">
+                <!-- PERBAIKAN: Menambahkan parameter 'event' pada onSubmit agar preventDefault bekerja -->
+                <form name="login" action="$(link-login-only)" method="post" $(if chap-id) onSubmit="return doLogin(event)" $(endif)>
+                    <input type="hidden" name="dst" value="$(link-orig)" />
+                    <input type="hidden" name="popup" value="false" />
+
+                    <label class="input-container">
+                        <img src="img/user.svg" alt="User" class="ico" id="copyUserBtn" onerror="this.style.display='none'">
+                        <input type="text" name="username" id="usernameInput" placeholder=" Username..." required autocomplete="on">
+                    </label>
+
+                    <label class="input-container">
+                        <img src="img/password.svg" alt="Password" class="ico" id="copyPassBtn" onerror="this.style.display='none'">
+                        <input type="password" name="password" id="passwordInput" placeholder=" Password..." required autocomplete="on">
+                    </label>
+
+                    <button type="submit" class="btn-submit">HUBUNGKAN</button>
+                </form>
+
+                <div id="error-message" style="display:none;">$(error)</div>
+                <div class="info bt"><a href="#" onclick="quickLogin(); return false;">Gunakan Voucher</a></div>
+                $(if trial == 'yes')
+                <div class="info bt">
+                    Darurat ? <a href="$(link-login-only)?dst=$(link-orig-esc)&username=T-$(mac-esc)">Coba Gratis</a>
+                </div>
+                $(endif)
+            </div>
+
+            <p class="info powered">Powered by MikroTik RouterOS</p>
+        </div>
+    </div>
+
+    <div class="setting">
+        <a href="main.html" title="Menu Utama">
+            <img src="img/settings.svg" alt="Settings" class="icon-custom settings" onerror="this.style.display='none'">
+        </a>
+    </div>
+
+    <div id="toast" class="toast"></div>
+    <div id="custom-hover-popup" class="hover-popup"></div>
+
+    <script src="js/script.js"></script>
+    <script type="module" src="js/bokeh.js"></script>
+</body>
+</html>

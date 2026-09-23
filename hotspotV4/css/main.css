@@ -1,0 +1,9 @@
+/* =========================================================
+   main.css - Legacy compatibility layer
+
+   Halaman HotSpot aktif menggunakan css/style.css.
+   File ini dipertahankan agar halaman lama yang masih
+   memanggil css/main.css otomatis memakai desain yang sama.
+========================================================= */
+
+@import url("./style.css");

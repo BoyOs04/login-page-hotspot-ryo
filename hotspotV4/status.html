@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+$(if refresh-timeout)
+<meta http-equiv="refresh" content="$(refresh-timeout-secs)">
+$(endif)
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="pragma" content="no-cache">
+<meta http-equiv="expires" content="-1">
+<title>Internet hotspot - Status</title>
+<link rel="stylesheet" href="css/style.css">
+
+<script>
+$(if advert-pending == 'yes')
+var popup = '';
+function focusAdvert() {
+    if (window.focus) popup.focus();
+}
+function openAdvert() {
+    popup = open('$(link-advert)', 'hotspot_advert', '');
+    setTimeout(focusAdvert, 1000);
+}
+$(endif)
+
+function openLogout() {
+    if (window.name != 'hotspot_status') return true;
+    open(
+        '$(link-logout)',
+        'hotspot_logout',
+        'toolbar=0,location=0,directories=0,status=0,menubars=0,resizable=1,width=280,height=250'
+    );
+    window.close();
+    return false;
+}
+</script>
+</head>
+
+<body$(if advert-pending == 'yes') onload="openAdvert()"$(endif)>
+
+<canvas id="bgCanvas"></canvas>
+
+<div class="ie-fixMinHeight">
+    <div class="main">
+        <div class="wrap">
+
+            $(if login-by == 'trial')
+                <h1>Hi, trial user!</h1>
+            $(elif login-by != 'mac')
+                <h1>Hi, $(username)!</h1>
+            $(endif)
+
+            <form action="$(link-logout)" name="logout" onsubmit="return openLogout()">
+                <table>
+                    <tr>
+                        <td>IP address</td>
+                        <td>$(ip)</td>
+                    </tr>
+
+                    <tr>
+                        <td>Bytes up / down</td>
+                        <td id="data_updown">$(bytes-in-nice) / $(bytes-out-nice)</td>
+                    </tr>
+
+                    $(if session-time-left)
+                    <tr>
+                        <td>Connected / left</td>
+                        <td>$(uptime) / $(session-time-left)</td>
+                    </tr>
+                    $(else)
+                    <tr>
+                        <td>Connected</td>
+                        <td>$(uptime)</td>
+                    </tr>
+                    $(endif)
+
+                    $(if blocked == 'yes')
+                    <tr>
+                        <td>Status</td>
+                        <td>
+                            <a href="$(link-advert)" target="hotspot_advert">
+                                Advertisement required
+                            </a>
+                        </td>
+                    </tr>
+                    $(elif refresh-timeout)
+                    <tr>
+                        <td>Status refresh</td>
+                        <td>$(refresh-timeout)</td>
+                    </tr>
+                    $(endif)
+                </table>
+
+                <div class="progress-box">
+                    <div class="progress-title">
+                        <span>Sisa Kuota:</span>
+                        <span id="quota_text">Menghitung...</span>
+                    </div>
+
+                    <div class="progress-bg">
+                        <div id="quota_bar" class="progress-bar"></div>
+                    </div>
+                </div>
+
+                $(if login-by-mac != 'yes')
+                <input type="submit" value="Log out">
+                $(endif)
+            </form>
+
+        </div>
+    </div>
+</div>
+
+<script type="module" src="js/bokeh.js"></script>
+
+<script>
+function formatBytes(bytes) {
+    bytes = Number(bytes);
+
+    if (!Number.isFinite(bytes) || bytes <= 0) {
+        return '0 Bytes';
+    }
+
+    const k = 1024;
+    const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
+
+    const i = Math.min(
+        Math.floor(Math.log(bytes) / Math.log(k)),
+        sizes.length - 1
+    );
+
+    return parseFloat(
+        (bytes / Math.pow(k, i)).toFixed(2)
+    ) + ' ' + sizes[i];
+}
+
+function setQuotaUI(limitBytes, remainBytes) {
+    const quotaText = document.getElementById('quota_text');
+    const quotaBar = document.getElementById('quota_bar');
+
+    if (!quotaText || !quotaBar) return;
+
+    limitBytes = Number(limitBytes);
+    remainBytes = Number(remainBytes);
+
+    if (!Number.isFinite(limitBytes) || limitBytes <= 0) {
+        quotaText.textContent = 'Unlimited';
+        quotaBar.style.width = '100%';
+        return;
+    }
+
+    if (!Number.isFinite(remainBytes) || remainBytes < 0) {
+        remainBytes = 0;
+    }
+
+    if (remainBytes > limitBytes) {
+        remainBytes = limitBytes;
+    }
+
+    const percentLeft = (remainBytes / limitBytes) * 100;
+
+    quotaText.textContent =
+        formatBytes(remainBytes) + ' / ' + formatBytes(limitBytes);
+
+    quotaBar.style.width = percentLeft.toFixed(1) + '%';
+
+    if (percentLeft <= 10) {
+        quotaBar.style.background = '#e74c3c';
+    } else if (percentLeft <= 30) {
+        quotaBar.style.background = '#f39c12';
+    } else {
+        quotaBar.style.background = '#2ecc71';
+    }
+}
+
+function pantauKuota() {
+    fetch('api.json?ts=' + Date.now(), {
+        cache: 'no-store'
+    })
+    .then(function(response) {
+        if (!response.ok) {
+            throw new Error('HTTP ' + response.status);
+        }
+        return response.json();
+    })
+    .then(function(data) {
+        const limitBytes = Number(data['limit-bytes-total']) || 0;
+        const remainBytes = Number(data['bytes-remaining']) || 0;
+
+        setQuotaUI(limitBytes, remainBytes);
+    })
+    .catch(function(error) {
+        console.error('Quota API error:', error);
+
+        const quotaText = document.getElementById('quota_text');
+        if (quotaText) {
+            quotaText.textContent = 'Tidak dapat membaca kuota';
+        }
+    });
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    pantauKuota();
+
+    // Refresh berkala agar sisa kuota ikut berubah.
+    setInterval(pantauKuota, 5000);
+});
+</script>
+
+</body>
+</html>

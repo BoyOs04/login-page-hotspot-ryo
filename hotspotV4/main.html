@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>HOME</title>
+
+<link rel="stylesheet" href="css/style.css">
+<script>
+  // Nilai ini diisi otomatis oleh MikroTik HotSpot Servlet.
+  window.HotspotConfig = {
+    loginUrl: "$(link-login-only)",
+    loginLink: "$(link-login)"
+  };
+</script>
+</head>
+
+<body>
+
+<div id="bgCanvas-container"></div>
+
+<div class="menu-toggle" onclick="toggleDropdown()">
+<img src="img/menu.svg" class="icon-custom">
+</div>
+
+<div class="dropdown" id="dropdownMenu">
+
+<a href="qr.html">
+<img src="img/qr.svg" class="icon-custom"> QR Login
+</a>
+
+<a href="#" onclick="chooseUser()">
+<img src="img/user.svg" class="icon-custom"> User
+</a>
+
+<a href="#" onclick="accessFamily()">
+<img src="img/diversity_3.svg" class="icon-custom"> Family
+</a>
+
+</div>
+
+<div class="logo-container">
+<img src="img/favicon.png" onclick="chooseUser()">
+</div>
+
+<div id="toast" class="toast"></div>
+
+<script src="js/main.js"></script>
+<script type="module" src="js/bokeh.js"></script>
+
+</body>
+</html>

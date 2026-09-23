@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>HOME</title>
+
+<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto&display=swap">
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.6.0/p5.min.js"></script>
+</head>
+
+<body>
+
+<div id="bgCanvas-container"></div>
+
+<div class="menu-toggle" onclick="toggleDropdown()">
+<img src="img/menu.svg" class="icon-custom">
+</div>
+
+<div class="dropdown" id="dropdownMenu">
+
+<a href="qr.html">
+<img src="img/qr.svg" class="icon-custom"> QR Login
+</a>
+
+<a href="#" onclick="chooseUser()">
+<img src="img/user.svg" class="icon-custom"> User
+</a>
+
+<a href="#" onclick="accessFamily()">
+<img src="img/diversity_3.svg" class="icon-custom"> Family
+</a>
+
+</div>
+
+<div class="logo-container">
+<img src="img/favicon.png" onclick="chooseUser()">
+</div>
+
+<div id="toast" class="toast"></div>
+
+<script src="js/main.js"></script>
+<script src="js/bokeh.js"></script>
+
+</body>
+</html>

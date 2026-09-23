@@ -18,7 +18,6 @@ git -C "$REPO_DIR" sparse-checkout init --no-cone
 printf '/*\n!/README.md\n' > "$REPO_DIR/.git/info/sparse-checkout"
 git -C "$REPO_DIR" read-tree -mu HEAD
 
-# Remove a previous shortcut block so the script is safe to run again.
 if [ -f "$BASHRC" ]; then
   awk -v start="$START" -v end="$END" '
     $0 == start {skip=1; next}
@@ -26,6 +25,13 @@ if [ -f "$BASHRC" ]; then
     !skip {print}
   ' "$BASHRC" > "$BASHRC.tmp"
   mv "$BASHRC.tmp" "$BASHRC"
+
+  # Remove older one-line aliases created by previous manual setup.
+  sed -i \
+    -e '/^alias hotspot=/d' \
+    -e '/^alias sync-file-github=/d' \
+    -e '/^alias push-file-github=/d' \
+    "$BASHRC"
 fi
 
 cat >> "$BASHRC" <<EOF
@@ -74,4 +80,4 @@ echo "  sync-file-github    -> GitHub -> HP"
 echo "  push-file-github    -> HP -> GitHub"
 echo
 echo "Contoh commit:"
-echo "  push-file-github \"Fix login page\""
+echo '  push-file-github "Fix login page"'

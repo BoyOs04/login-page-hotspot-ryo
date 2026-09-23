@@ -2,9 +2,9 @@
 set -e
 
 REPO_DIR="$(cd "$(dirname "$0")" && pwd)"
-VERSION="\${1:-v1.0.0}"
-RELEASE_DIR="\${2:-$REPO_DIR/releases}"
-OUTPUT="$RELEASE_DIR/hotspotV3-\${VERSION}.zip"
+VERSION="${1:-v1.0.0}"
+RELEASE_DIR="${2:-$REPO_DIR/releases}"
+OUTPUT="$RELEASE_DIR/hotspotV3-${VERSION}.zip"
 
 if [ ! -d "$REPO_DIR/hotspotV3" ]; then
   echo "Error: hotspotV3 directory not found."

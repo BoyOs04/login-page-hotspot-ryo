@@ -2180,3 +2180,347 @@ table a {
   z-index: 3;
 }
 
+
+
+/* =========================================================
+   V4 DESIGN — MINIMAL PREMIUM / AURORA GLASS NETWORK
+   Visual-only layer:
+   - keeps existing logo, copy, fields, links and settings gear
+   - no change to HotSpot / CHAP / PAP logic
+   - wheat + cream premium palette
+   - subtle aurora + network-grid decoration
+========================================================= */
+
+:root {
+  --v4-aurora-wheat: rgba(245, 222, 179, 0.72);
+  --v4-aurora-cream: rgba(255, 250, 240, 0.78);
+  --v4-aurora-gold: rgba(222, 184, 135, 0.48);
+  --v4-glass: rgba(255, 250, 240, 0.48);
+  --v4-glass-border: rgba(255, 255, 255, 0.58);
+  --v4-glass-highlight: rgba(255, 255, 255, 0.72);
+  --v4-shadow: rgba(92, 51, 18, 0.14);
+  --v4-text-soft: rgba(92, 51, 18, 0.70);
+}
+
+/* ---------- Aurora background ---------- */
+body {
+  isolation: isolate;
+  background:
+    radial-gradient(circle at 12% 16%, rgba(255, 255, 255, 0.82) 0%, transparent 30%),
+    radial-gradient(circle at 82% 18%, rgba(245, 222, 179, 0.76) 0%, transparent 34%),
+    radial-gradient(circle at 78% 82%, rgba(222, 184, 135, 0.36) 0%, transparent 38%),
+    linear-gradient(135deg, #f8eee1 0%, #fffaf0 46%, #f5deb3 100%);
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  inset: -18%;
+  z-index: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(
+      38% 26% at 22% 30%,
+      var(--v4-aurora-wheat) 0%,
+      rgba(245, 222, 179, 0.22) 45%,
+      transparent 74%
+    ),
+    radial-gradient(
+      34% 28% at 76% 66%,
+      var(--v4-aurora-gold) 0%,
+      rgba(255, 250, 240, 0.18) 42%,
+      transparent 74%
+    );
+  filter: blur(34px) saturate(108%);
+  opacity: 0.72;
+  transform: translate3d(-2%, -1%, 0) scale(1.05);
+  animation: v4AuroraDrift 18s ease-in-out infinite alternate;
+}
+
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background-image:
+    linear-gradient(rgba(139, 69, 19, 0.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(139, 69, 19, 0.035) 1px, transparent 1px);
+  background-size: 28px 28px;
+  mask-image: radial-gradient(circle at center, black 0%, rgba(0,0,0,.65) 38%, transparent 82%);
+  -webkit-mask-image: radial-gradient(circle at center, black 0%, rgba(0,0,0,.65) 38%, transparent 82%);
+  opacity: 0.48;
+}
+
+/* Keep animated canvas between the base background and interface. */
+#bgCanvas,
+#bgCanvas-container,
+#bgCanvas-container canvas {
+  z-index: 1;
+}
+
+/* ---------- Minimal premium glass card ---------- */
+.main {
+  width: min(92vw, 410px);
+  max-width: 410px;
+  padding: clamp(25px, 6vw, 34px);
+  border: 1px solid var(--v4-glass-border);
+  border-radius: 26px;
+  background:
+    linear-gradient(
+      145deg,
+      rgba(255, 250, 240, 0.60) 0%,
+      rgba(255, 250, 240, 0.42) 52%,
+      rgba(245, 222, 179, 0.26) 100%
+    );
+  box-shadow:
+    0 24px 70px rgba(92, 51, 18, 0.10),
+    0 8px 24px var(--v4-shadow),
+    inset 0 1px 0 var(--v4-glass-highlight);
+  -webkit-backdrop-filter: blur(24px) saturate(118%);
+  backdrop-filter: blur(24px) saturate(118%);
+  overflow: hidden;
+}
+
+.main::before {
+  background:
+    linear-gradient(
+      135deg,
+      rgba(255,255,255,0.60) 0%,
+      rgba(255,255,255,0.16) 28%,
+      transparent 54%,
+      rgba(245,222,179,0.16) 100%
+    );
+}
+
+.main::after {
+  content: "";
+  position: absolute;
+  width: 240px;
+  height: 240px;
+  right: -150px;
+  bottom: -150px;
+  z-index: -1;
+  border-radius: 50%;
+  background:
+    radial-gradient(
+      circle,
+      rgba(245, 222, 179, 0.42) 0%,
+      rgba(222, 184, 135, 0.18) 36%,
+      transparent 70%
+    );
+  filter: blur(16px);
+  pointer-events: none;
+  animation: v4OrbFloat 12s ease-in-out infinite alternate;
+}
+
+/* ---------- Existing logo + copy: minimal, unchanged ---------- */
+.logo-container {
+  margin-bottom: 12px;
+}
+
+.logo {
+  width: 72px;
+  margin-bottom: 12px;
+  filter: drop-shadow(0 9px 20px rgba(92, 51, 18, 0.13));
+}
+
+.login-instructions h1,
+.main h1 {
+  margin-bottom: 8px;
+  font-size: clamp(21px, 5vw, 25px);
+  letter-spacing: -0.025em;
+  font-weight: 700;
+}
+
+.login-instructions p {
+  margin: 6px auto 0;
+  max-width: 320px;
+  color: var(--v4-text-soft);
+  font-size: 13px;
+  line-height: 1.65;
+}
+
+.interactive-text {
+  color: var(--brown);
+  border-bottom-color: rgba(139, 69, 19, 0.28);
+}
+
+/* ---------- Form: cleaner dashboard-like fields ---------- */
+form {
+  margin: 17px 0 14px;
+}
+
+.input-container {
+  margin-bottom: 11px;
+}
+
+input[type="text"],
+input[type="password"] {
+  min-height: 46px;
+  border-radius: 14px;
+  border-color: rgba(139, 69, 19, 0.12);
+  background: rgba(255, 250, 240, 0.38);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.70),
+    0 5px 16px rgba(92,51,18,0.06);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+}
+
+input[type="text"]:hover,
+input[type="password"]:hover {
+  background: rgba(255, 250, 240, 0.52);
+  border-color: rgba(139, 69, 19, 0.20);
+}
+
+input[type="text"]:focus,
+input[type="password"]:focus {
+  background: rgba(255, 250, 240, 0.72);
+  border-color: rgba(205, 133, 63, 0.56);
+  box-shadow:
+    0 0 0 4px rgba(245, 222, 179, 0.20),
+    0 9px 24px rgba(92,51,18,0.08),
+    inset 0 1px 2px rgba(255,255,255,0.85);
+}
+
+/* ---------- Primary button: single wheat CTA ---------- */
+.btn-submit,
+input[type="submit"] {
+  width: min(100%, 230px);
+  min-height: 46px;
+  margin-top: 5px;
+  border: 1px solid rgba(139, 69, 19, 0.08);
+  border-radius: 14px;
+  background:
+    linear-gradient(
+      135deg,
+      #f5deb3 0%,
+      #deb887 52%,
+      #f5deb3 100%
+    );
+  color: #3e2a19;
+  box-shadow:
+    0 10px 24px rgba(92, 51, 18, 0.13),
+    inset 0 1px 0 rgba(255,255,255,0.78);
+}
+
+.btn-submit:hover,
+input[type="submit"]:hover {
+  box-shadow:
+    0 14px 28px rgba(92, 51, 18, 0.16),
+    inset 0 1px 0 rgba(255,255,255,0.84);
+}
+
+.info.bt {
+  margin-top: 13px;
+}
+
+.info.powered {
+  margin-top: 12px;
+  opacity: 0.54;
+}
+
+/* ---------- Existing clock: compact glass widget ---------- */
+#clock-box {
+  min-width: 120px;
+  padding: 8px 11px;
+  border-color: rgba(139, 69, 19, 0.18);
+  background:
+    linear-gradient(
+      135deg,
+      rgba(255,250,240,0.50),
+      rgba(245,222,179,0.28)
+    );
+  box-shadow:
+    0 10px 28px rgba(92,51,18,0.10),
+    inset 0 1px 0 rgba(255,255,255,0.78);
+  -webkit-backdrop-filter: blur(16px) saturate(118%);
+  backdrop-filter: blur(16px) saturate(118%);
+}
+
+#clock-time {
+  font-size: 15px;
+  letter-spacing: 0.55px;
+}
+
+#clock-date {
+  font-size: 10.5px;
+}
+
+/* ---------- Settings gear: fixed bottom position preserved ---------- */
+.setting {
+  left: max(14px, env(safe-area-inset-left));
+  bottom: max(14px, env(safe-area-inset-bottom));
+}
+
+.setting a {
+  display: flex;
+  width: 42px;
+  height: 42px;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(255,255,255,0.52);
+  border-radius: 50%;
+  background: rgba(255,250,240,0.34);
+  box-shadow:
+    0 10px 24px rgba(92,51,18,0.11),
+    inset 0 1px 0 rgba(255,255,255,0.68);
+  -webkit-backdrop-filter: blur(14px);
+  backdrop-filter: blur(14px);
+}
+
+.setting .icon-custom {
+  width: 23px;
+  height: 23px;
+}
+
+/* ---------- Reduced motion ---------- */
+@keyframes v4AuroraDrift {
+  0% {
+    transform: translate3d(-2%, -1%, 0) scale(1.05) rotate(0deg);
+  }
+  50% {
+    transform: translate3d(2%, 1%, 0) scale(1.09) rotate(1deg);
+  }
+  100% {
+    transform: translate3d(0%, -2%, 0) scale(1.07) rotate(-1deg);
+  }
+}
+
+@keyframes v4OrbFloat {
+  0% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  100% {
+    transform: translate3d(-24px, -18px, 0) scale(1.08);
+  }
+}
+
+@media (max-width: 480px) {
+  .main {
+    width: min(92vw, 410px);
+    padding: 23px 18px 22px;
+    border-radius: 23px;
+  }
+
+  .logo {
+    width: 68px;
+  }
+
+  .login-instructions p {
+    max-width: 300px;
+  }
+
+  .btn-submit,
+  input[type="submit"] {
+    width: 100%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body::before,
+  .main::after {
+    animation: none !important;
+  }
+}

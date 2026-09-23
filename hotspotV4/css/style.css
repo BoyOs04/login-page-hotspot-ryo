@@ -2868,3 +2868,144 @@ body {
 #loginPanel input::placeholder {
   color: rgba(139,69,19,.58);
 }
+
+
+/* V4 — black premium 3D treatment */
+body {
+  color: #111111;
+  background:
+    radial-gradient(circle at 20% 18%, rgba(255,255,255,.10) 0%, transparent 30%),
+    radial-gradient(circle at 82% 24%, rgba(255,255,255,.06) 0%, transparent 32%),
+    radial-gradient(circle at 70% 82%, rgba(255,255,255,.07) 0%, transparent 36%),
+    #080808;
+}
+
+body::before {
+  background:
+    radial-gradient(40% 28% at 24% 28%,
+      rgba(255,255,255,.08) 0%,
+      rgba(255,255,255,.025) 46%,
+      transparent 74%),
+    radial-gradient(38% 28% at 76% 70%,
+      rgba(255,255,255,.06) 0%,
+      rgba(255,255,255,.018) 44%,
+      transparent 74%);
+  opacity: .72;
+}
+
+body::after {
+  background-image:
+    linear-gradient(rgba(255,255,255,.018) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,.018) 1px, transparent 1px);
+  opacity: .5;
+}
+
+/* Main container stays borderless and shadowless, as requested. */
+.main {
+  border: none !important;
+  box-shadow: none !important;
+  background: rgba(16,16,16,.16);
+}
+
+.login-instructions h1,
+.main h1 {
+  color: #f2f2f2;
+  text-shadow:
+    0 1px 0 rgba(255,255,255,.30),
+    0 2px 0 rgba(180,180,180,.18),
+    0 4px 7px rgba(0,0,0,.75);
+}
+
+.login-instructions p {
+  color: #d4d4d4;
+  text-shadow:
+    0 1px 0 rgba(255,255,255,.20),
+    0 2px 3px rgba(0,0,0,.72);
+}
+
+.interactive-text {
+  color: #ffffff;
+  text-shadow:
+    0 1px 0 rgba(255,255,255,.34),
+    0 2px 0 rgba(150,150,150,.20),
+    0 3px 5px rgba(0,0,0,.78);
+}
+
+/* 3D outline around the login controls. */
+#loginPanel .input-container {
+  background: rgba(18,18,18,.58);
+  border: 1px solid rgba(255,255,255,.34);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.20),
+    inset 0 -2px 0 rgba(0,0,0,.72),
+    0 2px 0 rgba(255,255,255,.08),
+    0 4px 8px rgba(0,0,0,.45);
+}
+
+#loginPanel .input-container:focus-within {
+  border-color: rgba(255,255,255,.68);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.24),
+    inset 0 -2px 0 rgba(0,0,0,.74),
+    0 2px 0 rgba(255,255,255,.10),
+    0 5px 12px rgba(0,0,0,.52);
+}
+
+#loginPanel input {
+  color: #f5f5f5;
+  text-shadow: 0 1px 2px rgba(0,0,0,.8);
+}
+
+#loginPanel input::placeholder {
+  color: #a9a9a9;
+  text-shadow: 0 1px 2px rgba(0,0,0,.65);
+}
+
+/* Main CTA: black 3D button with raised lettering. */
+#connectButton {
+  color: #f4f4f4;
+  background:
+    linear-gradient(180deg, #2d2d2d 0%, #171717 48%, #0a0a0a 100%);
+  border: 1px solid rgba(255,255,255,.34);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.24),
+    inset 0 -2px 0 rgba(0,0,0,.92),
+    0 2px 0 rgba(255,255,255,.08),
+    0 5px 12px rgba(0,0,0,.58);
+  text-shadow:
+    0 1px 0 rgba(255,255,255,.30),
+    0 2px 2px rgba(0,0,0,.90);
+}
+
+#connectButton:hover {
+  background:
+    linear-gradient(180deg, #383838 0%, #1d1d1d 48%, #0b0b0b 100%);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.28),
+    inset 0 -2px 0 rgba(0,0,0,.94),
+    0 2px 0 rgba(255,255,255,.10),
+    0 7px 15px rgba(0,0,0,.64);
+}
+
+#connectButton:active {
+  box-shadow:
+    inset 0 2px 4px rgba(0,0,0,.82),
+    0 1px 0 rgba(255,255,255,.06);
+}
+
+/* Settings remains fixed at the bottom-left, now with a raised 3D outline. */
+.setting a {
+  background: linear-gradient(180deg, #262626, #0d0d0d);
+  border: 1px solid rgba(255,255,255,.28);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.18),
+    inset 0 -2px 0 rgba(0,0,0,.86),
+    0 2px 0 rgba(255,255,255,.06),
+    0 4px 9px rgba(0,0,0,.46);
+}
+
+.setting .icon-custom {
+  filter:
+    drop-shadow(0 1px 0 rgba(255,255,255,.22))
+    drop-shadow(0 2px 2px rgba(0,0,0,.82));
+}

@@ -2833,3 +2833,38 @@ body {
     animation: none !important;
   }
 }
+
+
+/* Keep username/password inputs visible in the login panel once opened.
+   Only the outer panel's border/shadow is removed. */
+#loginPanel.is-open .input-container {
+  display: flex !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+
+#loginPanel.is-open input {
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+
+#loginPanel.is-open form {
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+
+#loginPanel .input-container {
+  background: rgba(245,222,179,.42);
+  border: 1px solid rgba(139,69,19,.16);
+}
+
+#loginPanel input {
+  background: transparent;
+  color: #5c3312;
+}
+
+#loginPanel input::placeholder {
+  color: rgba(139,69,19,.58);
+}

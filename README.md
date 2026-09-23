@@ -14,7 +14,7 @@ Custom captive portal / HotSpot login page for MikroTik RouterOS.
 
 ```text
 .
-├── hotspotV3/
+├── hotspotV3/              ← files for MikroTik HotSpot
 │   ├── login.html
 │   ├── main.html
 │   ├── status.html
@@ -28,18 +28,135 @@ Custom captive portal / HotSpot login page for MikroTik RouterOS.
 │   ├── md5.js
 │   ├── css/
 │   └── js/
-├── index.html
-├── css/
-├── js/
-├── termux-setup.sh
+├── index.html              ← repository/browser launcher
+├── css/                    ← repository launcher styles
+├── js/                     ← repository launcher scripts
+├── termux-setup.sh         ← Termux shortcut/recovery setup
+├── make-hotspot-release.sh ← creates MikroTik-only ZIP
 └── README.md
 ```
 
-The `hotspotV3/` directory is the HotSpot portal that is uploaded to MikroTik.
+The **MikroTik deployment payload is the `hotspotV3/` directory**.
+
+The root `index.html`, root `css/`, root `js/`, README, Termux scripts, and development/demo files are not required by MikroTik to serve the HotSpot portal.
 
 ---
 
-# 2. Requirements
+# 2. What to download for MikroTik
+
+For normal MikroTik installation, download **only the HotSpot portal payload**:
+
+```text
+hotspotV3/
+```
+
+Do **not** download or upload the entire repository to the router.
+
+The deployment tree should look like:
+
+```text
+MikroTik
+└── Files
+    └── hotspot/
+        ├── login.html
+        ├── main.html
+        ├── status.html
+        ├── qr.html
+        ├── alogin.html
+        ├── radvert.html
+        ├── logout.html
+        ├── error.html
+        ├── redirect.html
+        ├── api.json
+        ├── md5.js
+        ├── css/
+        └── js/
+```
+
+Keep the internal `css/` and `js/` directories intact.
+
+### Files that are development-only
+
+These are useful for development but are **not part of the MikroTik HotSpot deployment**:
+
+```text
+README.md
+index.html
+css/
+js/
+termux-setup.sh
+make-hotspot-release.sh
+hotspotV3/demo.html
+```
+
+The release package also excludes `hotspotV3/demo.html` because it is a browser-only frontend test page, not a MikroTik HotSpot page.
+
+---
+
+# 3. Release package
+
+A release package can be created containing only the MikroTik deployment files.
+
+The repository includes:
+
+```text
+make-hotspot-release.sh
+```
+
+From Termux, run:
+
+```bash
+hotspot
+bash make-hotspot-release.sh v1.0.0
+```
+
+The ZIP is created outside the repository by default:
+
+```text
+$HOME/hotspotV3-v1.0.0.zip
+```
+
+Its contents are based only on:
+
+```text
+hotspotV3/
+```
+
+with `hotspotV3/demo.html` excluded.
+
+You can choose another version:
+
+```bash
+bash make-hotspot-release.sh v1.0.1
+```
+
+or specify the output path:
+
+```bash
+bash make-hotspot-release.sh v1.0.0 $HOME/storage/downloads/hotspotV3-v1.0.0.zip
+```
+
+The ZIP should be uploaded to the MikroTik **Files** directory after extracting it, or extracted locally first and then its contents uploaded to the HotSpot HTML directory.
+
+### GitHub Release
+
+GitHub Releases are also suitable for distributing the ZIP.
+
+Recommended asset name:
+
+```text
+hotspotV3-v1.0.0.zip
+```
+
+The release asset should contain only the MikroTik portal payload described above.
+
+GitHub's normal repository **Code → Download ZIP** archive contains the whole repository, so it is not the correct download method when the goal is a clean MikroTik deployment package.
+
+The release ZIP is intentionally separate from the Git source repository so README, Termux tooling, launcher files, and development files do not need to be copied to the router.
+
+---
+
+# 4. Requirements
 
 You need:
 
@@ -67,7 +184,7 @@ Do not test the production portal by opening the raw HTML directly in a normal b
 
 ---
 
-# 3. Using the custom HTML login page on MikroTik
+# 5. Using the custom HTML login page on MikroTik
 
 ## Step 1 — Enable HotSpot
 
@@ -125,13 +242,7 @@ The HotSpot files are normally stored in the router's HotSpot directory, commonl
 
 Back up the existing files first.
 
-Then upload the contents of:
-
-```text
-hotspotV3/
-```
-
-to the router's HotSpot directory.
+Then upload the **contents of `hotspotV3/`** to the router's HotSpot directory.
 
 The important result is that MikroTik can access:
 
@@ -154,7 +265,7 @@ Upload the **contents of `hotspotV3/`**, not the repository root.
 
 ---
 
-# 4. Configure the HotSpot profile
+# 6. Configure the HotSpot profile
 
 Go to:
 
@@ -181,7 +292,7 @@ You can also inspect it from Terminal/SSH:
 
 ---
 
-# 5. HTTP-CHAP login
+# 7. HTTP-CHAP login
 
 This project supports the RouterOS HTTP-CHAP flow.
 
@@ -225,7 +336,7 @@ Always test with a non-critical HotSpot user before changing a production router
 
 ---
 
-# 6. Create a HotSpot user for testing
+# 8. Create a HotSpot user for testing
 
 Example:
 
@@ -253,7 +364,7 @@ If CHAP is enabled, the page handles the CHAP transformation before submitting t
 
 ---
 
-# 7. Test the login page
+# 9. Test the login page
 
 After uploading the files:
 
@@ -279,7 +390,7 @@ If the page is blank, check:
 
 ---
 
-# 8. HotSpot page flow
+# 10. HotSpot page flow
 
 The intended flow is approximately:
 
@@ -293,11 +404,8 @@ HotSpot
 login.html
   │
   ├── normal login
-  │
   ├── HTTP-CHAP
-  │
   ├── Quick Login
-  │
   └── QR credentials
   │
   ▼
@@ -311,7 +419,7 @@ The exact page shown after login depends on the RouterOS HotSpot variables and c
 
 ---
 
-# 9. Termux development setup
+# 11. Termux development setup
 
 The repository can be managed directly from Android/Termux.
 
@@ -334,7 +442,7 @@ Accept the Android permission prompt.
 
 ---
 
-# 10. Clone the repository on a new Termux installation
+# 12. Clone the repository on a new Termux installation
 
 Go to the web directory:
 
@@ -358,7 +466,7 @@ If Git asks for authentication, authenticate using the GitHub credentials/token 
 
 ---
 
-# 11. Install the Termux shortcuts
+# 13. Install the Termux shortcuts
 
 This repository includes:
 
@@ -384,7 +492,7 @@ It is safe to run again after reinstalling Termux.
 
 ---
 
-# 12. Termux shortcuts
+# 14. Termux shortcuts
 
 ## Enter the repository
 
@@ -454,7 +562,7 @@ Update from HP
 
 ---
 
-# 13. Recommended daily workflow
+# 15. Recommended daily workflow
 
 Before editing:
 
@@ -496,7 +604,7 @@ GitHub
 
 ---
 
-# 14. If Termux is accidentally deleted
+# 16. If Termux is accidentally deleted
 
 Your GitHub repository remains the backup/source of truth.
 
@@ -528,7 +636,7 @@ This means the shortcut configuration does not depend only on the old Termux ins
 
 ---
 
-# 15. README and sparse-checkout
+# 17. README and sparse-checkout
 
 The repository contains this README, but the Termux setup uses Git sparse-checkout so that `README.md` can remain tracked on GitHub without being checked out into the local working tree.
 
@@ -556,7 +664,7 @@ The repository still retains the README on GitHub.
 
 ---
 
-# 16. Updating the custom portal
+# 18. Updating the custom portal
 
 After modifying the portal:
 
@@ -576,7 +684,7 @@ Do not modify the MikroTik copy and assume GitHub will automatically know about 
 
 ---
 
-# 17. Backup before replacing MikroTik HotSpot files
+# 19. Backup before replacing MikroTik HotSpot files
 
 Before installing a new version, keep a copy of the current router HotSpot directory.
 
@@ -594,7 +702,7 @@ This makes it possible to restore the previous portal if the new version has a p
 
 ---
 
-# 18. Troubleshooting
+# 20. Troubleshooting
 
 ## Login page is blank
 
@@ -679,7 +787,7 @@ main
 
 ---
 
-# 19. Important security notes
+# 21. Important security notes
 
 - Do not commit GitHub Personal Access Tokens.
 - Do not publish router administrator passwords.
@@ -691,7 +799,7 @@ main
 
 ---
 
-# 20. Browser demo
+# 22. Browser demo
 
 The repository includes:
 
@@ -715,7 +823,7 @@ are processed by MikroTik when the actual HotSpot portal is served by RouterOS.
 
 ---
 
-# 21. Development principle
+# 23. Development principle
 
 Keep the following separation:
 
@@ -753,6 +861,9 @@ sync-file-github
 
 # HP -> GitHub
 push-file-github "Your commit message"
+
+# Create MikroTik-only release ZIP
+bash make-hotspot-release.sh v1.0.0
 
 # Check Git status
 git status

@@ -2736,3 +2736,33 @@ body::after {
     animation: none !important;
   }
 }
+
+
+/* Final V4 entry-panel behavior: keep the complete existing login area
+   hidden until the primary button is pressed. */
+#loginPanel {
+  display: block;
+  max-height: 0;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  margin: 0;
+  overflow: hidden;
+  transition:
+    max-height .38s ease,
+    opacity .22s ease,
+    visibility .22s ease,
+    margin .38s ease;
+}
+
+#loginPanel.is-open {
+  max-height: 520px;
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+  margin-top: 16px;
+}
+
+#loginPanel > * {
+  min-height: 0;
+}

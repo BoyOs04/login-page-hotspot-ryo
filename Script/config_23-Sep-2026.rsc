@@ -2682,52 +2682,52 @@ set address-list-extra-time=0s allow-remote-requests=yes cache-max-ttl=1w1h1s \
     https://2rlu4q28in.cloudflare-gateway.com/dns-query verify-doh-cert=yes \
     vrf=main
 /ip dns static
-add address=2606:4700:4700::1003 disabled=no name=Cloudflare ttl=1d type=AAAA
-add address=216.239.35.0 disabled=no name=time.google.com ttl=1d type=A
-add address=162.159.200.1 disabled=no name=time.cloudflare.com ttl=1d type=A
-add address=94.140.15.16 disabled=no name="AdGuard Family" ttl=1d type=A
-add address=94.140.14.49 address-list=94.140.14.49 disabled=no name=\
+add address=2606:4700:4700::1003 disabled=yes name=Cloudflare ttl=1d type=AAAA
+add address=216.239.35.0 disabled=yes name=time.google.com ttl=1d type=A
+add address=162.159.200.1 disabled=yes name=time.cloudflare.com ttl=1d type=A
+add address=94.140.15.16 disabled=yes name="AdGuard Family" ttl=1d type=A
+add address=94.140.14.49 address-list=94.140.14.49 disabled=yes name=\
     https://family.adguard-dns.com/dns-query ttl=1d type=A
-add address=94.140.14.15 disabled=no regexp=\
+add address=94.140.14.15 disabled=yes regexp=\
     https://d.adguard-dns.com/dns-query/rtr-942926e3-mikrotik ttl=1d type=A
-add address=1.1.1.3 disabled=no name=\
-    https://family.cloudflare-dns.com/dns-query ttl=1d type=A
-add address=94.140.14.49 disabled=no match-subdomain=yes name=\
-    https://d.adguard-dns.com/dns-query/93fca145 ttl=1d type=A
-add address=157.240.13.55 disabled=no name=chat.cdn.whatsapp.net ttl=1d type=\
-    A
-add address=3.10.1.1 disabled=no name=gateway.ryoline.id ttl=1d type=A
 add address=1.1.1.3 disabled=yes name=\
     https://family.cloudflare-dns.com/dns-query ttl=1d type=A
-add address=2a06:98c1:54::17:f649 disabled=no name="Cloudflare Zero Trust" \
+add address=94.140.14.49 disabled=yes match-subdomain=yes name=\
+    https://d.adguard-dns.com/dns-query/93fca145 ttl=1d type=A
+add address=157.240.13.55 disabled=yes name=chat.cdn.whatsapp.net ttl=1d type=\
+    A
+add address=3.10.1.1 disabled=yes name=gateway.ryoline.id ttl=1d type=A
+add address=1.1.1.3 disabled=yes name=\
+    https://family.cloudflare-dns.com/dns-query ttl=1d type=A
+add address=2a06:98c1:54::17:f649 disabled=yes name="Cloudflare Zero Trust" \
     ttl=1d type=AAAA
-add address=172.64.36.1 disabled=no name="Cloudflare Zero Trust" ttl=1d type=\
+add address=172.64.36.1 disabled=yes name="Cloudflare Zero Trust" ttl=1d type=\
     A
-add address=172.64.36.2 disabled=no name="Cloudflare Zero Trust" ttl=1d type=\
+add address=172.64.36.2 disabled=yes name="Cloudflare Zero Trust" ttl=1d type=\
     A
-add address=3.10.1.2 disabled=no name=dapurminahasa.com ttl=1d type=A
-add address=192.168.173.91 disabled=no name=dapurminahasa.com ttl=1d type=A
-add address=192.168.1.2 disabled=no name=gateway.ryoline.net ttl=1d type=A
-add address=172.31.2.1 disabled=no name=gateway.ryoline.net ttl=1d type=A
-add address=172.31.1.1 disabled=no name=gateway.ryoline.net ttl=1d type=A
-add address=94.140.14.49 disabled=no name=d.adguard-dns.com ttl=1d type=A
-add address=94.140.14.59 disabled=no name=d.adguard-dns.com ttl=1d type=A
-add address=198.41.0.4 disabled=no name=a.root-servers.net ttl=1d type=A
-add address=172.64.36.1 disabled=no name=\
+add address=3.10.1.2 disabled=yes name=dapurminahasa.com ttl=1d type=A
+add address=192.168.173.91 disabled=yes name=dapurminahasa.com ttl=1d type=A
+add address=192.168.1.2 disabled=yes name=gateway.ryoline.net ttl=1d type=A
+add address=172.31.2.1 disabled=yes name=gateway.ryoline.net ttl=1d type=A
+add address=172.31.1.1 disabled=yes name=gateway.ryoline.net ttl=1d type=A
+add address=94.140.14.49 disabled=yes name=d.adguard-dns.com ttl=1d type=A
+add address=94.140.14.59 disabled=yes name=d.adguard-dns.com ttl=1d type=A
+add address=198.41.0.4 disabled=yes name=a.root-servers.net ttl=1d type=A
+add address=172.64.36.1 disabled=yes name=\
     https://ajgcjz9ng8.cloudflare-gateway.com/dns-query ttl=1d type=A
-add address=172.64.36.2 disabled=no name=\
+add address=172.64.36.2 disabled=yes name=\
     https://ajgcjz9ng8.cloudflare-gateway.com/dns-query ttl=1d type=A
-add address=172.64.148.235 disabled=no name=ws.chatgpt.com ttl=1d type=A
-add address=104.18.39.21 disabled=no name=ws.chatgpt.com ttl=1d type=A
+add address=172.64.148.235 disabled=yes name=ws.chatgpt.com ttl=1d type=A
+add address=104.18.39.21 disabled=yes name=ws.chatgpt.com ttl=1d type=A
 add disabled=yes name="DNS IKLAN" text="https://raw.githubusercontent.com/Stev\
     enBlack/hosts/refs/heads/master/hosts" ttl=1d type=TXT
-add address=119.81.63.194 disabled=no name=login.ml.mlbangbang.com ttl=1d \
+add address=119.81.63.194 disabled=yes name=login.ml.mlbangbang.com ttl=1d \
     type=A
 add address=191.150.81.20 disabled=yes name=gateway.linelejan-rumagit.net \
     ttl=5m type=A
 add address=191.150.81.10 disabled=yes name=gateway.linelejan-rumagit.net \
     ttl=5m type=A
-add address=1.1.1.1 disabled=no name=\
+add address=1.1.1.1 disabled=yes name=\
     https://d.adguard-dns.com/dns-query/4c755dc8 ttl=1d type=A
 /ip firewall address-list
 add address=youtube.com disabled=no dynamic=no list=youtube.com

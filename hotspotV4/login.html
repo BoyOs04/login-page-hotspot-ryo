@@ -105,7 +105,7 @@
                 </div>
             </div>
 
-            <div class="wrap">
+            <div class="wrap" id="loginPanel" data-open="false">
                 <!-- PERBAIKAN: Menambahkan parameter 'event' pada onSubmit agar preventDefault bekerja -->
                 <form name="login" action="$(link-login-only)" method="post" $(if chap-id) onSubmit="return doLogin(event)" $(endif)>
                     <input type="hidden" name="dst" value="$(link-orig)" />
@@ -121,7 +121,7 @@
                         <input type="password" name="password" id="passwordInput" placeholder=" Password..." required autocomplete="on">
                     </label>
 
-                    <button type="submit" class="btn-submit">HUBUNGKAN</button>
+                    <button type="button" class="btn-submit" id="connectButton" aria-expanded="false" aria-controls="loginPanel">HUBUNGKAN</button>
                 </form>
 
                 <div id="error-message" style="display:none;">$(error)</div>
@@ -145,6 +145,26 @@
 
     <div id="toast" class="toast"></div>
     <div id="custom-hover-popup" class="hover-popup"></div>
+
+
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const button = document.getElementById('connectButton');
+            const panel = document.getElementById('loginPanel');
+            const username = document.getElementById('usernameInput');
+            if (!button || !panel) return;
+
+            button.addEventListener('click', () => {
+                const opened = panel.classList.toggle('is-open');
+                panel.dataset.open = opened ? 'true' : 'false';
+                button.setAttribute('aria-expanded', opened ? 'true' : 'false');
+                if (opened) {
+                    window.setTimeout(() => username && username.focus(), 280);
+                }
+            });
+        });
+    </script>
 
     <script src="js/script.js"></script>
     <script type="module" src="js/bokeh.js"></script>

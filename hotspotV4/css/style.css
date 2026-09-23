@@ -2766,3 +2766,70 @@ body::after {
 #loginPanel > * {
   min-height: 0;
 }
+
+
+/* V4 wheat-only finish */
+body {
+  color: #8b4513;
+  background:
+    radial-gradient(circle at 18% 20%, rgba(245,222,179,.92) 0%, transparent 34%),
+    radial-gradient(circle at 82% 22%, rgba(222,184,135,.72) 0%, transparent 38%),
+    radial-gradient(circle at 72% 82%, rgba(245,222,179,.72) 0%, transparent 40%),
+    #f5deb3;
+}
+
+/* Remove the outer panel border and shadow completely. */
+.main {
+  border: none !important;
+  box-shadow: none !important;
+  background: rgba(245,222,179,.20);
+}
+
+/* Keep the glass feel without a visible edge/shadow. */
+.main::before {
+  opacity: .32;
+}
+
+#connectButton {
+  color: #5c3312;
+  background: #f5deb3;
+  border: 1px solid rgba(139,69,19,.18);
+  box-shadow: none;
+}
+
+#connectButton:hover {
+  background: #deb887;
+  box-shadow: none;
+}
+
+.setting a {
+  background: rgba(245,222,179,.62);
+  border-color: rgba(139,69,19,.16);
+  box-shadow: none;
+}
+
+.login-instructions h1,
+.main h1 {
+  color: #8b4513;
+}
+
+.login-instructions p {
+  color: #8b4513;
+}
+
+#loginPanel input,
+#loginPanel .input-container {
+  border-color: rgba(139,69,19,.18);
+  background: rgba(245,222,179,.48);
+  color: #5c3312;
+}
+
+#loginPanel input::placeholder {
+  color: rgba(139,69,19,.62);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body::before {
+    animation: none !important;
+  }
+}

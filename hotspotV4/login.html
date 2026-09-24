@@ -63,61 +63,91 @@
     $(endif)
 
     <div class="ie-fixMinHeight">
-        <div class="main">
-            
+        <main class="main login-card" id="loginCard">
+
+            <div class="login-topline">
+                <span class="status-dot" aria-hidden="true"></span>
+                <span>PRIVATE NETWORK ACCESS</span>
+            </div>
+
             <div class="logo-container">
+                <div class="logo-orbit" aria-hidden="true"></div>
                 <img src="img/favicon.png" alt="Logo" class="logo" onerror="this.style.display='none'">
                 <div class="login-instructions">
-                    <h1>HOME</h1>
+                    <p class="eyebrow">WELCOME HOME</p>
+                    <h1>Selamat Datang</h1>
                     <p>
-                        Silakan masukkan <span class="interactive-text" id="popupUser">username</span> 
-                        dan <span class="interactive-text" id="popupPass">password</span> untuk menggunakan Internet
+                        Masukkan <span class="interactive-text" id="popupUser">username</span>
+                        dan <span class="interactive-text" id="popupPass">password</span>
+                        untuk terhubung ke Internet.
                     </p>
                 </div>
             </div>
 
+            <div class="login-divider" aria-hidden="true"><span></span></div>
+
             <div class="wrap">
-                <!-- PERBAIKAN: Menambahkan parameter 'event' pada onSubmit agar preventDefault bekerja -->
-                <form name="login" action="$(link-login-only)" method="post" $(if chap-id) onSubmit="return doLogin()" $(endif)>
+                <form name="login" action="$(link-login-only)" method="post" class="login-form" $(if chap-id) onSubmit="return doLogin()" $(endif)>
                     <input type="hidden" name="dst" value="$(link-orig)" />
                     <input type="hidden" name="popup" value="true" />
 
-                    <label class="input-container">
-                        <img src="img/user.svg" alt="User" class="ico" id="copyUserBtn" onerror="this.style.display='none'">
-                        <input type="text" name="username" id="usernameInput" placeholder=" Username..." required autocomplete="on">
-                    </label>
+                    <div class="field-group">
+                        <label class="field-label" for="usernameInput">Username</label>
+                        <div class="input-container">
+                            <img src="img/user.svg" alt="" class="ico" id="copyUserBtn" onerror="this.style.display='none'">
+                            <input type="text" name="username" id="usernameInput" placeholder="Masukkan username" required autocomplete="username" inputmode="text">
+                            <span class="field-line" aria-hidden="true"></span>
+                        </div>
+                    </div>
 
-                    <label class="input-container">
-                        <img src="img/password.svg" alt="Password" class="ico" id="copyPassBtn" onerror="this.style.display='none'">
-                        <input type="password" name="password" id="passwordInput" placeholder=" Password..." required autocomplete="on">
-                    </label>
+                    <div class="field-group">
+                        <label class="field-label" for="passwordInput">Password</label>
+                        <div class="input-container">
+                            <img src="img/password.svg" alt="" class="ico" id="copyPassBtn" onerror="this.style.display='none'">
+                            <input type="password" name="password" id="passwordInput" placeholder="Masukkan password" required autocomplete="current-password">
+                            <button type="button" class="password-toggle" id="passwordToggle" aria-label="Tampilkan password" aria-pressed="false">
+                                <span class="eye-icon" aria-hidden="true"></span>
+                            </button>
+                            <span class="field-line" aria-hidden="true"></span>
+                        </div>
+                    </div>
 
-                    <button type="submit" class="btn-submit">HUBUNGKAN</button>
+                    <button type="submit" class="btn-submit" id="loginSubmit">
+                        <span class="btn-label">HUBUNGKAN</span>
+                        <span class="btn-icon" aria-hidden="true">↗</span>
+                    </button>
                 </form>
 
                 <div id="error-message" style="display:none;">$(error)</div>
-                <div class="info bt"><a href="#" onclick="quickLogin(); return false;">Gunakan Voucher</a></div>
+
+                <div class="quick-access">
+                    <span class="quick-caption">Quick access</span>
+                    <button type="button" class="quick-link" onclick="quickLogin()">
+                        <span>Gunakan Voucher</span>
+                        <span class="quick-arrow" aria-hidden="true">→</span>
+                    </button>
+                </div>
+
                 $(if trial == 'yes')
-                <div class="info bt">
-                    Darurat ? <a href="$(link-login-only)?dst=$(link-orig-esc)&username=T-$(mac-esc)">Coba Gratis</a>
+                <div class="trial-access">
+                    <span>Butuh akses cepat?</span>
+                    <a href="$(link-login-only)?dst=$(link-orig-esc)&username=T-$(mac-esc)">Coba Gratis</a>
                 </div>
                 $(endif)
             </div>
 
-            <p class="info powered">Powered by MikroTik RouterOS</p>
-        </div>
-    </div>
-
-    <div class="setting">
-        <a href="main.html" title="Menu Utama">
-            <img src="img/settings.svg" alt="Settings" class="icon-custom settings" onerror="this.style.display='none'">
-        </a>
+            <div class="login-footer">
+                <span>Powered by MikroTik RouterOS</span>
+                <span class="footer-dot" aria-hidden="true">•</span>
+                <span>Secure access</span>
+            </div>
+        </main>
     </div>
 
     <div id="toast" class="toast"></div>
     <div id="custom-hover-popup" class="hover-popup"></div>
 
-    <script src="js/script.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.15.0/dist/gsap.min.js"></script>\n    <script src="js/script.js"></script>
     <script type="module" src="js/bokeh.js"></script>
 </body>
 </html>

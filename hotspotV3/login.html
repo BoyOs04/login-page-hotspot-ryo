@@ -48,68 +48,19 @@
         <input type="hidden" name="username" />
         <input type="hidden" name="password" />
         <input type="hidden" name="dst" value="$(link-orig)" />
-        <input type="hidden" name="popup" value="false" />
+        <input type="hidden" name="popup" value="true" />
     </form>
-    
-    <!-- HTTP-CHAP: RouterOS requires MD5(chap-id + password + chap-challenge). -->
-    <script type="text/javascript" src="/md5.js"></script>
+
+    <script src="/md5.js"></script>
     <script>
-        function doLogin(e) {
-            if (e) e.preventDefault();
-
-            var loginForm = document.forms["login"];
-            var sendinForm = document.forms["sendin"];
-
-            if (!loginForm || !sendinForm) {
-                alert("Form login HotSpot tidak lengkap.");
-                return false;
-            }
-
-            var usernameField = loginForm.elements["username"];
-            var passwordField = loginForm.elements["password"];
-
-            if (!usernameField || !passwordField) {
-                alert("Field username/password tidak ditemukan.");
-                return false;
-            }
-
-            var username = usernameField.value;
-            var password = passwordField.value;
-
-            if (username === "" || password === "") {
-                if (typeof showToast === "function") {
-                    showToast("Username dan Password wajib diisi!");
-                } else {
-                    alert("Username dan Password wajib diisi!");
-                }
-                return false;
-            }
-
-            if (typeof window.hexMD5 !== "function") {
-                alert("HTTP-CHAP gagal: md5.js tidak termuat.");
-                return false;
-            }
-
-            var chapId = '$(chap-id)';
-            var chapChallenge = '$(chap-challenge)';
-
-            if (!chapId || !chapChallenge) {
-                alert("HTTP-CHAP gagal: CHAP ID/challenge tidak diterima dari MikroTik.");
-                return false;
-            }
-
-            sendinForm.elements["username"].value = username;
-            sendinForm.elements["password"].value =
-                window.hexMD5(chapId + password + chapChallenge);
-            sendinForm.elements["dst"].value =
-                loginForm.elements["dst"] ? loginForm.elements["dst"].value : "";
-            sendinForm.elements["popup"].value = "false";
-
-            // Submit the dedicated CHAP form, not the plaintext login form.
-            sendinForm.submit();
+        function doLogin() {
+            document.sendin.username.value = document.login.username.value;
+            document.sendin.password.value = hexMD5('$(chap-id)' + document.login.password.value + '$(chap-challenge)');
+            document.sendin.submit();
             return false;
         }
-    </script>    $(endif)
+    </script>
+    $(endif)
 
     <div class="ie-fixMinHeight">
         <div class="main">
@@ -129,7 +80,7 @@
                 <!-- PERBAIKAN: Menambahkan parameter 'event' pada onSubmit agar preventDefault bekerja -->
                 <form name="login" action="$(link-login-only)" method="post" $(if chap-id) onSubmit="return doLogin()" $(endif)>
                     <input type="hidden" name="dst" value="$(link-orig)" />
-                    <input type="hidden" name="popup" value="false" />
+                    <input type="hidden" name="popup" value="true" />
 
                     <label class="input-container">
                         <img src="img/user.svg" alt="User" class="ico" id="copyUserBtn" onerror="this.style.display='none'">

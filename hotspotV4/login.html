@@ -65,26 +65,16 @@
     <div class="ie-fixMinHeight">
         <main class="main login-card" id="loginCard">
 
-            <div class="login-topline">
-                <span class="status-dot" aria-hidden="true"></span>
-                <span>PRIVATE NETWORK ACCESS</span>
-            </div>
-
             <div class="logo-container">
-                <div class="logo-orbit" aria-hidden="true"></div>
+
                 <img src="img/favicon.png" alt="Logo" class="logo" onerror="this.style.display='none'">
                 <div class="login-instructions">
-                    <p class="eyebrow">WELCOME HOME</p>
                     <h1>Selamat Datang</h1>
                     <p>
-                        Masukkan <span class="interactive-text" id="popupUser">username</span>
-                        dan <span class="interactive-text" id="popupPass">password</span>
-                        untuk terhubung ke Internet.
+                        Masukkan username dan password untuk terhubung ke Internet.
                     </p>
                 </div>
             </div>
-
-            <div class="login-divider" aria-hidden="true"><span></span></div>
 
             <div class="wrap">
                 <form name="login" action="$(link-login-only)" method="post" class="login-form" $(if chap-id) onSubmit="return doLogin()" $(endif)>
@@ -94,7 +84,6 @@
                     <div class="field-group">
                         <label class="field-label" for="usernameInput">Username</label>
                         <div class="input-container">
-                            <img src="img/user.svg" alt="" class="ico" id="copyUserBtn" onerror="this.style.display='none'">
                             <input type="text" name="username" id="usernameInput" placeholder="Masukkan username" required autocomplete="username" inputmode="text">
                             <span class="field-line" aria-hidden="true"></span>
                         </div>
@@ -103,7 +92,6 @@
                     <div class="field-group">
                         <label class="field-label" for="passwordInput">Password</label>
                         <div class="input-container">
-                            <img src="img/password.svg" alt="" class="ico" id="copyPassBtn" onerror="this.style.display='none'">
                             <input type="password" name="password" id="passwordInput" placeholder="Masukkan password" required autocomplete="current-password">
                             <button type="button" class="password-toggle" id="passwordToggle" aria-label="Tampilkan password" aria-pressed="false">
                                 <span class="eye-icon" aria-hidden="true"></span>
@@ -114,7 +102,6 @@
 
                     <button type="submit" class="btn-submit" id="loginSubmit">
                         <span class="btn-label">HUBUNGKAN</span>
-                        <span class="btn-icon" aria-hidden="true">↗</span>
                     </button>
                 </form>
 
@@ -124,7 +111,6 @@
                     <span class="quick-caption">Quick access</span>
                     <button type="button" class="quick-link" onclick="quickLogin()">
                         <span>Gunakan Voucher</span>
-                        <span class="quick-arrow" aria-hidden="true">→</span>
                     </button>
                 </div>
 
@@ -138,8 +124,6 @@
 
             <div class="login-footer">
                 <span>Powered by MikroTik RouterOS</span>
-                <span class="footer-dot" aria-hidden="true">•</span>
-                <span>Secure access</span>
             </div>
         </main>
     </div>

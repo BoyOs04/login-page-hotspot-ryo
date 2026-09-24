@@ -168,19 +168,19 @@
 
     shadowGradient.addColorStop(
       0,
-      'rgba(0,0,0,0.08)'
+      'rgba(72,28,40,0.08)'
     );
     shadowGradient.addColorStop(
       0.45,
-      'rgba(0,0,0,0.045)'
+      'rgba(72,28,40,0.045)'
     );
     shadowGradient.addColorStop(
       0.75,
-      'rgba(0,0,0,0.018)'
+      'rgba(72,28,40,0.018)'
     );
     shadowGradient.addColorStop(
       1,
-      'rgba(0,0,0,0)'
+      'rgba(72,28,40,0)'
     );
 
     ctx.fillStyle = shadowGradient;

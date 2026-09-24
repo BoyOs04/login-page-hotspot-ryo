@@ -273,17 +273,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  if (loginForm) {
-    loginForm.addEventListener('submit', (e) => {
-      const username = (loginForm.username ? loginForm.username.value : '').trim();
-      const password = (loginForm.password ? loginForm.password.value : '').trim();
-      if (!username || !password) {
-        e.preventDefault();
-        showToast('Username dan password wajib diisi!', 1000);
-      }
-    });
-  }
-
   // PERBAIKAN: Membersihkan nested event listener agar lebih efisien
   const errElem = document.getElementById('error-message');
   if (errElem) {

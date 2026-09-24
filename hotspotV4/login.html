@@ -1,4 +1,4 @@
- l<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="id">
 <head>
     <meta charset="UTF-8">
@@ -8,9 +8,6 @@
     <title>Login Hotspot</title>
     <link rel="stylesheet" href="css/style.css">
     
-    <!-- PENTING: Pastikan file md5.js benar-benar ada di folder yang sama dengan login.html -->
-    <!-- Jika md5.js ada di dalam folder js, ubah menjadi: <script src="js/md5.js"></script> -->
-    <script src="md5.js"></script>
     <script src="js/config.js"></script>
 </head>
 <body>
@@ -51,42 +48,16 @@
         <input type="hidden" name="username" />
         <input type="hidden" name="password" />
         <input type="hidden" name="dst" value="$(link-orig)" />
-        <input type="hidden" name="popup" value="false" />
+        <input type="hidden" name="popup" value="true" />
     </form>
-    
-    <!-- PERBAIKAN BUG CHAP -->
+
+    <script src="/md5.js"></script>
     <script>
-        function doLogin(e) {
-            // 1. Cegah form utama (PAP) terkirim secara default
-            if (e) e.preventDefault(); 
-            
-            try {
-                var username = document.login.username.value;
-                var password = document.login.password.value;
-                
-                // 2. Validasi kosong
-                if (username === '' || password === '') {
-                    if (typeof showToast === "function") showToast("Username dan Password wajib diisi!");
-                    return false;
-                }
-
-                // 3. Cek apakah fungsi hexMD5 dari md5.js berhasil dimuat
-                if (typeof hexMD5 === 'undefined') {
-                    alert("Error: File md5.js tidak terbaca! Pastikan file md5.js ada di folder yang benar di MikroTik Anda.");
-                    return false;
-                }
-
-                // 4. Proses enkripsi CHAP dan submit form tersembunyi (sendin)
-                document.sendin.username.value = username;
-                document.sendin.password.value = hexMD5('$(chap-id)' + password + '$(chap-challenge)');
-                document.sendin.submit();
-                
-            } catch (err) {
-                console.error("CHAP Error:", err);
-                alert("Terjadi kesalahan sistem saat enkripsi CHAP.");
-            }
-            
-            return false; // Wajib return false agar form 'login' tidak ikut tersubmit
+        function doLogin() {
+            document.sendin.username.value = document.login.username.value;
+            document.sendin.password.value = hexMD5('$(chap-id)' + document.login.password.value + '$(chap-challenge)');
+            document.sendin.submit();
+            return false;
         }
     </script>
     $(endif)
@@ -105,11 +76,11 @@
                 </div>
             </div>
 
-            <div class="wrap" id="loginPanel" data-open="false">
+            <div class="wrap">
                 <!-- PERBAIKAN: Menambahkan parameter 'event' pada onSubmit agar preventDefault bekerja -->
-                <form name="login" action="$(link-login-only)" method="post" $(if chap-id) onSubmit="return doLogin(event)" $(endif)>
+                <form name="login" action="$(link-login-only)" method="post" $(if chap-id) onSubmit="return doLogin()" $(endif)>
                     <input type="hidden" name="dst" value="$(link-orig)" />
-                    <input type="hidden" name="popup" value="false" />
+                    <input type="hidden" name="popup" value="true" />
 
                     <label class="input-container">
                         <img src="img/user.svg" alt="User" class="ico" id="copyUserBtn" onerror="this.style.display='none'">
@@ -121,7 +92,7 @@
                         <input type="password" name="password" id="passwordInput" placeholder=" Password..." required autocomplete="on">
                     </label>
 
-                    <button type="button" class="btn-submit" id="connectButton" aria-expanded="false" aria-controls="loginPanel">HUBUNGKAN</button>
+                    <button type="submit" class="btn-submit">HUBUNGKAN</button>
                 </form>
 
                 <div id="error-message" style="display:none;">$(error)</div>
@@ -145,26 +116,6 @@
 
     <div id="toast" class="toast"></div>
     <div id="custom-hover-popup" class="hover-popup"></div>
-
-
-
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const button = document.getElementById('connectButton');
-            const panel = document.getElementById('loginPanel');
-            const username = document.getElementById('usernameInput');
-            if (!button || !panel) return;
-
-            button.addEventListener('click', () => {
-                const opened = panel.classList.toggle('is-open');
-                panel.dataset.open = opened ? 'true' : 'false';
-                button.setAttribute('aria-expanded', opened ? 'true' : 'false');
-                if (opened) {
-                    window.setTimeout(() => username && username.focus(), 280);
-                }
-            });
-        });
-    </script>
 
     <script src="js/script.js"></script>
     <script type="module" src="js/bokeh.js"></script>

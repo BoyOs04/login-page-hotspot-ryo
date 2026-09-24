@@ -2311,7 +2311,8 @@ table a {
 }
 
 
-/* Burgundy minimal palette */
+
+/* Burgundy palette — Design 05 */
 :root {
   --bg-1: #ffffff;
   --bg-2: #f7f3ef;
@@ -2326,7 +2327,7 @@ table a {
   --warning: #8a5a64;
   --success: #481c28;
   --glass-bg: rgba(255,255,255,.94);
-  --glass-border: rgba(72,28,40,.16);
+  --glass-border: rgba(72,28,40,.15);
   --glass-shadow: 0 8px 24px rgba(72,28,40,.08);
   --color-bg-1: #ffffff;
   --color-bg-2: #f7f3ef;
@@ -2338,98 +2339,53 @@ table a {
   --color-warning: #8a5a64;
   --color-success: #481c28;
 }
-
 html, body {
-  background: linear-gradient(145deg, #ffffff 0%, #f7f3ef 100%) !important;
+  background: linear-gradient(145deg,#ffffff 0%,#f7f3ef 100%) !important;
   color: #24171a !important;
 }
-
 .main {
-  background: rgba(255,255,255,.94) !important;
-  border: 1px solid rgba(72,28,40,.14);
+  background: rgba(255,255,255,.95) !important;
+  border: 1px solid rgba(72,28,40,.15);
   box-shadow: 0 10px 28px rgba(72,28,40,.08) !important;
-  -webkit-backdrop-filter: blur(8px);
   backdrop-filter: blur(8px);
 }
-
-body, h1, h2, h3, p, .info, .login-instructions, .main h1,
-.login-instructions h1, .login-instructions p, .interactive-text,
-.hint-text, td, #clock-time, #clock-date {
-  color: #24171a !important;
+body,h1,h2,h3,p,.info,.login-instructions,.login-instructions h1,
+.login-instructions p,.main h1,.interactive-text,.hint-text,td,
+#clock-time,#clock-date { color:#24171a !important; }
+.info a,table a,.dropdown a { color:#481c28 !important; }
+input[type="text"],input[type="password"] {
+  background:#ffffff !important;
+  color:#24171a !important;
+  border:1px solid rgba(72,28,40,.30) !important;
+  box-shadow:0 4px 12px rgba(72,28,40,.045) !important;
 }
-
-.info a, table a, .dropdown a {
-  color: #481c28 !important;
+input[type="text"]:focus,input[type="password"]:focus {
+  border-color:#481c28 !important;
+  box-shadow:0 0 0 3px rgba(72,28,40,.08),0 6px 16px rgba(72,28,40,.07) !important;
 }
-
-.interactive-text {
-  border-bottom-color: rgba(72,28,40,.35);
+.btn-submit,input[type="submit"] {
+  background:#481c28 !important;
+  border-color:#481c28 !important;
+  color:#ffffff !important;
+  box-shadow:0 6px 14px rgba(72,28,40,.13) !important;
 }
-
-input[type="text"], input[type="password"] {
-  background: #ffffff !important;
-  color: #24171a !important;
-  border: 1px solid rgba(72,28,40,.30) !important;
-  box-shadow: 0 4px 12px rgba(72,28,40,.045) !important;
+.btn-submit:hover,input[type="submit"]:hover {
+  background:#32131b !important;
+  color:#ffffff !important;
 }
-
-input[type="text"]:hover, input[type="password"]:hover,
-input[type="text"]:focus, input[type="password"]:focus {
-  border-color: #481c28 !important;
-  background: #ffffff !important;
+table,.progress-box,#clock-box,.menu-toggle,.dropdown {
+  background:rgba(255,255,255,.95) !important;
+  border-color:rgba(72,28,40,.14) !important;
 }
-
-input[type="text"]:focus, input[type="password"]:focus {
-  box-shadow: 0 0 0 3px rgba(72,28,40,.08), 0 6px 16px rgba(72,28,40,.07) !important;
+.progress-bg { background:rgba(72,28,40,.09) !important; }
+.progress-bar { background:#481c28 !important; }
+.menu-toggle:hover { background:#fff !important; }
+.dropdown a:hover { color:#481c28 !important; background:rgba(72,28,40,.045) !important; }
+.hover-popup,.toast {
+  background:#481c28 !important;
+  color:#fff !important;
+  box-shadow:0 8px 20px rgba(72,28,40,.14) !important;
 }
-
-.btn-submit, input[type="submit"] {
-  border-color: #481c28 !important;
-  background: #481c28 !important;
-  color: #ffffff !important;
-  box-shadow: 0 6px 14px rgba(72,28,40,.13) !important;
-}
-
-.btn-submit:hover, input[type="submit"]:hover {
-  background: #32131b !important;
-  color: #ffffff !important;
-  box-shadow: 0 9px 18px rgba(72,28,40,.16) !important;
-}
-
-table, .progress-box, #clock-box, .menu-toggle, .dropdown {
-  background: rgba(255,255,255,.94) !important;
-  border-color: rgba(72,28,40,.14) !important;
-}
-
-table, .progress-box {
-  box-shadow: 0 5px 14px rgba(72,28,40,.05) !important;
-}
-
-.progress-bg {
-  background: rgba(72,28,40,.09) !important;
-}
-
-.progress-bar {
-  background: #481c28 !important;
-  box-shadow: 0 1px 4px rgba(72,28,40,.10) !important;
-}
-
-.menu-toggle:hover {
-  background: #ffffff !important;
-  box-shadow: 0 8px 18px rgba(72,28,40,.11) !important;
-}
-
-.dropdown a:hover {
-  color: #481c28 !important;
-  background: rgba(72,28,40,.045) !important;
-}
-
-.hover-popup, .toast {
-  background: #481c28 !important;
-  color: #ffffff !important;
-  box-shadow: 0 8px 20px rgba(72,28,40,.14) !important;
-}
-
-.ico, .icon-custom, .settings {
-  filter: grayscale(.25) sepia(.12) saturate(.8) drop-shadow(0 2px 4px rgba(72,28,40,.07)) !important;
+.ico,.icon-custom,.settings {
+  filter:grayscale(.25) sepia(.12) saturate(.8) drop-shadow(0 2px 4px rgba(72,28,40,.07)) !important;
 }

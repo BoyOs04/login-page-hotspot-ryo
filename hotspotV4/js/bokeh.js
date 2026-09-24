@@ -168,19 +168,19 @@
 
     shadowGradient.addColorStop(
       0,
-      'rgba(92,51,18,0.13)'
+      'rgba(0,0,0,0.08)'
     );
     shadowGradient.addColorStop(
       0.45,
-      'rgba(92,51,18,0.075)'
+      'rgba(0,0,0,0.045)'
     );
     shadowGradient.addColorStop(
       0.75,
-      'rgba(92,51,18,0.025)'
+      'rgba(0,0,0,0.018)'
     );
     shadowGradient.addColorStop(
       1,
-      'rgba(92,51,18,0)'
+      'rgba(0,0,0,0)'
     );
 
     ctx.fillStyle = shadowGradient;
@@ -206,7 +206,7 @@
     );
     glowGradient.addColorStop(
       0.22,
-      `rgba(255,252,244,${alpha})`
+      `rgba(255,255,255,${alpha})`
     );
     glowGradient.addColorStop(
       0.46,
@@ -214,7 +214,7 @@
     );
     glowGradient.addColorStop(
       0.68,
-      'rgba(255,250,240,0.045)'
+      'rgba(255,255,255,0.045)'
     );
     glowGradient.addColorStop(
       1,

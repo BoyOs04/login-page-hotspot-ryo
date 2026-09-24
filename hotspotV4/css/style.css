@@ -2310,177 +2310,126 @@ table a {
   --glass-shadow: 0 8px 24px rgba(0, 0, 0, 0.07);
 }
 
-/* Latar halaman benar-benar putih. */
-html,
-body {
-  background: #ffffff !important;
-  color: #000000 !important;
+
+/* Burgundy minimal palette */
+:root {
+  --bg-1: #ffffff;
+  --bg-2: #f7f3ef;
+  --cream: #ffffff;
+  --wheat: #481c28;
+  --wheat-deep: #481c28;
+  --brown: #481c28;
+  --brown-dark: #32131b;
+  --text: #24171a;
+  --muted: #765f64;
+  --danger: #8a5a64;
+  --warning: #8a5a64;
+  --success: #481c28;
+  --glass-bg: rgba(255,255,255,.94);
+  --glass-border: rgba(72,28,40,.16);
+  --glass-shadow: 0 8px 24px rgba(72,28,40,.08);
+  --color-bg-1: #ffffff;
+  --color-bg-2: #f7f3ef;
+  --color-cream: #ffffff;
+  --color-brown: #481c28;
+  --color-brown-dark: #32131b;
+  --color-text: #24171a;
+  --color-danger: #8a5a64;
+  --color-warning: #8a5a64;
+  --color-success: #481c28;
 }
 
-/* Panel putih bersih dengan bayangan tipis agar tetap hidup. */
+html, body {
+  background: linear-gradient(145deg, #ffffff 0%, #f7f3ef 100%) !important;
+  color: #24171a !important;
+}
+
 .main {
-  border: 1px solid rgba(0, 0, 0, 0.12);
-  background: #ffffff !important;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.07) !important;
-  -webkit-backdrop-filter: none;
-  backdrop-filter: none;
+  background: rgba(255,255,255,.94) !important;
+  border: 1px solid rgba(72,28,40,.14);
+  box-shadow: 0 10px 28px rgba(72,28,40,.08) !important;
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
 }
 
-.main::before {
-  background: linear-gradient(
-    135deg,
-    rgba(0, 0, 0, 0.025),
-    transparent 48%,
-    rgba(0, 0, 0, 0.018)
-  );
+body, h1, h2, h3, p, .info, .login-instructions, .main h1,
+.login-instructions h1, .login-instructions p, .interactive-text,
+.hint-text, td, #clock-time, #clock-date {
+  color: #24171a !important;
 }
 
-/* Teks, link, judul, dan aksen hanya hitam. */
-body,
-h1,
-h2,
-h3,
-p,
-a,
-.info,
-.login-instructions,
-.login-instructions h1,
-.main h1,
-.login-instructions p,
-.menu-toggle ~ .logo-container h1,
-.menu-toggle ~ .logo-container p,
-.interactive-text,
-.hint-text,
-.hint-text strong,
-td,
-td:first-child,
-td:last-child,
-.progress-title,
-.progress-title span:last-child,
-#clock-time,
-#clock-date {
-  color: #000000 !important;
-}
-
-.info a,
-table a {
-  color: #000000 !important;
+.info a, table a, .dropdown a {
+  color: #481c28 !important;
 }
 
 .interactive-text {
-  border-bottom-color: rgba(0, 0, 0, 0.32);
+  border-bottom-color: rgba(72,28,40,.35);
 }
 
-/* Input putih + border hitam + bayangan sangat tipis. */
-input[type="text"],
-input[type="password"] {
-  border: 1px solid rgba(0, 0, 0, 0.28) !important;
+input[type="text"], input[type="password"] {
   background: #ffffff !important;
-  color: #000000 !important;
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 1),
-    0 4px 12px rgba(0, 0, 0, 0.045) !important;
-  -webkit-backdrop-filter: none;
-  backdrop-filter: none;
+  color: #24171a !important;
+  border: 1px solid rgba(72,28,40,.30) !important;
+  box-shadow: 0 4px 12px rgba(72,28,40,.045) !important;
 }
 
-input[type="text"]:hover,
-input[type="password"]:hover,
-input[type="text"]:focus,
-input[type="password"]:focus {
-  border-color: #000000 !important;
+input[type="text"]:hover, input[type="password"]:hover,
+input[type="text"]:focus, input[type="password"]:focus {
+  border-color: #481c28 !important;
   background: #ffffff !important;
 }
 
-input[type="text"]:focus,
-input[type="password"]:focus {
-  box-shadow:
-    0 0 0 3px rgba(0, 0, 0, 0.07),
-    0 6px 16px rgba(0, 0, 0, 0.07) !important;
+input[type="text"]:focus, input[type="password"]:focus {
+  box-shadow: 0 0 0 3px rgba(72,28,40,.08), 0 6px 16px rgba(72,28,40,.07) !important;
 }
 
-/* Tombol hitam dengan teks putih: tetap hanya dua warna. */
-.btn-submit,
-input[type="submit"] {
-  border-color: #000000 !important;
-  background: #000000 !important;
+.btn-submit, input[type="submit"] {
+  border-color: #481c28 !important;
+  background: #481c28 !important;
   color: #ffffff !important;
-  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.10) !important;
+  box-shadow: 0 6px 14px rgba(72,28,40,.13) !important;
 }
 
-.btn-submit:hover,
-input[type="submit"]:hover {
-  background: #000000 !important;
+.btn-submit:hover, input[type="submit"]:hover {
+  background: #32131b !important;
   color: #ffffff !important;
-  box-shadow: 0 9px 18px rgba(0, 0, 0, 0.13) !important;
+  box-shadow: 0 9px 18px rgba(72,28,40,.16) !important;
 }
 
-/* Elemen panel lain tetap putih dengan garis hitam halus. */
-table,
-.progress-box,
-#clock-box,
-.menu-toggle,
-.dropdown,
-.hover-popup,
-.toast {
-  border-color: rgba(0, 0, 0, 0.14) !important;
+table, .progress-box, #clock-box, .menu-toggle, .dropdown {
+  background: rgba(255,255,255,.94) !important;
+  border-color: rgba(72,28,40,.14) !important;
 }
 
-table,
-.progress-box,
-#clock-box,
-.menu-toggle,
-.dropdown {
-  background: #ffffff !important;
-}
-
-table {
-  box-shadow: 0 5px 14px rgba(0, 0, 0, 0.045) !important;
-}
-
-.progress-box {
-  box-shadow: 0 5px 14px rgba(0, 0, 0, 0.045) !important;
+table, .progress-box {
+  box-shadow: 0 5px 14px rgba(72,28,40,.05) !important;
 }
 
 .progress-bg {
-  background: rgba(0, 0, 0, 0.08) !important;
+  background: rgba(72,28,40,.09) !important;
 }
 
 .progress-bar {
-  background: #000000 !important;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08) !important;
+  background: #481c28 !important;
+  box-shadow: 0 1px 4px rgba(72,28,40,.10) !important;
 }
 
 .menu-toggle:hover {
   background: #ffffff !important;
-  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.11) !important;
-}
-
-.dropdown a {
-  color: #000000 !important;
+  box-shadow: 0 8px 18px rgba(72,28,40,.11) !important;
 }
 
 .dropdown a:hover {
-  color: #000000 !important;
-  background: rgba(0, 0, 0, 0.045) !important;
+  color: #481c28 !important;
+  background: rgba(72,28,40,.045) !important;
 }
 
-.hover-popup,
-.toast {
-  background: #000000 !important;
+.hover-popup, .toast {
+  background: #481c28 !important;
   color: #ffffff !important;
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12) !important;
+  box-shadow: 0 8px 20px rgba(72,28,40,.14) !important;
 }
 
-.hover-popup::after {
-  background: #000000 !important;
-  border-right-color: rgba(255, 255, 255, 0.12);
-  border-bottom-color: rgba(255, 255, 255, 0.12);
-}
-
-/* Ikon tetap monochrome secara visual. */
-.ico,
-.icon-custom,
-.settings {
-  filter: grayscale(1) contrast(1.15) drop-shadow(0 2px 4px rgba(0, 0, 0, 0.06)) !important;
+.ico, .icon-custom, .settings {
+  filter: grayscale(.25) sepia(.12) saturate(.8) drop-shadow(0 2px 4px rgba(72,28,40,.07)) !important;
 }

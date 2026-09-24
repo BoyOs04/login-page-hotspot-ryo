@@ -284,3 +284,204 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 });
+
+/* =========================================================
+   V4 INTERACTIVE UI — GSAP + progressive fallback
+========================================================= */
+(() => {
+  'use strict';
+
+  const reduceMotion = window.matchMedia &&
+    window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  const hasGSAP = typeof window.gsap !== 'undefined';
+  const card = document.getElementById('loginCard');
+  const form = document.forms['login'];
+  const submit = document.getElementById('loginSubmit');
+  const password = document.getElementById('passwordInput');
+  const passwordToggle = document.getElementById('passwordToggle');
+
+  function animate(target, vars, duration = .35) {
+    if (!target) return;
+    if (hasGSAP && !reduceMotion) {
+      window.gsap.to(target, { duration, ...vars, ease: 'power2.out' });
+    } else {
+      Object.keys(vars).forEach(key => {
+        if (key !== 'ease') target.style[key] = typeof vars[key] === 'number' && key !== 'opacity' ? vars[key] + 'px' : vars[key];
+      });
+    }
+  }
+
+  function introAnimation() {
+    if (!card || reduceMotion) return;
+
+    if (hasGSAP) {
+      window.gsap.set(card, { opacity: 0, y: 24, scale: .985 });
+      const parts = card.querySelectorAll(
+        '.login-topline, .logo, .eyebrow, .login-instructions h1, .login-instructions p:last-child, .login-divider, .field-group, #loginSubmit, .quick-access, .trial-access, .login-footer'
+      );
+
+      window.gsap.set(parts, { opacity: 0, y: 14 });
+
+      const tl = window.gsap.timeline({ defaults: { ease: 'power3.out' }});
+      tl.to(card, { opacity: 1, y: 0, scale: 1, duration: .65 })
+        .to(parts, { opacity: 1, y: 0, duration: .38, stagger: .055 }, '-=.40');
+    } else {
+      card.classList.add('v4-ready');
+      card.style.animation = 'fadeInUp .65s cubic-bezier(.4,0,.2,1) both';
+    }
+  }
+
+  function setupFields() {
+    if (!form) return;
+
+    form.querySelectorAll('.input-container input').forEach(input => {
+      const group = input.closest('.field-group');
+      const label = group && group.querySelector('.field-label');
+
+      const focusIn = () => {
+        if (label && hasGSAP && !reduceMotion) {
+          window.gsap.to(label, { color: '#481c28', y: -1, duration: .22, ease: 'power2.out' });
+        }
+        if (hasGSAP && !reduceMotion) {
+          window.gsap.to(input.closest('.input-container'), { y: -1, duration: .22, ease: 'power2.out' });
+        }
+      };
+
+      const focusOut = () => {
+        if (label && hasGSAP && !reduceMotion) {
+          window.gsap.to(label, { color: input.value ? '#481c28' : '#765f64', y: 0, duration: .22 });
+        }
+        if (hasGSAP && !reduceMotion) {
+          window.gsap.to(input.closest('.input-container'), { y: 0, duration: .22 });
+        }
+      };
+
+      input.addEventListener('focus', focusIn);
+      input.addEventListener('blur', focusOut);
+      input.addEventListener('input', () => {
+        if (label) label.style.color = '#481c28';
+      });
+    });
+  }
+
+  function setupPasswordToggle() {
+    if (!password || !passwordToggle) return;
+
+    passwordToggle.addEventListener('click', () => {
+      const visible = password.type === 'text';
+      password.type = visible ? 'password' : 'text';
+      passwordToggle.classList.toggle('is-visible', !visible);
+      passwordToggle.setAttribute('aria-pressed', String(!visible));
+      passwordToggle.setAttribute('aria-label', visible ? 'Tampilkan password' : 'Sembunyikan password');
+
+      if (hasGSAP && !reduceMotion) {
+        window.gsap.fromTo(passwordToggle, { scale: .88 }, { scale: 1, duration: .3, ease: 'back.out(2)' });
+      }
+    });
+  }
+
+  function setupMagneticButton() {
+    if (!submit || reduceMotion || !hasGSAP) return;
+    const pointerFine = window.matchMedia('(pointer:fine)').matches;
+    if (!pointerFine) return;
+
+    submit.addEventListener('pointermove', event => {
+      const r = submit.getBoundingClientRect();
+      const x = event.clientX - r.left - r.width / 2;
+      const y = event.clientY - r.top - r.height / 2;
+
+      window.gsap.to(submit, {
+        x: x * .08,
+        y: y * .10,
+        duration: .28,
+        ease: 'power2.out',
+        overwrite: true
+      });
+    });
+
+    submit.addEventListener('pointerleave', () => {
+      window.gsap.to(submit, { x: 0, y: 0, duration: .42, ease: 'elastic.out(1,.55)' });
+    });
+  }
+
+  function setupRipple() {
+    if (!submit) return;
+
+    submit.addEventListener('pointerdown', event => {
+      const r = submit.getBoundingClientRect();
+      const ripple = document.createElement('span');
+      ripple.className = 'btn-ripple';
+      ripple.style.left = (event.clientX - r.left) + 'px';
+      ripple.style.top = (event.clientY - r.top) + 'px';
+      submit.appendChild(ripple);
+
+      const end = () => ripple.remove();
+
+      if (hasGSAP && !reduceMotion) {
+        window.gsap.to(ripple, {
+          scale: 14,
+          opacity: 0,
+          duration: .55,
+          ease: 'power2.out',
+          onComplete: end
+        });
+      } else {
+        ripple.remove();
+      }
+    });
+  }
+
+  function setupSubmitState() {
+    if (!form || !submit) return;
+
+    form.addEventListener('submit', () => {
+      submit.classList.add('is-loading');
+      const label = submit.querySelector('.btn-label');
+      if (label) label.textContent = 'MENGHUBUNGKAN...';
+
+      if (hasGSAP && !reduceMotion) {
+        window.gsap.to(card, {
+          scale: .995,
+          duration: .18,
+          ease: 'power2.out'
+        });
+      }
+    });
+
+    const error = document.getElementById('error-message');
+    if (error) {
+      const text = error.textContent.trim();
+      if (text && hasGSAP && !reduceMotion) {
+        window.gsap.fromTo(card,
+          { x: -5 },
+          { x: 5, duration: .06, repeat: 5, yoyo: true, ease: 'power1.inOut' }
+        );
+      }
+    }
+  }
+
+  function animateLogo() {
+    const logo = document.querySelector('.logo');
+    if (!logo || reduceMotion || !hasGSAP) return;
+
+    window.gsap.to(logo, {
+      rotation: 2,
+      y: -2,
+      duration: 2.8,
+      repeat: -1,
+      yoyo: true,
+      ease: 'sine.inOut'
+    });
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    introAnimation();
+    setupFields();
+    setupPasswordToggle();
+    setupMagneticButton();
+    setupRipple();
+    setupSubmitState();
+    animateLogo();
+  }, { once: true });
+})();

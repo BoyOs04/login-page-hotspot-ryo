@@ -54,42 +54,64 @@
         <input type="hidden" name="popup" value="false" />
     </form>
     
-    <!-- PERBAIKAN BUG CHAP -->
+    <!-- HTTP-CHAP: RouterOS requires MD5(chap-id + password + chap-challenge). -->
     <script>
         function doLogin(e) {
-            // 1. Cegah form utama (PAP) terkirim secara default
-            if (e) e.preventDefault(); 
-            
-            try {
-                var username = document.login.username.value;
-                var password = document.login.password.value;
-                
-                // 2. Validasi kosong
-                if (username === '' || password === '') {
-                    if (typeof showToast === "function") showToast("Username dan Password wajib diisi!");
-                    return false;
-                }
+            if (e) e.preventDefault();
 
-                // 3. Cek apakah fungsi hexMD5 dari md5.js berhasil dimuat
-                if (typeof hexMD5 === 'undefined') {
-                    alert("Error: File md5.js tidak terbaca! Pastikan file md5.js ada di folder yang benar di MikroTik Anda.");
-                    return false;
-                }
+            var loginForm = document.forms["login"];
+            var sendinForm = document.forms["sendin"];
 
-                // 4. Proses enkripsi CHAP dan submit form tersembunyi (sendin)
-                document.sendin.username.value = username;
-                document.sendin.password.value = hexMD5('$(chap-id)' + password + '$(chap-challenge)');
-                document.sendin.submit();
-                
-            } catch (err) {
-                console.error("CHAP Error:", err);
-                alert("Terjadi kesalahan sistem saat enkripsi CHAP.");
+            if (!loginForm || !sendinForm) {
+                alert("Form login HotSpot tidak lengkap.");
+                return false;
             }
-            
-            return false; // Wajib return false agar form 'login' tidak ikut tersubmit
+
+            var usernameField = loginForm.elements["username"];
+            var passwordField = loginForm.elements["password"];
+
+            if (!usernameField || !passwordField) {
+                alert("Field username/password tidak ditemukan.");
+                return false;
+            }
+
+            var username = usernameField.value;
+            var password = passwordField.value;
+
+            if (username === "" || password === "") {
+                if (typeof showToast === "function") {
+                    showToast("Username dan Password wajib diisi!");
+                } else {
+                    alert("Username dan Password wajib diisi!");
+                }
+                return false;
+            }
+
+            if (typeof window.hexMD5 !== "function") {
+                alert("HTTP-CHAP gagal: md5.js tidak termuat.");
+                return false;
+            }
+
+            var chapId = '$(chap-id)';
+            var chapChallenge = '$(chap-challenge)';
+
+            if (!chapId || !chapChallenge) {
+                alert("HTTP-CHAP gagal: CHAP ID/challenge tidak diterima dari MikroTik.");
+                return false;
+            }
+
+            sendinForm.elements["username"].value = username;
+            sendinForm.elements["password"].value =
+                window.hexMD5(chapId + password + chapChallenge);
+            sendinForm.elements["dst"].value =
+                loginForm.elements["dst"] ? loginForm.elements["dst"].value : "";
+            sendinForm.elements["popup"].value = "false";
+
+            // Submit the dedicated CHAP form, not the plaintext login form.
+            sendinForm.submit();
+            return false;
         }
-    </script>
-    $(endif)
+    </script>    $(endif)
 
     <div class="ie-fixMinHeight">
         <div class="main">

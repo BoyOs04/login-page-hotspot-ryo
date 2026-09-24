@@ -8,9 +8,6 @@
     <title>Login Hotspot</title>
     <link rel="stylesheet" href="css/style.css">
     
-    <!-- PENTING: Pastikan file md5.js benar-benar ada di folder yang sama dengan login.html -->
-    <!-- Jika md5.js ada di dalam folder js, ubah menjadi: <script src="js/md5.js"></script> -->
-    <script src="md5.js"></script>
     <script src="js/config.js"></script>
 </head>
 <body>
@@ -55,6 +52,7 @@
     </form>
     
     <!-- HTTP-CHAP: RouterOS requires MD5(chap-id + password + chap-challenge). -->
+    <script type="text/javascript" src="/md5.js"></script>
     <script>
         function doLogin(e) {
             if (e) e.preventDefault();
@@ -129,7 +127,7 @@
 
             <div class="wrap">
                 <!-- PERBAIKAN: Menambahkan parameter 'event' pada onSubmit agar preventDefault bekerja -->
-                <form name="login" action="$(link-login-only)" method="post" $(if chap-id) onSubmit="return doLogin(event)" $(endif)>
+                <form name="login" action="$(link-login-only)" method="post" $(if chap-id) onSubmit="return doLogin()" $(endif)>
                     <input type="hidden" name="dst" value="$(link-orig)" />
                     <input type="hidden" name="popup" value="false" />
 

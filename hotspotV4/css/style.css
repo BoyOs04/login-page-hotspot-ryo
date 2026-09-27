@@ -3097,3 +3097,19 @@ input[type="password"]::placeholder {
     opacity: .08 !important;
   }
 }
+
+
+/* =========================================================
+   V4 FLAT BACKGROUND
+   Solid wheat background, matching the reference visual.
+========================================================= */
+body {
+  background: #f5deb3 !important;
+  background-image: none !important;
+}
+
+#bgCanvas,
+#bgCanvas-container,
+#bgCanvas-container canvas {
+  opacity: 0 !important;
+}

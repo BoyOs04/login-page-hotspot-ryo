@@ -874,3 +874,110 @@ git branch --show-current
 # Check GitHub remote
 git remote -v
 ```
+
+
+---
+
+# 24. Troubleshooting: sync-file-github says local changes would be overwritten
+
+If you run:
+
+    sync-file-github
+
+and Git shows:
+
+    error: Your local changes to the following files would be overwritten by merge:
+            hotspotV4/login.html
+    Please commit your changes or stash them before you merge.
+    Aborting
+
+it means the local file on the HP/Termux has changes that have not been committed, while GitHub has a newer version of that same file.
+
+Git stops the synchronization to prevent your local changes from being overwritten.
+
+## If the local changes are not needed
+
+First discard the local change for the affected file:
+
+    git restore hotspotV4/login.html
+    sync-file-github
+
+This makes the local file return to the last committed version, then sync-file-github can download the newer GitHub version.
+
+## If the local changes must be kept
+
+Use Git stash:
+
+    git stash push -m "backup perubahan lokal"
+    sync-file-github
+
+The local changes are temporarily stored by Git.
+
+To restore them later:
+
+    git stash pop
+
+## Check before deciding
+
+Use:
+
+    git status
+    git diff -- hotspotV4/login.html
+
+This lets you see what is different before discarding anything.
+
+## Recommended rule
+
+Before editing:
+
+    sync-file-github
+
+After editing:
+
+    git status
+    push-file-github "Update login page"
+
+Do not use git restore if the local changes are important. It permanently discards those uncommitted changes.
+
+---
+
+# 25. Troubleshooting: V4 login gear/settings button is invisible
+
+If the V4 login page contains the settings button but the gear icon cannot be seen, check both the HTML and SVG.
+
+The login page should contain:
+
+    <div class="setting">
+        <a href="main.html" title="Menu Utama">
+            <img src="img/settings.svg" alt="Settings" class="icon-custom settings">
+        </a>
+    </div>
+
+The V4 settings.svg must use a visible color. If the icon color is the same as the wheat background (#F5DEB3), it can appear invisible.
+
+The current V4 gear uses the burgundy theme color:
+
+    #481C28
+
+The CSS also places the gear above the page content:
+
+    .setting {
+        position: fixed;
+        left: max(14px, env(safe-area-inset-left));
+        bottom: max(14px, env(safe-area-inset-bottom));
+        z-index: 1000;
+    }
+
+If you manually recreate the button, also make sure the icon has:
+
+    .setting .settings {
+        display: block;
+        width: 26px;
+        height: 26px;
+        opacity: .88;
+    }
+
+After syncing:
+
+    sync-file-github
+

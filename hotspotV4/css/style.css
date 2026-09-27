@@ -3566,3 +3566,37 @@ body > .logo-container img {
     padding:20px 16px 18px !important;
   }
 }
+
+
+/* =========================================================
+   V4 SETTINGS GEAR — VISIBILITY FIX
+========================================================= */
+.setting {
+  position: fixed !important;
+  left: max(14px, env(safe-area-inset-left)) !important;
+  bottom: max(14px, env(safe-area-inset-bottom)) !important;
+  z-index: 1000 !important;
+  display: block !important;
+}
+
+.setting a {
+  display: flex !important;
+  width: 32px !important;
+  height: 32px !important;
+  align-items: center !important;
+  justify-content: center !important;
+  text-decoration: none !important;
+}
+
+.setting .settings {
+  display: block !important;
+  width: 26px !important;
+  height: 26px !important;
+  opacity: .88 !important;
+  filter: drop-shadow(2px 2px 0 rgba(72,28,40,.14)) !important;
+}
+
+.setting .settings:hover {
+  opacity: 1 !important;
+  transform: rotate(90deg) !important;
+}

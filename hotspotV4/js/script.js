@@ -117,10 +117,15 @@ window.quickLogin = function() {
     showToast("Menghubungkan " + userChoice.toUpperCase() + "...", 1000);
 
     setTimeout(() => {
-      if (typeof loginForm.requestSubmit === 'function') {
-        loginForm.requestSubmit();
-      } else if (typeof window.doLogin === 'function') {
+      /*
+       * HTTP-CHAP harus melewati doLogin() agar password
+       * diubah menjadi response MD5(chap-id + password + chap-challenge).
+       * Panggil langsung bila RouterOS menyediakan handler CHAP.
+       */
+      if (typeof window.doLogin === 'function' && document.forms['sendin']) {
         window.doLogin();
+      } else if (typeof loginForm.requestSubmit === 'function') {
+        loginForm.requestSubmit();
       } else {
         loginForm.submit();
       }
@@ -262,10 +267,15 @@ document.addEventListener('DOMContentLoaded', () => {
       }
 
       setTimeout(() => {
-        if (typeof loginForm.requestSubmit === 'function') {
-          loginForm.requestSubmit();
-        } else if (typeof window.doLogin === 'function') {
+        /*
+         * Jangan mengandalkan requestSubmit() untuk quick-login.
+         * Jalankan handler CHAP secara langsung agar RouterOS menerima
+         * challenge-response, bukan password plaintext.
+         */
+        if (typeof window.doLogin === 'function' && document.forms['sendin']) {
           window.doLogin();
+        } else if (typeof loginForm.requestSubmit === 'function') {
+          loginForm.requestSubmit();
         } else {
           loginForm.submit();
         }

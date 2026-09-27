@@ -1,0 +1,235 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="1200" viewBox="0 0 1200 1200" fill="none">
+  <title>2D transparent pixel block outline pattern</title>
+  <desc>Flat square block pattern with varied geometric and porous details. Outline color adapts to light or dark device theme.</desc>
+
+  <style>
+    .block { stroke: #111; stroke-width: 3; vector-effect: non-scaling-stroke; }
+    .detail { stroke: #111; stroke-width: 3; vector-effect: non-scaling-stroke; stroke-linecap: round; stroke-linejoin: round; }
+    @media (prefers-color-scheme: dark) {
+      .block, .detail { stroke: #fff; }
+    }
+    .soft { opacity: .68; }
+    .fine { stroke-width: 2; opacity: .52; }
+  </style>
+
+  <!-- Outer grid: every block is a flat, identical square. Background is intentionally transparent. -->
+  <g class="block">
+    <!-- row 1 -->
+    <rect x="0" y="0" width="100" height="100"/><rect x="100" y="0" width="100" height="100"/><rect x="200" y="0" width="100" height="100"/><rect x="300" y="0" width="100" height="100"/><rect x="400" y="0" width="100" height="100"/><rect x="500" y="0" width="100" height="100"/><rect x="600" y="0" width="100" height="100"/><rect x="700" y="0" width="100" height="100"/><rect x="800" y="0" width="100" height="100"/><rect x="900" y="0" width="100" height="100"/><rect x="1000" y="0" width="100" height="100"/><rect x="1100" y="0" width="100" height="100"/>
+    <!-- row 2 -->
+    <rect x="0" y="100" width="100" height="100"/><rect x="100" y="100" width="100" height="100"/><rect x="200" y="100" width="100" height="100"/><rect x="300" y="100" width="100" height="100"/><rect x="400" y="100" width="100" height="100"/><rect x="500" y="100" width="100" height="100"/><rect x="600" y="100" width="100" height="100"/><rect x="700" y="100" width="100" height="100"/><rect x="800" y="100" width="100" height="100"/><rect x="900" y="100" width="100" height="100"/><rect x="1000" y="100" width="100" height="100"/><rect x="1100" y="100" width="100" height="100"/>
+    <!-- row 3 -->
+    <rect x="0" y="200" width="100" height="100"/><rect x="100" y="200" width="100" height="100"/><rect x="200" y="200" width="100" height="100"/><rect x="300" y="200" width="100" height="100"/><rect x="400" y="200" width="100" height="100"/><rect x="500" y="200" width="100" height="100"/><rect x="600" y="200" width="100" height="100"/><rect x="700" y="200" width="100" height="100"/><rect x="800" y="200" width="100" height="100"/><rect x="900" y="200" width="100" height="100"/><rect x="1000" y="200" width="100" height="100"/><rect x="1100" y="200" width="100" height="100"/>
+    <!-- row 4 -->
+    <rect x="0" y="300" width="100" height="100"/><rect x="100" y="300" width="100" height="100"/><rect x="200" y="300" width="100" height="100"/><rect x="300" y="300" width="100" height="100"/><rect x="400" y="300" width="100" height="100"/><rect x="500" y="300" width="100" height="100"/><rect x="600" y="300" width="100" height="100"/><rect x="700" y="300" width="100" height="100"/><rect x="800" y="300" width="100" height="100"/><rect x="900" y="300" width="100" height="100"/><rect x="1000" y="300" width="100" height="100"/><rect x="1100" y="300" width="100" height="100"/>
+    <!-- row 5 -->
+    <rect x="0" y="400" width="100" height="100"/><rect x="100" y="400" width="100" height="100"/><rect x="200" y="400" width="100" height="100"/><rect x="300" y="400" width="100" height="100"/><rect x="400" y="400" width="100" height="100"/><rect x="500" y="400" width="100" height="100"/><rect x="600" y="400" width="100" height="100"/><rect x="700" y="400" width="100" height="100"/><rect x="800" y="400" width="100" height="100"/><rect x="900" y="400" width="100" height="100"/><rect x="1000" y="400" width="100" height="100"/><rect x="1100" y="400" width="100" height="100"/>
+    <!-- row 6 -->
+    <rect x="0" y="500" width="100" height="100"/><rect x="100" y="500" width="100" height="100"/><rect x="200" y="500" width="100" height="100"/><rect x="300" y="500" width="100" height="100"/><rect x="400" y="500" width="100" height="100"/><rect x="500" y="500" width="100" height="100"/><rect x="600" y="500" width="100" height="100"/><rect x="700" y="500" width="100" height="100"/><rect x="800" y="500" width="100" height="100"/><rect x="900" y="500" width="100" height="100"/><rect x="1000" y="500" width="100" height="100"/><rect x="1100" y="500" width="100" height="100"/>
+    <!-- row 7 -->
+    <rect x="0" y="600" width="100" height="100"/><rect x="100" y="600" width="100" height="100"/><rect x="200" y="600" width="100" height="100"/><rect x="300" y="600" width="100" height="100"/><rect x="400" y="600" width="100" height="100"/><rect x="500" y="600" width="100" height="100"/><rect x="600" y="600" width="100" height="100"/><rect x="700" y="600" width="100" height="100"/><rect x="800" y="600" width="100" height="100"/><rect x="900" y="600" width="100" height="100"/><rect x="1000" y="600" width="100" height="100"/><rect x="1100" y="600" width="100" height="100"/>
+    <!-- row 8 -->
+    <rect x="0" y="700" width="100" height="100"/><rect x="100" y="700" width="100" height="100"/><rect x="200" y="700" width="100" height="100"/><rect x="300" y="700" width="100" height="100"/><rect x="400" y="700" width="100" height="100"/><rect x="500" y="700" width="100" height="100"/><rect x="600" y="700" width="100" height="100"/><rect x="700" y="700" width="100" height="100"/><rect x="800" y="700" width="100" height="100"/><rect x="900" y="700" width="100" height="100"/><rect x="1000" y="700" width="100" height="100"/><rect x="1100" y="700" width="100" height="100"/>
+    <!-- row 9 -->
+    <rect x="0" y="800" width="100" height="100"/><rect x="100" y="800" width="100" height="100"/><rect x="200" y="800" width="100" height="100"/><rect x="300" y="800" width="100" height="100"/><rect x="400" y="800" width="100" height="100"/><rect x="500" y="800" width="100" height="100"/><rect x="600" y="800" width="100" height="100"/><rect x="700" y="800" width="100" height="100"/><rect x="800" y="800" width="100" height="100"/><rect x="900" y="800" width="100" height="100"/><rect x="1000" y="800" width="100" height="100"/><rect x="1100" y="800" width="100" height="100"/>
+    <!-- row 10 -->
+    <rect x="0" y="900" width="100" height="100"/><rect x="100" y="900" width="100" height="100"/><rect x="200" y="900" width="100" height="100"/><rect x="300" y="900" width="100" height="100"/><rect x="400" y="900" width="100" height="100"/><rect x="500" y="900" width="100" height="100"/><rect x="600" y="900" width="100" height="100"/><rect x="700" y="900" width="100" height="100"/><rect x="800" y="900" width="100" height="100"/><rect x="900" y="900" width="100" height="100"/><rect x="1000" y="900" width="100" height="100"/><rect x="1100" y="900" width="100" height="100"/>
+    <!-- row 11 -->
+    <rect x="0" y="1000" width="100" height="100"/><rect x="100" y="1000" width="100" height="100"/><rect x="200" y="1000" width="100" height="100"/><rect x="300" y="1000" width="100" height="100"/><rect x="400" y="1000" width="100" height="100"/><rect x="500" y="1000" width="100" height="100"/><rect x="600" y="1000" width="100" height="100"/><rect x="700" y="1000" width="100" height="100"/><rect x="800" y="1000" width="100" height="100"/><rect x="900" y="1000" width="100" height="100"/><rect x="1000" y="1000" width="100" height="100"/><rect x="1100" y="1000" width="100" height="100"/>
+    <!-- row 12 -->
+    <rect x="0" y="1100" width="100" height="100"/><rect x="100" y="1100" width="100" height="100"/><rect x="200" y="1100" width="100" height="100"/><rect x="300" y="1100" width="100" height="100"/><rect x="400" y="1100" width="100" height="100"/><rect x="500" y="1100" width="100" height="100"/><rect x="600" y="1100" width="100" height="100"/><rect x="700" y="1100" width="100" height="100"/><rect x="800" y="1100" width="100" height="100"/><rect x="900" y="1100" width="100" height="100"/><rect x="1000" y="1100" width="100" height="100"/><rect x="1100" y="1100" width="100" height="100"/>
+  </g>
+
+  <!-- Varied internal motifs. All details stay inside their own square. -->
+  <g class="detail soft">
+    <!-- 1: nested squares -->
+    <path d="M18 20h38v38H18z M28 30h18v18H28z"/>
+    <!-- 2: dots -->
+    <circle cx="128" cy="28" r="4"/><circle cx="156" cy="45" r="3"/><circle cx="180" cy="26" r="5"/><circle cx="145" cy="75" r="5"/><circle cx="174" cy="70" r="3"/>
+    <!-- 3: stone chips -->
+    <path d="M220 24h14v9h-14z M250 18h9v16h-9z M270 45h15v10h-15z M230 72h18v8h-18z"/>
+    <!-- 4: corner frame -->
+    <path d="M324 18h30v6h-24v24h-6z M382 82h-30v-6h24V52h6z"/>
+    <!-- 5: holes -->
+    <circle cx="430" cy="30" r="9"/><circle cx="472" cy="52" r="6"/><circle cx="442" cy="76" r="5"/><circle cx="488" cy="28" r="4"/>
+    <!-- 6: plus/grid -->
+    <path d="M525 18h12v20h20v12h-20v20h-12V50h-20V38h20z"/>
+    <!-- 7: diagonal shards -->
+    <path d="M620 22l18 12-8 8-18-12z M662 34l18 10-7 9-18-11z M632 70l14-12 8 8-14 12z"/>
+    <!-- 8: nested rectangle -->
+    <rect x="720" y="20" width="62" height="42"/><rect x="736" y="30" width="30" height="22"/>
+    <!-- 9: irregular holes / cheese -->
+    <circle cx="832" cy="28" r="7"/><circle cx="864" cy="52" r="10"/><circle cx="846" cy="79" r="5"/><circle cx="889" cy="31" r="4"/>
+    <!-- 10 -->
+    <path d="M928 20l18 0 0 12 16 0 0 14-34 0z M965 62h22v20h-22z"/>
+    <!-- 11 -->
+    <circle cx="1030" cy="32" r="4"/><circle cx="1062" cy="22" r="6"/><circle cx="1085" cy="48" r="4"/><circle cx="1046" cy="73" r="8"/>
+    <!-- 12 -->
+    <path d="M1120 22h18v18h-18z M1150 22h22v8h-22z M1138 56h28v22h-28z"/>
+
+    <!-- row 2 -->
+    <path d="M22 120h54v12H36v34h40v12H22z"/>
+    <rect x="118" y="120" width="24" height="24"/><rect x="152" y="150" width="12" height="12"/><rect x="176" y="172" width="9" height="9"/>
+    <path d="M222 126h16v12h12v-12h16v26h-16v12h-12v-12h-16z"/>
+    <circle cx="340" cy="124" r="6"/><circle cx="365" cy="144" r="4"/><circle cx="390" cy="170" r="8"/>
+    <path d="M420 122h58v10h-22v34h22v10h-58v-10h22v-34h-22z"/>
+    <path d="M522 122h46v8h-38v16h30v8h-30v18h38v8h-46z"/>
+    <path d="M620 132l14-12 14 12-10 9 10 9-14 12-14-12 10-9z"/>
+    <circle cx="720" cy="132" r="8"/><circle cx="752" cy="150" r="5"/><circle cx="780" cy="175" r="7"/>
+    <path d="M822 124h52v10h-20v42h-12v-42h-20z"/>
+    <path d="M920 120h20v20h18v18h-18v22h-20v-22h-18v-18h18z"/>
+    <rect x="1020" y="118" width="56" height="56"/><rect x="1038" y="136" width="20" height="20"/>
+    <path d="M1120 124h54v8h-20v44h-14v-44h-20z"/>
+
+    <!-- row 3 -->
+    <circle cx="24" cy="230" r="9"/><circle cx="50" cy="256" r="6"/><circle cx="78" cy="222" r="4"/>
+    <path d="M122 220h26v14h20v14h-20v14h-26z"/>
+    <path d="M220 220h56v8h-24v42h-8v-42h-24z"/>
+    <rect x="322" y="224" width="46" height="46"/><rect x="334" y="236" width="22" height="22"/>
+    <circle cx="430" cy="225" r="5"/><circle cx="458" cy="248" r="8"/><circle cx="482" cy="270" r="4"/>
+    <path d="M520 226l22-10 22 10-8 8h-28z M520 256l22-10 22 10-22 12z"/>
+    <path d="M620 220h18v18h22v18h-22v18h-18v-18h-22v-18h22z"/>
+    <path d="M724 224h18v12h14v22h-14v12h-18z"/>
+    <circle cx="832" cy="230" r="10"/><circle cx="867" cy="258" r="5"/><circle cx="888" cy="222" r="4"/>
+    <path d="M920 222h50v10h-18v30h18v10h-50v-10h18v-30h-18z"/>
+    <path d="M1020 222h62v8h-26v10h18v8h-18v12h26v8h-62v-8h24v-12h-16v-8h16v-10h-24z"/>
+    <path d="M1122 224h40l14 14-14 14h-40l-10-14z"/>
+
+    <!-- row 4 -->
+    <path d="M18 320h24v14h18v-14h22v34H60v26H42v-26H18z"/>
+    <rect x="118" y="322" width="54" height="38"/><rect x="130" y="332" width="30" height="18"/>
+    <circle cx="230" cy="324" r="6"/><circle cx="258" cy="350" r="10"/><circle cx="280" cy="378" r="4"/>
+    <path d="M322 318l18 18-18 18 18 18-18 18"/>
+    <path d="M420 324h52v10h-42v12h32v10h-32v14h42v10h-52z"/>
+    <circle cx="530" cy="328" r="7"/><circle cx="560" cy="350" r="5"/><circle cx="540" cy="378" r="9"/>
+    <path d="M622 322h46v8h-18v46h-10v-46h-18z"/>
+    <rect x="718" y="318" width="58" height="58"/><rect x="734" y="334" width="26" height="26"/>
+    <path d="M820 320h18v18h18v-18h18v18h18v18h-18v18h-18v-18h-18v18h-18v-18h18v-18h-18z"/>
+    <circle cx="930" cy="330" r="8"/><circle cx="954" cy="354" r="4"/><circle cx="978" cy="378" r="6"/>
+    <path d="M1022 326h22v22h18v18h-40z M1064 350h28v18h-28z"/>
+    <path d="M1122 322h58v12h-22v28h22v12h-58v-12h22v-28h-22z"/>
+
+    <!-- row 5 -->
+    <path d="M20 420h18v18h18v18h-18v18H20z"/>
+    <circle cx="130" cy="430" r="5"/><circle cx="158" cy="450" r="9"/><circle cx="182" cy="426" r="4"/><circle cx="170" cy="480" r="6"/>
+    <path d="M220 424h56v12h-22v32h22v12h-56v-12h22v-32h-22z"/>
+    <rect x="320" y="420" width="58" height="58"/><rect x="338" y="438" width="22" height="22"/>
+    <path d="M422 418h12v50h12v-50h12v62h-36z"/>
+    <circle cx="530" cy="430" r="11"/><circle cx="566" cy="462" r="6"/><circle cx="542" cy="482" r="4"/>
+    <path d="M620 420h60v10h-26v42h-8v-42h-26z"/>
+    <path d="M722 424h20v20h20v20h-20v20h-20v-20h-20v-20h20z"/>
+    <path d="M822 424h48v10h-18v32h18v10h-48v-10h18v-32h-18z"/>
+    <circle cx="930" cy="428" r="8"/><circle cx="956" cy="454" r="5"/><circle cx="982" cy="480" r="8"/>
+    <path d="M1022 422l18 0 0 14 14 0 0 14h-32z M1058 458h32v20h-32z"/>
+    <rect x="1120" y="420" width="58" height="58"/><path d="M1134 434h30v30h-30z"/>
+
+    <!-- row 6 -->
+    <circle cx="26" cy="528" r="6"/><circle cx="54" cy="548" r="4"/><circle cx="78" cy="578" r="8"/>
+    <path d="M122 520h50v10h-18v42h-14v-42h-18z"/>
+    <path d="M220 524h54v8h-20v18h24v8h-24v26h20v8h-54v-8h20v-26h-24v-8h24v-18h-20z"/>
+    <path d="M322 522h54v12h-18v26h18v12h-54v-12h18v-26h-18z"/>
+    <circle cx="430" cy="528" r="9"/><circle cx="458" cy="556" r="5"/><circle cx="482" cy="582" r="7"/>
+    <rect x="520" y="520" width="58" height="58"/><rect x="538" y="538" width="22" height="22"/>
+    <path d="M620 526h26l10 10-10 10h-26l-10-10z M646 554h30l10 10-10 10h-30l-10-10z"/>
+    <path d="M720 520h60v10h-26v42h-8v-42h-26z"/>
+    <circle cx="832" cy="532" r="5"/><circle cx="856" cy="552" r="8"/><circle cx="884" cy="578" r="4"/>
+    <path d="M922 524h18v18h18v18h-18v18h-18v-18h-18v-18h18z"/>
+    <path d="M1022 522h58v10h-38v16h30v10h-30v20h38v10h-58z"/>
+    <path d="M1122 524h44v44h-12v-16h-20v16h-12z"/>
+
+    <!-- rows 7-12 use a second vocabulary of shapes -->
+    <path d="M20 620h56v10H36v12h32v10H36v18h40v10H20z"/>
+    <circle cx="128" cy="632" r="8"/><circle cx="154" cy="662" r="5"/><circle cx="180" cy="686" r="9"/>
+    <path d="M222 620h18v18h18v18h-18v18h-18v-18h-18v-18h18z"/>
+    <rect x="320" y="624" width="58" height="48"/><rect x="336" y="636" width="26" height="24"/>
+    <path d="M422 622l16 0 0 16 16 0 0 16-16 0 0 20h-16z"/>
+    <circle cx="530" cy="628" r="7"/><circle cx="556" cy="654" r="10"/><circle cx="578" cy="682" r="4"/>
+    <path d="M620 622h52v8h-20v46h-12v-46h-20z"/>
+    <path d="M720 620h60v10h-20v12h20v12h-20v26h-40v-12h28v-14h-28v-12h28v-12h-28z"/>
+    <circle cx="832" cy="632" r="8"/><circle cx="858" cy="658" r="4"/><circle cx="886" cy="684" r="6"/>
+    <path d="M920 624h22v22h22v-22h18v40h-18v18h-22v-18h-22z"/>
+    <rect x="1020" y="620" width="60" height="60"/><path d="M1038 638h24v24h-24z"/>
+    <path d="M1120 624h56v10h-42v18h30v10h-30v18h42v10h-56z"/>
+
+    <path d="M18 720h60v10H40v12h32v10H40v28h-22z"/>
+    <circle cx="130" cy="730" r="10"/><circle cx="160" cy="754" r="5"/><circle cx="182" cy="786" r="7"/>
+    <path d="M220 722h58v10h-18v42h18v10h-58v-10h18v-42h-18z"/>
+    <path d="M320 726h20v20h20v20h-20v20h-20v-20h-20v-20h20z"/>
+    <rect x="420" y="724" width="58" height="58"/><rect x="438" y="742" width="22" height="22"/>
+    <path d="M520 722h54l8 8-8 8h-54z M520 750h40l8 8-8 8h-40z"/>
+    <circle cx="630" cy="734" r="7"/><circle cx="658" cy="760" r="6"/><circle cx="684" cy="784" r="9"/>
+    <path d="M722 726h50v10h-20v34h20v10h-50v-10h18v-34h-18z"/>
+    <path d="M820 722h16v52h16v-52h16v62h-48z"/>
+    <circle cx="932" cy="730" r="9"/><circle cx="958" cy="756" r="4"/><circle cx="982" cy="784" r="8"/>
+    <path d="M1020 722h22v22h22v22h-22v22h-22v-22h-22v-22h22z"/>
+    <rect x="1120" y="724" width="58" height="46"/><rect x="1134" y="736" width="30" height="22"/>
+
+    <path d="M20 824h50v10H30v18h32v10H30v18h40v10H20z"/>
+    <circle cx="130" cy="832" r="5"/><circle cx="160" cy="856" r="8"/><circle cx="182" cy="882" r="4"/>
+    <path d="M220 820h54v10h-18v42h18v10h-54v-10h18v-42h-18z"/>
+    <path d="M320 822h44v10h-16v18h22v10h-22v22h16v10h-44v-10h16v-22h-22v-10h22v-18h-16z"/>
+    <rect x="420" y="824" width="54" height="54"/><rect x="435" y="839" width="24" height="24"/>
+    <path d="M520 820h18v18h18v18h-18v18h-18v-18h-18v-18h18z"/>
+    <circle cx="630" cy="830" r="8"/><circle cx="660" cy="854" r="5"/><circle cx="682" cy="882" r="8"/>
+    <path d="M722 824h18v18h18v-18h18v48h-18v-18h-18v18h-18z"/>
+    <path d="M822 822h58v10h-42v14h30v10h-30v18h42v10h-58z"/>
+    <circle cx="930" cy="832" r="6"/><circle cx="958" cy="856" r="10"/><circle cx="980" cy="884" r="4"/>
+    <path d="M1020 824h60v10h-26v42h-8v-42h-26z"/>
+    <path d="M1122 822h48v12h12v24h-12v18h-48v-12h36v-12h-36z"/>
+
+    <circle cx="26" cy="934" r="8"/><circle cx="54" cy="960" r="4"/><circle cx="80" cy="984" r="6"/>
+    <path d="M120 922h60v10h-24v44h-12v-44h-24z"/>
+    <rect x="220" y="924" width="58" height="58"/><rect x="238" y="942" width="22" height="22"/>
+    <path d="M322 922h18v18h18v18h18v18h-18v18h-18v-18h-18v-18h18z"/>
+    <circle cx="430" cy="932" r="10"/><circle cx="458" cy="962" r="5"/><circle cx="484" cy="990" r="7"/>
+    <path d="M520 924h54v10h-20v42h20v10h-54v-10h20v-42h-20z"/>
+    <path d="M620 920h20v20h20v20h-20v20h-20v-20h-20v-20h20z"/>
+    <circle cx="730" cy="930" r="6"/><circle cx="754" cy="952" r="9"/><circle cx="780" cy="986" r="4"/>
+    <path d="M820 922h54v10h-40v18h28v10h-28v18h40v10h-54z"/>
+    <path d="M922 924h56v12h-22v30h22v12h-56v-12h22v-30h-22z"/>
+    <rect x="1020" y="922" width="58" height="58"/><circle cx="1049" cy="951" r="11"/><circle cx="1068" cy="970" r="5"/>
+    <path d="M1120 926h24v24h20v20h-20v20h-24v-20h-20v-20h20z"/>
+
+    <path d="M18 1022h58v10H38v18h28v10H38v22h38v10H18z"/>
+    <circle cx="130" cy="1032" r="7"/><circle cx="158" cy="1062" r="4"/><circle cx="184" cy="1088" r="9"/>
+    <path d="M220 1024h18v18h18v18h-18v18h-18v-18h-18v-18h18z"/>
+    <rect x="322" y="1024" width="56" height="56"/><rect x="340" y="1042" width="20" height="20"/>
+    <path d="M420 1020h58v10h-20v42h20v10h-58v-10h20v-42h-20z"/>
+    <circle cx="530" cy="1032" r="9"/><circle cx="560" cy="1058" r="4"/><circle cx="584" cy="1088" r="7"/>
+    <path d="M620 1024h44v10h-16v36h16v10h-44v-10h16v-36h-16z"/>
+    <path d="M720 1022h58v10h-20v18h20v10h-20v20h-38v-10h28v-10h-28v-10h28v-18h-28z"/>
+    <circle cx="832" cy="1032" r="5"/><circle cx="858" cy="1056" r="8"/><circle cx="884" cy="1084" r="4"/>
+    <rect x="920" y="1024" width="58" height="58"/><path d="M938 1042h22v22h-22z"/>
+    <path d="M1020 1022h18v18h18v18h-18v18h-18v-18h-18v-18h18z"/>
+    <path d="M1120 1026h54v8h-40v14h30v8h-30v16h40v8h-54z"/>
+
+    <circle cx="28" cy="1132" r="9"/><circle cx="54" cy="1158" r="5"/><circle cx="82" cy="1182" r="7"/>
+    <path d="M120 1124h56v12h-22v32h22v12h-56v-12h22v-32h-22z"/>
+    <path d="M220 1122h18v18h18v18h-18v18h-18v-18h-18v-18h18z"/>
+    <rect x="322" y="1124" width="56" height="56"/><rect x="340" y="1142" width="20" height="20"/>
+    <path d="M420 1120h18v18h18v18h-18v18h-18v-18h-18v-18h18z"/>
+    <circle cx="530" cy="1130" r="8"/><circle cx="558" cy="1158" r="6"/><circle cx="584" cy="1182" r="5"/>
+    <path d="M620 1124h50v10h-18v38h18v10h-50v-10h18v-38h-18z"/>
+    <path d="M722 1122h18v18h18v-18h18v36h-18v18h-18v-18h-18z"/>
+    <circle cx="832" cy="1132" r="7"/><circle cx="860" cy="1158" r="4"/><circle cx="886" cy="1182" r="8"/>
+    <path d="M920 1122h56v10h-22v40h22v10h-56v-10h22v-40h-22z"/>
+    <rect x="1020" y="1124" width="58" height="58"/><circle cx="1048" cy="1152" r="9"/><circle cx="1068" cy="1170" r="4"/>
+    <path d="M1120 1120h24v24h22v22h-22v24h-24v-24h-22v-22h22z"/>
+  </g>
+
+  <!-- Extra fine pixel-like marks to avoid a uniform look. -->
+  <g class="detail fine">
+    <path d="M8 88h16 M84 14v16 M104 74h14 M192 88h12 M286 16v14 M304 78h18 M396 8h14 M482 88h18 M590 16h12 M688 84h16 M792 12h12 M892 90h18 M988 12h14 M1090 84h16"/>
+    <path d="M8 188h14 M88 118h10 M190 186h14 M286 118h12 M390 186h12 M488 118h10 M590 188h14 M690 118h12 M788 186h14 M890 118h10 M990 186h12 M1090 118h14"/>
+    <path d="M8 288h16 M90 214h10 M190 286h12 M286 214h14 M390 288h12 M488 214h10 M590 286h14 M690 214h12 M790 288h10 M888 214h14 M990 286h12 M1090 214h14"/>
+    <path d="M8 388h14 M88 318h12 M190 386h14 M286 318h10 M390 388h12 M488 318h14 M590 386h12 M690 318h10 M790 388h14 M888 318h12 M990 386h10 M1090 318h14"/>
+    <path d="M8 488h16 M90 414h12 M190 486h14 M286 414h10 M390 488h12 M488 414h14 M590 486h12 M690 414h10 M790 488h14 M888 414h12 M990 486h10 M1090 414h14"/>
+    <path d="M8 588h14 M88 518h12 M190 586h14 M286 518h10 M390 588h12 M488 518h14 M590 586h12 M690 518h10 M790 588h14 M888 518h12 M990 586h10 M1090 518h14"/>
+    <path d="M8 688h16 M90 618h10 M190 686h12 M286 618h14 M390 688h12 M488 618h10 M590 686h14 M690 618h12 M790 688h10 M888 618h14 M990 686h12 M1090 618h14"/>
+    <path d="M8 788h14 M88 718h12 M190 786h14 M286 718h10 M390 788h12 M488 718h14 M590 786h12 M690 718h10 M790 788h14 M888 718h12 M990 786h10 M1090 718h14"/>
+    <path d="M8 888h16 M90 818h10 M190 886h12 M286 818h14 M390 888h12 M488 818h10 M590 886h14 M690 818h12 M790 888h10 M888 818h14 M990 886h12 M1090 818h14"/>
+    <path d="M8 988h14 M88 918h12 M190 986h14 M286 918h10 M390 988h12 M488 918h14 M590 986h12 M690 918h10 M790 988h14 M888 918h12 M990 986h10 M1090 918h14"/>
+    <path d="M8 1088h16 M90 1018h10 M190 1086h12 M286 1018h14 M390 1088h12 M488 1018h10 M590 1086h14 M690 1018h12 M790 1088h10 M888 1018h14 M990 1086h12 M1090 1018h14"/>
+    <path d="M8 1188h14 M88 1118h12 M190 1186h14 M286 1118h10 M390 1188h12 M488 1118h14 M590 1186h12 M690 1118h10 M790 1188h14 M888 1118h12 M990 1186h10 M1090 1118h14"/>
+  </g>
+</svg>

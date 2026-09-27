@@ -3405,3 +3405,164 @@ input[type="password"]::placeholder {
     padding: 20px 16px 18px !important;
   }
 }
+
+/* =========================================================
+   V4 PIXEL THEME — UPLOADED SVG BACKGROUND
+========================================================= */
+
+html,
+body {
+  background: #f5deb3 !important;
+  background-image: none !important;
+  color: #24171a !important;
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background: url("../img/minecraft_blocks_outline.svg") center / min(760px,72vw) min(760px,72vw) repeat;
+  opacity: .18;
+}
+
+.ie-fixMinHeight {
+  position: relative;
+  z-index: 2;
+  background: transparent !important;
+}
+
+/* Login remains exactly flat: no outer border/fill. */
+.login-card {
+  border: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+/* Other visual pages use the same flat geometry as login. */
+.main:not(.login-card),
+.container {
+  width: min(92vw,390px) !important;
+  max-width: 390px !important;
+  padding: 24px 22px 20px !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+.main:not(.login-card)::before { display:none !important; }
+
+.main:not(.login-card) h1,
+.container h1 {
+  color:#24171a !important;
+  font-family:"Courier New",ui-monospace,monospace !important;
+  font-weight:800 !important;
+  letter-spacing:.02em !important;
+}
+
+.main:not(.login-card) p,
+.container p {
+  color:rgba(36,23,26,.68) !important;
+  font-family:"Courier New",ui-monospace,monospace !important;
+}
+
+.main:not(.login-card) table {
+  background:transparent !important;
+  border:1px solid #481c28 !important;
+  border-radius:0 !important;
+  box-shadow:3px 3px 0 rgba(72,28,40,.14) !important;
+  backdrop-filter:none !important;
+  -webkit-backdrop-filter:none !important;
+}
+
+.main:not(.login-card) td {
+  border-bottom-color:rgba(72,28,40,.18) !important;
+  font-family:"Courier New",ui-monospace,monospace !important;
+}
+
+.main:not(.login-card) input[type="submit"] {
+  border:1px solid #481c28 !important;
+  border-radius:0 !important;
+  background:transparent !important;
+  color:#481c28 !important;
+  box-shadow:3px 3px 0 rgba(72,28,40,.14) !important;
+}
+
+.main:not(.login-card) input[type="submit"]:hover {
+  background:transparent !important;
+  transform:translate(1px,1px) !important;
+  box-shadow:2px 2px 0 rgba(72,28,40,.12) !important;
+}
+
+/* Same outline + subtle offset shadow as HUBUNGKAN. */
+#clock-box {
+  padding:5px 10px !important;
+  border:1px solid #481c28 !important;
+  border-radius:0 !important;
+  background:transparent !important;
+  box-shadow:3px 3px 0 rgba(72,28,40,.14) !important;
+  backdrop-filter:none !important;
+  -webkit-backdrop-filter:none !important;
+}
+
+#clock-box:hover {
+  transform:translate(1px,1px) !important;
+  box-shadow:2px 2px 0 rgba(72,28,40,.12) !important;
+}
+
+/* Flat pixel styling for the QR page. */
+.qr-card { background:transparent !important; border:0 !important; box-shadow:none !important; }
+.qr-card .qr-label {
+  color:#481c28 !important;
+  font-family:"Courier New",ui-monospace,monospace !important;
+  font-size:11px !important;
+  letter-spacing:.10em !important;
+  text-transform:uppercase !important;
+}
+.qrcode a {
+  border:1px solid #481c28 !important;
+  border-radius:0 !important;
+  padding:8px !important;
+  background:transparent !important;
+  box-shadow:3px 3px 0 rgba(72,28,40,.12) !important;
+}
+.qrcode img,
+.qrcode canvas { image-rendering:pixelated; }
+
+/* Main page controls follow the same flat outline language. */
+.menu-toggle {
+  border:1px solid #481c28 !important;
+  border-radius:0 !important;
+  background:transparent !important;
+  box-shadow:3px 3px 0 rgba(72,28,40,.12) !important;
+}
+.dropdown {
+  border:1px solid #481c28 !important;
+  border-radius:0 !important;
+  background:#f5deb3 !important;
+  box-shadow:3px 3px 0 rgba(72,28,40,.12) !important;
+}
+.dropdown a {
+  border-radius:0 !important;
+  font-family:"Courier New",ui-monospace,monospace !important;
+}
+
+body > .logo-container { position:relative; z-index:2; }
+body > .logo-container img {
+  width:64px !important;
+  height:64px !important;
+  filter:none !important;
+  image-rendering:pixelated;
+}
+
+@media (max-width:480px) {
+  .main:not(.login-card),
+  .container {
+    width:min(92vw,360px) !important;
+    padding:20px 16px 18px !important;
+  }
+}

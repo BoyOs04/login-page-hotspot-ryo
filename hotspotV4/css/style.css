@@ -3602,3 +3602,43 @@ body > .logo-container img {
   opacity: 1 !important;
   transform: rotate(90deg) !important;
 }
+
+
+/* =========================================================
+   V4 INPUT ICONS — RESTORE USER/PASSWORD ICONS
+   Ikon berada di sisi kiri input dan tetap bisa diklik untuk copy.
+========================================================= */
+.login-card .input-container {
+  position: relative !important;
+}
+
+.login-card .input-container .ico {
+  display: block !important;
+  position: absolute !important;
+  top: 50% !important;
+  left: 12px !important;
+  width: 20px !important;
+  height: 20px !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  transform: translateY(-50%) !important;
+  opacity: .72 !important;
+  visibility: visible !important;
+  pointer-events: auto !important;
+  cursor: pointer !important;
+  z-index: 10 !important;
+}
+
+.login-card .input-container .ico:hover {
+  opacity: 1 !important;
+  transform: translateY(-50%) scale(1.06) !important;
+}
+
+.login-card .input-container input[type="text"],
+.login-card .input-container input[type="password"] {
+  padding-left: 42px !important;
+}
+
+.login-card .input-container .password-toggle {
+  z-index: 11 !important;
+}

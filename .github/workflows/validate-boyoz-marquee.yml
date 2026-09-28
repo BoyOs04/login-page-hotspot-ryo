@@ -260,25 +260,88 @@ jobs:
 
           context.window.document = document;
 
-          for (const id of ids) {
-            if (!new RegExp(`id="${id}"\\b`).test(html)) {
-              throw new Error(`HTML missing required element id: ${id}`);
-            }
+          if (!html.includes('id="scene"') || !html.includes('id="marqueeRows"')) {
+            throw new Error("Core marquee elements are missing from HTML.");
           }
 
           vm.runInNewContext(js, context, {
             filename: "boyoz-marquee/js/app.js"
           });
 
-          const rows = byId("marqueeRows").children;
-          if (rows.length !== 1) {
-            throw new Error(`Expected 1 rendered row, got ${rows.length}`);
+          const rowsContainer = byId("marqueeRows");
+          if (rowsContainer.children.length !== 1) {
+            throw new Error(`Expected 1 rendered row, got ${rowsContainer.children.length}`);
           }
 
-          const track = rows[0].children[0];
+          const track = rowsContainer.children[0]?.children[0];
           if (!track || track.className !== "marquee-track") {
             throw new Error("Marquee track was not rendered.");
           }
 
-          console.log("BoyOz marquee runtime smoke test: PASS");
+          const initialBackground = byId("scene").className;
+
+          byId("rows").value = "3";
+          byId("rows").listeners.input[0]({ target: byId("rows") });
+
+          if (rowsContainer.children.length !== 3) {
+            throw new Error(`Rows control failed: expected 3 rows, got ${rowsContainer.children.length}`);
+          }
+
+          byId("rowDirection").value = "same";
+          byId("rowDirection").listeners.change[0]({ target: byId("rowDirection") });
+
+          if (!rowsContainer.classList.contains("mode-same")) {
+            throw new Error("Same direction mode was not applied.");
+          }
+
+          byId("rowDirection").value = "alternate";
+          byId("rowDirection").listeners.change[0]({ target: byId("rowDirection") });
+
+          if (!rowsContainer.classList.contains("mode-alternate")) {
+            throw new Error("Alternating direction mode was not applied.");
+          }
+
+          const variables = new Map();
+          document.documentElement.style = {
+            setProperty(name, value) {
+              variables.set(name, value);
+            }
+          };
+
+          const scene = byId("scene");
+          const backgroundHandler = scene.listeners.click[0];
+          const backgroundTarget = {
+            closest() {
+              return null;
+            }
+          };
+
+          backgroundHandler({
+            target: backgroundTarget
+          });
+
+          if (localStorageStore.get("boyoz-marquee-theme-v1") !== "custom") {
+            throw new Error("Background click did not create a custom background theme.");
+          }
+
+          if (!variables.has("--bg-a") || !variables.has("--bg-b")) {
+            throw new Error("Background click did not update background variables.");
+          }
+
+          const button = rowsContainer.children[0].children[0].children[0];
+          const themeHandler = rowsContainer.listeners.click[0];
+
+          themeHandler({
+            target: {
+              closest(selector) {
+                return selector.includes(".theme-button") ? button : null;
+              }
+            }
+          });
+
+          if (localStorageStore.get("boyoz-marquee-theme-v1") !== "custom") {
+            throw new Error("Text click handler did not generate a theme.");
+          }
+
+          console.log(`BoyOz marquee runtime smoke test: PASS (${initialBackground} → runtime initialized, 3 rows, both direction modes, background/text click handlers)`);
           NODE

@@ -502,7 +502,6 @@
 
     syncCustomColorControls();
     showCustomTheme();
-    playThemeFlash();
   }
 
   function hexToRgba(hex, opacity) {
@@ -610,6 +609,8 @@
       shadowOpacity: theme.shadowOpacity || ".88",
       glow: hexToRgba(theme.glowHex, theme.glowOpacity)
     });
+
+    playInteractionFlash("theme");
   }
 
   function updateRangeLabels() {

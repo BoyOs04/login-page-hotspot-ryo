@@ -23,6 +23,7 @@ html, body { margin: 0; min-height: 100%; }
 
 body {
   min-height: 100vh;
+  min-height: 100dvh;
   overflow: hidden;
   display: grid;
   place-items: center;
@@ -81,7 +82,7 @@ button, input, select { font: inherit; }
 
 .scene {
   position: relative;
-  cursor: default;
+  cursor: pointer;
   z-index: 1;
   width: 100%;
   min-height: 100vh;
@@ -196,6 +197,7 @@ button, input, select { font: inherit; }
   inset: 0;
   z-index: 60;
   background: rgba(0,0,0,.18);
+  -webkit-backdrop-filter: blur(7px);
   backdrop-filter: blur(7px);
   opacity: 0;
   visibility: hidden;
@@ -215,6 +217,7 @@ button, input, select { font: inherit; }
   padding: 20px;
   border: 0;
   border-radius: 24px;
+  background: var(--bg-b);
   background: color-mix(in srgb, var(--bg-b) 84%, #000 16%);
   box-shadow: 0 30px 90px rgba(0,0,0,.32);
   transform: translateY(-14px) scale(.97);
@@ -310,6 +313,7 @@ button, input, select { font: inherit; }
 
 .text-input:focus, .select-input:focus {
   background: rgba(255,255,255,.085);
+  box-shadow: 0 0 0 2px var(--accent);
   box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent) 62%, transparent);
 }
 
@@ -370,6 +374,7 @@ button, input, select { font: inherit; }
 
 .control-button:hover {
   transform: translateY(-1px);
+  background: rgba(255,255,255,.085);
   background: color-mix(in srgb, var(--accent) 13%, var(--ui-field));
   color: var(--accent);
 }
@@ -378,6 +383,7 @@ button, input, select { font: inherit; }
 
 .control-button.primary:hover {
   color: #111;
+  background: var(--accent);
   background: color-mix(in srgb, var(--accent) 88%, white);
 }
 
@@ -477,7 +483,10 @@ button, input, select { font: inherit; }
 
 @media (max-width: 700px) {
   :root { --font-size: 72px; --gap: 34px; }
-  .scene { padding: 70px 0; }
+  .scene {
+    min-height: 100dvh;
+    padding: 70px 0;
+  }
   .marquee-row { width: 145%; margin-left: -22.5%; }
   .theme-button { padding: 15px 28px; }
   .separator { width: 11px; height: 11px; }

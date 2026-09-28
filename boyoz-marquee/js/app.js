@@ -86,6 +86,13 @@
     return Math.min(max, Math.max(min, value));
   }
 
+  function clampNumber(value, min, max, fallback) {
+    const number = Number(value);
+    return Number.isFinite(number)
+      ? clamp(number, min, max)
+      : fallback;
+  }
+
   function readJSON(key, fallback) {
     try {
       const value = localStorage.getItem(key);
@@ -134,12 +141,14 @@
       state.theme = DEFAULTS.theme;
     }
 
-    state.fontSize = clamp(Number(state.fontSize),24,320);
-    state.speed = clamp(Number(state.speed),2,120);
-    state.rotation = clamp(Number(state.rotation),-15,15);
-    state.gap = clamp(Number(state.gap),0,300);
-    state.shadow = clamp(Number(state.shadow),0,30);
-    state.rows = clamp(Math.round(Number(state.rows)), 1, 8);
+    state.fontSize = clampNumber(state.fontSize, 24, 320, DEFAULTS.fontSize);
+    state.speed = clampNumber(state.speed, 2, 120, DEFAULTS.speed);
+    state.rotation = clampNumber(state.rotation, -15, 15, DEFAULTS.rotation);
+    state.gap = clampNumber(state.gap, 0, 300, DEFAULTS.gap);
+    state.shadow = clampNumber(state.shadow, 0, 30, DEFAULTS.shadow);
+    state.rows = Math.round(
+      clampNumber(state.rows, 1, 8, DEFAULTS.rows)
+    );
 
     if (!["alternate", "same"].includes(state.rowDirection)) {
       state.rowDirection = DEFAULTS.rowDirection;
@@ -178,22 +187,10 @@
   function applyRowDirections() {
     if (!els.marqueeRows) return;
 
-    els.marqueeRows.classList.toggle(
-      "mode-alternate",
-      state.rowDirection === "alternate"
-    );
-    els.marqueeRows.classList.toggle(
-      "mode-same",
-      state.rowDirection === "same"
-    );
+    const alternate = state.rowDirection === "alternate";
 
-    $(".marquee-track", els.marqueeRows).forEach((track, rowIndex) => {
-      const direction = state.rowDirection === "alternate"
-        ? (rowIndex % 2 === 0 ? "reverse" : "normal")
-        : "normal";
-
-      track.style.animationDirection = direction;
-    });
+    els.marqueeRows.classList.toggle("mode-alternate", alternate);
+    els.marqueeRows.classList.toggle("mode-same", !alternate);
   }
 
   function renderMarqueeRows() {
@@ -236,7 +233,7 @@
 
     if (els.googleFontStylesheet) {
       els.googleFontStylesheet.href =
-        `https://fonts.googleapis.com/css2?family=${encoded}:wght@400;500;600;700;800&display=swap`;
+        `https://fonts.googleapis.com/css2?family=${encoded}&display=swap`;
     }
 
     setVariable("--font-family", `"${fontName}"`);
@@ -344,23 +341,23 @@
     const hueB = (hue + 12 + Math.random() * 35) % 360;
 
     if (textIsLight) {
-      keep.bgA = hsl(
+      keep.bgA = hslToHex(
         hue,
         34 + Math.random() * 34,
         4 + Math.random() * 9
       );
-      keep.bgB = hsl(
+      keep.bgB = hslToHex(
         hueB,
         30 + Math.random() * 35,
         11 + Math.random() * 12
       );
     } else {
-      keep.bgA = hsl(
+      keep.bgA = hslToHex(
         hue,
         18 + Math.random() * 28,
         76 + Math.random() * 13
       );
-      keep.bgB = hsl(
+      keep.bgB = hslToHex(
         hueB,
         12 + Math.random() * 24,
         89 + Math.random() * 8
@@ -432,8 +429,12 @@
   }
 
   function hexToRgba(hex, opacity) {
-    const n = parseInt(String(hex).replace("#", ""), 16);
-    return `rgba(${(n >> 16) & 255}, ${(n >> 8) & 255}, ${n & 255}, ${(opacity / 100).toFixed(2)})`;
+    const rgb = hexToRgb(hex);
+    const alpha = clampNumber(opacity, 0, 100, 0) / 100;
+
+    if (!rgb) return `rgba(255, 255, 255, ${alpha.toFixed(2)})`;
+
+    return `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, ${alpha.toFixed(2)})`;
   }
 
   function syncCustomColorControls() {

@@ -137,6 +137,30 @@ jobs:
               (this.listeners[type] ||= []).push(handler);
             }
 
+            querySelector(selector) {
+              return this.querySelectorAll(selector)[0] || null;
+            }
+
+            querySelectorAll(selector) {
+              const results = [];
+              const match = selector.startsWith(".")
+                ? selector.slice(1)
+                : selector;
+
+              const walk = node => {
+                if (selector.startsWith(".") && node.className === match) {
+                  results.push(node);
+                }
+
+                for (const child of node.children || []) {
+                  walk(child);
+                }
+              };
+
+              walk(this);
+              return results;
+            }
+
             focus() {}
           }
 
@@ -204,20 +228,8 @@ jobs:
               return null;
             },
             querySelectorAll(selector, root = this) {
-              const results = [];
-
-              const walk = node => {
-                if (selector === ".theme-button" && node.className === "theme-button") {
-                  results.push(node);
-                }
-
-                for (const child of node.children || []) {
-                  walk(child);
-                }
-              };
-
-              walk(root === this ? byId("marqueeRows") : root);
-              return results;
+              const target = root === this ? byId("marqueeRows") : root;
+              return target?.querySelectorAll(selector) || [];
             },
             addEventListener() {}
           };

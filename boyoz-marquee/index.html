@@ -39,8 +39,30 @@
   </header>
 
   <main class="scene" aria-label="BoyOz marquee">
-    <div class="marquee" id="marquee">
-      <div class="marquee-rows" id="marqueeRows" aria-live="off"></div>
+    <div class="marquee">
+      <div class="marquee-track">
+        <div class="marquee-group">
+          <button class="theme-button" type="button">BoyOz</button>
+          <span class="separator" aria-hidden="true"></span>
+          <button class="theme-button" type="button">BoyOz</button>
+          <span class="separator" aria-hidden="true"></span>
+          <button class="theme-button" type="button">BoyOz</button>
+          <span class="separator" aria-hidden="true"></span>
+          <button class="theme-button" type="button">BoyOz</button>
+          <span class="separator" aria-hidden="true"></span>
+        </div>
+
+        <div class="marquee-group" aria-hidden="true">
+          <button class="theme-button" type="button" tabindex="-1">BoyOz</button>
+          <span class="separator" aria-hidden="true"></span>
+          <button class="theme-button" type="button" tabindex="-1">BoyOz</button>
+          <span class="separator" aria-hidden="true"></span>
+          <button class="theme-button" type="button" tabindex="-1">BoyOz</button>
+          <span class="separator" aria-hidden="true"></span>
+          <button class="theme-button" type="button" tabindex="-1">BoyOz</button>
+          <span class="separator" aria-hidden="true"></span>
+        </div>
+      </div>
     </div>
   </main>
 
@@ -142,22 +164,6 @@
       <h3>Animation</h3>
 
       <div class="field">
-        <label for="rows">
-          <span>Rows</span>
-          <span class="value" id="rowsValue">1</span>
-        </label>
-        <div class="range-row"><input class="range" id="rows" type="range" min="1" max="8" step="1" value="1"><input class="number-input" id="rowsNumber" type="number" min="1" max="8" step="1" value="1" inputmode="numeric" aria-label="Jumlah baris custom"></div>
-      </div>
-
-      <div class="field">
-        <label for="direction">Direction</label>
-        <select class="select-input" id="direction">
-          <option value="alternate">Alternate — Zigzag</option>
-          <option value="same">Same Direction</option>
-        </select>
-      </div>
-
-      <div class="field">
         <label for="speed">
           <span>Speed</span>
           <span class="value" id="speedValue">20s</span>
@@ -170,7 +176,7 @@
           <span>Rotation</span>
           <span class="value" id="rotationValue">-2°</span>
         </label>
-        <div class="range-row"><input class="range" id="rotation" type="range" min="-15" max="15" step="1" value="-2"><input class="number-input" id="rotationNumber" type="number" min="-15" max="15" step="1" value="-2" inputmode="numeric" aria-label="Rotation custom"></div>
+        <div class="range-row"><input class="range" id="rotation" type="range" min="-360" max="360" step="1" value="-2"><input class="number-input" id="rotationNumber" type="number" min="-15" max="15" step="1" value="-2" inputmode="numeric" aria-label="Rotation custom"></div>
       </div>
 
       <div class="field">
@@ -232,9 +238,8 @@
       </div>
 
       <p class="settings-hint">
-        Klik teks BoyOz untuk mengacak tema lengkap. Klik area background
-        untuk mengacak warna background saja. Pengaturan tersimpan otomatis
-        di perangkat ini.
+        Klik teks BoyOz pada marquee untuk menghasilkan tema acak.
+        Pengaturan tersimpan otomatis di perangkat ini.
       </p>
     </section>
   </aside>

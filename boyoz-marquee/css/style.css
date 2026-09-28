@@ -83,12 +83,25 @@ button, input, select { font: inherit; }
   position: relative;
   z-index: 1;
   width: 100%;
+  min-height: 100vh;
   overflow: hidden;
+  display: grid;
+  place-items: center;
   padding: 100px 0;
   perspective: 1200px;
 }
 
 .marquee {
+  width: 100%;
+}
+
+.marquee-rows {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(2px, 1.2vh, 14px);
+}
+
+.marquee-row {
   width: 120%;
   margin-left: -10%;
   transform: rotate(var(--rotation)) skewX(-3deg);
@@ -99,6 +112,10 @@ button, input, select { font: inherit; }
   width: max-content;
   animation: marquee var(--speed) linear infinite;
   will-change: transform;
+}
+
+.marquee-track.reverse {
+  animation-direction: reverse;
 }
 
 .marquee-group {
@@ -330,7 +347,7 @@ button, input, select { font: inherit; }
 @media (max-width: 700px) {
   :root { --font-size: 72px; --gap: 34px; }
   .scene { padding: 70px 0; }
-  .marquee { width: 145%; margin-left: -22.5%; }
+  .marquee-row { width: 145%; margin-left: -22.5%; }
   .theme-button { padding: 15px 28px; }
   .separator { width: 11px; height: 11px; }
   .settings-panel { top: 7px; right: 7px; width: calc(100vw - 14px); max-height: calc(100vh - 14px); }

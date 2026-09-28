@@ -81,6 +81,7 @@ button, input, select { font: inherit; }
 
 .scene {
   position: relative;
+  cursor: pointer;
   z-index: 1;
   width: 100%;
   min-height: 100vh;
@@ -99,6 +100,7 @@ button, input, select { font: inherit; }
   display: flex;
   flex-direction: column;
   gap: clamp(2px, 1.2vh, 14px);
+  width: 100%;
 }
 
 .marquee-row {
@@ -107,10 +109,28 @@ button, input, select { font: inherit; }
   transform: rotate(var(--rotation)) skewX(-3deg);
 }
 
+.marquee-rows.mode-alternate .marquee-row:nth-child(even) .marquee-track {
+  animation-direction: reverse;
+}
+
+.marquee-rows.mode-same .marquee-row .marquee-track {
+  animation-direction: normal;
+}
+
+.marquee-row {
+  position: relative;
+  flex: 0 0 auto;
+}
+
 .marquee-track {
   display: flex;
   width: max-content;
-  animation: marquee var(--speed) linear infinite;
+  animation-name: marquee;
+  animation-duration: var(--speed);
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+  animation-direction: normal;
+  animation-fill-mode: both;
   will-change: transform;
 }
 
@@ -250,6 +270,15 @@ button, input, select { font: inherit; }
 }
 
 .field { margin-bottom: 15px; }
+
+.field-hint {
+  margin: 7px 1px 0;
+  color: var(--ui-muted);
+  font-size: 10px;
+  line-height: 1.5;
+  text-transform: none;
+  letter-spacing: 0;
+}
 
 .field > label {
   display: flex;

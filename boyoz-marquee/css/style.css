@@ -81,7 +81,7 @@ button, input, select { font: inherit; }
 
 .scene {
   position: relative;
-  cursor: pointer;
+  cursor: default;
   z-index: 1;
   width: 100%;
   min-height: 100vh;
@@ -109,8 +109,12 @@ button, input, select { font: inherit; }
   transform: rotate(var(--rotation)) skewX(-3deg);
 }
 
-.marquee-rows.mode-alternate .marquee-row:nth-child(even) .marquee-track {
+.marquee-rows.mode-alternate .marquee-row:nth-child(odd) .marquee-track {
   animation-direction: reverse;
+}
+
+.marquee-rows.mode-alternate .marquee-row:nth-child(even) .marquee-track {
+  animation-direction: normal;
 }
 
 .marquee-rows.mode-same .marquee-row .marquee-track {
@@ -130,7 +134,6 @@ button, input, select { font: inherit; }
   animation-timing-function: linear;
   animation-iteration-count: infinite;
   animation-direction: normal;
-  animation-fill-mode: both;
   will-change: transform;
 }
 
@@ -187,8 +190,6 @@ button, input, select { font: inherit; }
   from { transform: translate3d(0,0,0); }
   to { transform: translate3d(-50%,0,0); }
 }
-
-.scene:hover .marquee-track { animation-play-state: paused; }
 
 .settings-overlay {
   position: fixed;

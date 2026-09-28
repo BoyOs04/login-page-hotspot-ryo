@@ -17,10 +17,8 @@
     gap: 96,
     shadow: 8,
     rows: 1,
-    direction: "alternate",
     theme: "elegant",
     customTheme: null,
-    backgroundOverride: null
   };
 
   const THEMES = {
@@ -61,7 +59,6 @@
     gap: $("#gap"),
     shadow: $("#shadow"),
     rows: $("#rows"),
-    direction: $("#direction"),
     themePicker: $("#themePicker"),
     customTheme: $("#customTheme"),
     applyCustomTheme: $("#applyCustomTheme"),
@@ -106,8 +103,6 @@
         gap: state.gap,
         shadow: state.shadow,
         rows: state.rows,
-        direction: state.direction,
-        backgroundOverride: state.backgroundOverride
       }));
       localStorage.setItem(STORAGE.font, state.font);
       localStorage.setItem(STORAGE.theme, state.theme);
@@ -118,7 +113,8 @@
   }
 
   function loadState() {
-    const settings = readJSON(STORAGE.settings, {});
+    const settings = readJSON(STORAGE.settings,{});
+
     state = {
       ...DEFAULTS,
       ...settings,
@@ -135,22 +131,12 @@
       state.theme = DEFAULTS.theme;
     }
 
-    state.fontSize = clamp(Number(state.fontSize), 24, 320);
-    state.speed = clamp(Number(state.speed), 2, 120);
-    state.rotation = clamp(Number(state.rotation), -15, 15);
-    state.gap = clamp(Number(state.gap), 0, 300);
-    state.shadow = clamp(Number(state.shadow), 0, 30);
-    state.rows = clamp(Number(state.rows), 1, 8);
-    state.direction = state.direction === "same" ? "same" : "alternate";
-
-    if (
-      !state.backgroundOverride ||
-      typeof state.backgroundOverride !== "object" ||
-      !state.backgroundOverride.bgA ||
-      !state.backgroundOverride.bgB
-    ) {
-      state.backgroundOverride = null;
-    }
+    state.fontSize = clamp(Number(state.fontSize),24,320);
+    state.speed = clamp(Number(state.speed),2,120);
+    state.rotation = clamp(Number(state.rotation),-15,15);
+    state.gap = clamp(Number(state.gap),0,300);
+    state.shadow = clamp(Number(state.shadow),0,30);
+    state.rows = clamp(Number(state.rows),1,8);
   }
 
   function setVariable(name, value) {
@@ -194,10 +180,11 @@
       const track = document.createElement("div");
       track.className = "marquee-track";
 
-      const reverse = state.direction === "alternate" && rowIndex % 2 === 1;
-      if (reverse) track.classList.add("reverse");
+      track.append(
+        createMarqueeGroup(false),
+        createMarqueeGroup(true)
+      );
 
-      track.append(createMarqueeGroup(false), createMarqueeGroup(true));
       row.append(track);
       fragment.append(row);
     }
@@ -237,27 +224,15 @@
     setVariable("--glow", theme.glow);
   }
 
-  function applyBackgroundOverride(override) {
-    if (!override) return;
-    setVariable("--bg-a", override.bgA);
-    setVariable("--bg-b", override.bgB);
-  }
-
-  function applyTheme(name, save = true, clearBackground = true) {
+  function applyTheme(name, save = true) {
     const theme = THEMES[name];
     if (!theme) return;
 
     state.theme = name;
-
-    if (clearBackground) state.backgroundOverride = null;
-
     applyBaseTheme(theme);
 
     if (els.themePicker) els.themePicker.value = name;
-
-    if (clearBackground && els.themePicker) {
-      els.customTheme.hidden = true;
-    }
+    if (els.customTheme) els.customTheme.hidden = true;
 
     if (save) saveState();
 
@@ -338,16 +313,13 @@
     });
   }
 
-  function applyCustomTheme(theme, save = true, clearBackground = true) {
+  function applyCustomTheme(theme, save = true) {
     state.customTheme = {
       ...state.customTheme,
       ...theme
     };
 
-    if (clearBackground) state.backgroundOverride = null;
-
     applyBaseTheme(state.customTheme);
-
     state.theme = "custom";
 
     if (els.themePicker) els.themePicker.value = "";
@@ -462,46 +434,6 @@
     });
   }
 
-  function colorLuminance(value) {
-    const probe = document.createElement("span");
-    probe.style.color = value;
-    probe.style.position = "fixed";
-    probe.style.left = "-9999px";
-    probe.style.visibility = "hidden";
-    document.body.append(probe);
-
-    const rgb = getComputedStyle(probe).color.match(/\d+(?:\.\d+)?/g)?.slice(0, 3).map(Number) || [0, 0, 0];
-    probe.remove();
-
-    const srgb = rgb.map(channel => channel / 255);
-    const linear = srgb.map(channel => channel <= .03928
-      ? channel / 12.92
-      : Math.pow((channel + .055) / 1.055, 2.4)
-    );
-
-    return .2126 * linear[0] + .7152 * linear[1] + .0722 * linear[2];
-  }
-
-  function generateRandomBackground() {
-    const hue = Math.floor(Math.random() * 360);
-    const textIsLight = colorLuminance(getComputedStyle(root).getPropertyValue("--text").trim()) > .55;
-
-    let bgA, bgB;
-
-    if (textIsLight) {
-      bgA = hsl(hue, 38 + Math.random() * 32, 5 + Math.random() * 9);
-      bgB = hsl((hue + 8 + Math.random() * 34) % 360, 32 + Math.random() * 34, 15 + Math.random() * 13);
-    } else {
-      bgA = hsl(hue, 18 + Math.random() * 28, 76 + Math.random() * 13);
-      bgB = hsl((hue + 8 + Math.random() * 32) % 360, 12 + Math.random() * 24, 89 + Math.random() * 8);
-    }
-
-    state.backgroundOverride = {bgA, bgB};
-    applyBackgroundOverride(state.backgroundOverride);
-    saveState();
-    playThemeFlash();
-  }
-
   function updateRangeLabels() {
     const values = {
       fontSize: $("#fontSizeValue"),
@@ -529,7 +461,6 @@
 
     if (els.rows) els.rows.value = state.rows;
     if ($("#rowsNumber")) $("#rowsNumber").value = state.rows;
-    if (els.direction) els.direction.value = state.direction;
 
     if (els.speed) els.speed.value = state.speed;
     if ($("#speedNumber")) $("#speedNumber").value = state.speed;
@@ -591,8 +522,7 @@
   function resetAll() {
     state = {
       ...DEFAULTS,
-      customTheme: null,
-      backgroundOverride: null
+      customTheme: null
     };
 
     try {
@@ -603,7 +533,7 @@
     } catch {}
 
     renderMarqueeRows();
-    applyTheme(DEFAULTS.theme, false, true);
+    applyTheme(DEFAULTS.theme, false);
     applySettings();
     syncControls();
     saveState();
@@ -629,27 +559,9 @@
       }
     });
 
-    document.addEventListener("click", event => {
-      if (els.settingsPanel?.classList.contains("open")) return;
-
-      if (
-        event.target.closest(
-          ".theme-button,.separator,.settings-toggle,.settings-panel,.settings-overlay,button,input,select,label"
-        )
-      ) {
-        return;
-      }
-
-      const target = event.target;
-      const isBackground =
-        target === document.body ||
-        target === els.scene ||
-        target === els.marquee ||
-        target === els.marqueeRows ||
-        target.classList?.contains("marquee-row");
-
-      if (isBackground) {
-        generateRandomBackground();
+    els.marqueeRows?.addEventListener("click", event => {
+      if (event.target.closest(".theme-button")) {
+        generateRandomTheme();
       }
     });
 
@@ -697,21 +609,6 @@
       updateMarqueeText();
       updateRangeLabels();
       saveState();
-    });
-
-    els.direction?.addEventListener("change", event => {
-      state.direction = event.target.value === "same" ? "same" : "alternate";
-      renderMarqueeRows();
-      updateMarqueeText();
-      saveState();
-    });
-
-    els.themePicker?.addEventListener("change", event => {
-      if (THEMES[event.target.value]) {
-        applyTheme(event.target.value, true, true);
-      } else {
-        showCustomTheme();
-      }
     });
 
     const numberInputs = [
@@ -782,17 +679,10 @@
   function init() {
     loadState();
 
-    const initialBackground = state.backgroundOverride;
-
     if (state.theme === "custom" && state.customTheme) {
-      applyCustomTheme(state.customTheme, false, false);
+      applyCustomTheme(state.customTheme, false);
     } else {
-      applyTheme(state.theme, false, false);
-    }
-
-    if (initialBackground) {
-      state.backgroundOverride = initialBackground;
-      applyBackgroundOverride(initialBackground);
+      applyTheme(state.theme, false);
     }
 
     renderMarqueeRows();

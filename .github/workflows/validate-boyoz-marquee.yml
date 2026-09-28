@@ -48,7 +48,10 @@ jobs:
           assert js.count('els.marqueeRows?.addEventListener("click"') == 1
           assert js.count('els.scene?.addEventListener("click"') == 1
           assert 'rowDirection: state.rowDirection' in js
-          assert 'event.target.closest(".theme-button, .separator")' in js
+          assert 'event.stopPropagation?.()' in js
+          assert 'randomBackground?.addEventListener("click", generateRandomBackground)' in js
+          assert 'function playInteractionFlash(type = "theme")' in js
+          assert '.theme-flash.background-play' in css
           assert '.mode-alternate .marquee-row:nth-child(odd) .marquee-track' in css
           assert '.mode-alternate .marquee-row:nth-child(even) .marquee-track' in css
           assert '.scene:hover .marquee-track' not in css
@@ -186,7 +189,7 @@ jobs:
             "fontSize","speed","rotation","gap","shadow","rows",
             "rowDirection","themePicker","customTheme","applyCustomTheme",
             "colorBgA","colorBgB","colorText","colorAccent","colorShadow",
-            "colorGlow","glowOpacity","randomTheme","reset","settingsToggle",
+            "colorGlow","glowOpacity","randomTheme","randomBackground","reset","settingsToggle",
             "settingsPanel","settingsOverlay","themeFlash","googleFontStylesheet"
           ];
 
@@ -330,6 +333,11 @@ jobs:
             }
           };
 
+          const initialText = variables.get("--text");
+          const initialAccent = variables.get("--accent");
+          const initialShadow = variables.get("--shadow");
+          const initialShadowOpacity = variables.get("--shadow-opacity");
+
           const scene = byId("scene");
           const backgroundHandler = scene.listeners.click[0];
           const backgroundTarget = {
@@ -350,20 +358,40 @@ jobs:
             throw new Error("Background click did not update background variables.");
           }
 
+          if (variables.get("--text") !== initialText ||
+              variables.get("--accent") !== initialAccent ||
+              variables.get("--shadow") !== initialShadow ||
+              variables.get("--shadow-opacity") !== initialShadowOpacity) {
+            throw new Error("Background click changed text/accent/shadow instead of background only.");
+          }
+
+          const backgroundButton = byId("randomBackground");
+          const backgroundButtonHandler = backgroundButton.listeners.click[0];
+          if (typeof backgroundButtonHandler !== "function") {
+            throw new Error("Random Background button is not wired.");
+          }
+
           const button = rowsContainer.children[0].children[0].children[0];
           const themeHandler = rowsContainer.listeners.click[0];
+
+          const previousText = variables.get("--text");
 
           themeHandler({
             target: {
               closest(selector) {
                 return selector.includes(".theme-button") ? button : null;
               }
-            }
+            },
+            stopPropagation() {}
           });
 
           if (localStorageStore.get("boyoz-marquee-theme-v1") !== "custom") {
             throw new Error("Text click handler did not generate a theme.");
           }
 
-          console.log(`BoyOz marquee runtime smoke test: PASS (${initialBackground} → runtime initialized, 3 rows, both direction modes, background/text click handlers)`);
+          if (variables.get("--text") === previousText) {
+            throw new Error("Text click did not change the text color/theme.");
+          }
+
+          console.log(`BoyOz marquee runtime smoke test: PASS (${initialBackground} → runtime initialized, 3 rows, both direction modes, background-only click, text-theme click)`);
           NODE

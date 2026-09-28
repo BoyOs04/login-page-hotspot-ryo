@@ -1,0 +1,284 @@
+name: Validate BoyOz Marquee
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "boyoz-marquee/**"
+      - ".github/workflows/validate-boyoz-marquee.yml"
+  workflow_dispatch:
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Check JavaScript syntax
+        run: node --check boyoz-marquee/js/app.js
+
+      - name: Validate HTML, CSS and JavaScript references
+        run: |
+          python3 - <<'PY'
+          import re
+          from pathlib import Path
+
+          root = Path("boyoz-marquee")
+          html = (root / "index.html").read_text(encoding="utf-8")
+          css = (root / "css/style.css").read_text(encoding="utf-8")
+          js = (root / "js/app.js").read_text(encoding="utf-8")
+
+          ids = set(re.findall(r'id="([^"]+)"', html))
+          js_ids = set(re.findall(r'\$\(\s*["\']#([^"\']+)["\']', js))
+          missing_ids = sorted(js_ids - ids)
+          assert not missing_ids, f"Missing HTML IDs referenced by JS: {missing_ids}"
+
+          declared_vars = set(re.findall(r'--([a-z0-9-]+)\s*:', css, re.I))
+          used_vars = set(re.findall(r'var\(--([a-z0-9-]+)', css, re.I))
+          missing_vars = sorted(used_vars - declared_vars)
+          assert not missing_vars, f"Missing CSS variables: {missing_vars}"
+
+          assert js.count('els.marqueeRows?.addEventListener("click"') == 1
+          assert js.count('els.scene?.addEventListener("click"') == 1
+          assert 'rowDirection: state.rowDirection' in js
+          assert 'event.target.closest(".theme-button, .separator")' in js
+          assert '.mode-alternate .marquee-row:nth-child(odd) .marquee-track' in css
+          assert '.mode-alternate .marquee-row:nth-child(even) .marquee-track' in css
+          assert '.scene:hover .marquee-track' not in css
+          assert '$(".marquee-track", els.marqueeRows).forEach' not in js
+
+          def balanced(source, opening, closing):
+              depth = 0
+              for char in source:
+                  if char == opening:
+                      depth += 1
+                  elif char == closing:
+                      depth -= 1
+                      if depth < 0:
+                          return False
+              return depth == 0
+
+          assert balanced(js, "{", "}")
+          assert balanced(js, "(", ")")
+          assert balanced(js, "[", "]")
+          assert balanced(css, "{", "}")
+          assert balanced(css, "(", ")")
+
+          for local in ("css/style.css", "js/app.js"):
+              assert (root / local).is_file(), f"Missing local asset: {local}"
+
+          print("BoyOz marquee static validation: PASS")
+          PY
+
+      - name: Runtime smoke test with a minimal DOM
+        run: |
+          node <<'NODE'
+          const fs = require("fs");
+          const vm = require("vm");
+
+          const html = fs.readFileSync("boyoz-marquee/index.html", "utf8");
+          const js = fs.readFileSync("boyoz-marquee/js/app.js", "utf8");
+
+          class FakeClassList {
+            constructor() { this.values = new Set(); }
+            add(...items) { items.forEach(item => this.values.add(item)); }
+            remove(...items) { items.forEach(item => this.values.delete(item)); }
+            toggle(item, force) {
+              const shouldHave = force === undefined ? !this.values.has(item) : force;
+              if (shouldHave) this.values.add(item);
+              else this.values.delete(item);
+              return shouldHave;
+            }
+            contains(item) { return this.values.has(item); }
+          }
+
+          class FakeElement {
+            constructor(tag = "div", id = "") {
+              this.tagName = tag.toUpperCase();
+              this.id = id;
+              this.value = "";
+              this.textContent = "";
+              this.hidden = false;
+              this.tabIndex = 0;
+              this.style = {
+                setProperty() {}
+              };
+              this.className = "";
+              this.classList = new FakeClassList();
+              this.children = [];
+              this.parentNode = null;
+              this.listeners = {};
+            }
+
+            append(...items) {
+              for (const item of items) {
+                if (!item) continue;
+                item.parentNode = this;
+                this.children.push(item);
+              }
+            }
+
+            replaceChildren(...items) {
+              this.children = [];
+              this.append(...items);
+            }
+
+            setAttribute() {}
+            removeAttribute() {}
+
+            addEventListener(type, handler) {
+              (this.listeners[type] ||= []).push(handler);
+            }
+
+            focus() {}
+          }
+
+          class FakeDocumentFragment extends FakeElement {
+            constructor() {
+              super("fragment");
+            }
+          }
+
+          const elements = new Map();
+          const ids = [
+            "scene","marquee","marqueeRows","textInput","fontPicker",
+            "fontSize","speed","rotation","gap","shadow","rows",
+            "rowDirection","themePicker","customTheme","applyCustomTheme",
+            "colorBgA","colorBgB","colorText","colorAccent","colorShadow",
+            "colorGlow","glowOpacity","randomTheme","reset","settingsToggle",
+            "settingsPanel","settingsOverlay","themeFlash","googleFontStylesheet"
+          ];
+
+          for (const id of ids) {
+            elements.set(id, new FakeElement("div", id));
+          }
+
+          elements.get("scene").className = "scene";
+          elements.get("marqueeRows").className = "marquee-rows";
+          elements.get("themePicker").value = "elegant";
+          elements.get("rowDirection").value = "alternate";
+          elements.get("rows").value = "1";
+          elements.get("textInput").value = "BoyOz";
+          elements.get("fontPicker").value = "Space Grotesk";
+          elements.get("fontSize").value = "160";
+          elements.get("speed").value = "20";
+          elements.get("rotation").value = "-2";
+          elements.get("gap").value = "96";
+          elements.get("shadow").value = "8";
+          elements.get("colorBgA").value = "#080808";
+          elements.get("colorBgB").value = "#211d19";
+          elements.get("colorText").value = "#f5f1e8";
+          elements.get("colorAccent").value = "#d7b77c";
+          elements.get("colorShadow").value = "#070707";
+          elements.get("colorGlow").value = "#d7b77c";
+          elements.get("glowOpacity").value = "18";
+
+          const byId = id => elements.get(id) || null;
+
+          const document = {
+            readyState: "complete",
+            activeElement: elements.get("settingsToggle"),
+            documentElement: new FakeElement("html"),
+            createElement(tag) {
+              return new FakeElement(tag);
+            },
+            createDocumentFragment() {
+              return new FakeDocumentFragment();
+            },
+            querySelector(selector) {
+              if (selector.startsWith("#")) {
+                return byId(selector.slice(1));
+              }
+
+              if (selector === ".close-settings") {
+                return new FakeElement("button");
+              }
+
+              return null;
+            },
+            querySelectorAll(selector, root = this) {
+              const results = [];
+
+              const walk = node => {
+                if (selector === ".theme-button" && node.className === "theme-button") {
+                  results.push(node);
+                }
+
+                for (const child of node.children || []) {
+                  walk(child);
+                }
+              };
+
+              walk(root === this ? byId("marqueeRows") : root);
+              return results;
+            },
+            addEventListener() {}
+          };
+
+          const localStorageStore = new Map();
+          const localStorage = {
+            getItem(key) {
+              return localStorageStore.has(key) ? localStorageStore.get(key) : null;
+            },
+            setItem(key, value) {
+              localStorageStore.set(key, String(value));
+            },
+            removeItem(key) {
+              localStorageStore.delete(key);
+            }
+          };
+
+          document.documentElement.style = { setProperty() {} };
+
+          const context = {
+            console,
+            document,
+            localStorage,
+            Math,
+            Number,
+            String,
+            JSON,
+            encodeURIComponent,
+            parseInt,
+            setTimeout() {
+              return 0;
+            },
+            clearTimeout() {},
+            window: {
+              lucide: {
+                createIcons() {}
+              }
+            }
+          };
+
+          context.window.document = document;
+
+          for (const id of ids) {
+            if (!new RegExp(`id="${id}"\\b`).test(html)) {
+              throw new Error(`HTML missing required element id: ${id}`);
+            }
+          }
+
+          vm.runInNewContext(js, context, {
+            filename: "boyoz-marquee/js/app.js"
+          });
+
+          const rows = byId("marqueeRows").children;
+          if (rows.length !== 1) {
+            throw new Error(`Expected 1 rendered row, got ${rows.length}`);
+          }
+
+          const track = rows[0].children[0];
+          if (!track || track.className !== "marquee-track") {
+            throw new Error("Marquee track was not rendered.");
+          }
+
+          console.log("BoyOz marquee runtime smoke test: PASS");
+          NODE

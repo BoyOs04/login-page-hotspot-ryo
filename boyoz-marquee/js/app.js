@@ -2,9 +2,10 @@
   "use strict";
 
   const STORAGE = {
-    settings: "boyoz-marquee-settings-v3",
+    settings: "boyoz-marquee-settings-v4",
     font: "boyoz-marquee-font-v1",
-    theme: "boyoz-marquee-theme-v1"
+    theme: "boyoz-marquee-theme-v1",
+    customTheme: "boyoz-marquee-custom-theme-v1"
   };
 
   const DEFAULTS = {
@@ -15,8 +16,11 @@
     rotation: -2,
     gap: 96,
     shadow: 8,
+    rows: 1,
+    direction: "alternate",
     theme: "elegant",
-    customTheme: null
+    customTheme: null,
+    backgroundOverride: null
   };
 
   const THEMES = {
@@ -46,6 +50,9 @@
   const root = document.documentElement;
 
   const els = {
+    scene: $("#scene"),
+    marquee: $("#marquee"),
+    marqueeRows: $("#marqueeRows"),
     textInput: $("#textInput"),
     fontPicker: $("#fontPicker"),
     fontSize: $("#fontSize"),
@@ -53,11 +60,17 @@
     rotation: $("#rotation"),
     gap: $("#gap"),
     shadow: $("#shadow"),
+    rows: $("#rows"),
+    direction: $("#direction"),
     themePicker: $("#themePicker"),
     customTheme: $("#customTheme"),
     applyCustomTheme: $("#applyCustomTheme"),
-    colorBgA: $("#colorBgA"), colorBgB: $("#colorBgB"), colorText: $("#colorText"),
-    colorAccent: $("#colorAccent"), colorShadow: $("#colorShadow"), colorGlow: $("#colorGlow"),
+    colorBgA: $("#colorBgA"),
+    colorBgB: $("#colorBgB"),
+    colorText: $("#colorText"),
+    colorAccent: $("#colorAccent"),
+    colorShadow: $("#colorShadow"),
+    colorGlow: $("#colorGlow"),
     glowOpacity: $("#glowOpacity"),
     randomTheme: $("#randomTheme"),
     reset: $("#reset"),
@@ -70,353 +83,728 @@
 
   let state = {...DEFAULTS};
 
-  function clamp(value,min,max){return Math.min(max,Math.max(min,value));}
+  function clamp(value, min, max) {
+    return Math.min(max, Math.max(min, value));
+  }
 
-  function readJSON(key,fallback){
+  function readJSON(key, fallback) {
     try {
       const value = localStorage.getItem(key);
       return value ? JSON.parse(value) : fallback;
-    } catch { return fallback; }
+    } catch {
+      return fallback;
+    }
   }
 
-  function saveState(){
+  function saveState() {
     try {
-      localStorage.setItem(STORAGE.settings,JSON.stringify({
-        text:state.text,fontSize:state.fontSize,speed:state.speed,
-        rotation:state.rotation,gap:state.gap,shadow:state.shadow
+      localStorage.setItem(STORAGE.settings, JSON.stringify({
+        text: state.text,
+        fontSize: state.fontSize,
+        speed: state.speed,
+        rotation: state.rotation,
+        gap: state.gap,
+        shadow: state.shadow,
+        rows: state.rows,
+        direction: state.direction,
+        backgroundOverride: state.backgroundOverride
       }));
-      localStorage.setItem(STORAGE.font,state.font);
-      if(state.customTheme) localStorage.setItem("boyoz-marquee-custom-theme-v1",JSON.stringify(state.customTheme));
+      localStorage.setItem(STORAGE.font, state.font);
+      localStorage.setItem(STORAGE.theme, state.theme);
+      if (state.customTheme) {
+        localStorage.setItem(STORAGE.customTheme, JSON.stringify(state.customTheme));
+      }
     } catch {}
   }
 
-  function loadState(){
-    const settings = readJSON(STORAGE.settings,{});
+  function loadState() {
+    const settings = readJSON(STORAGE.settings, {});
     state = {
       ...DEFAULTS,
       ...settings,
       font: localStorage.getItem(STORAGE.font) || DEFAULTS.font,
       theme: localStorage.getItem(STORAGE.theme) || DEFAULTS.theme,
-      customTheme: readJSON("boyoz-marquee-custom-theme-v1", null)
+      customTheme: readJSON(STORAGE.customTheme, null)
     };
 
-    if(!THEMES[state.theme]) state.theme = DEFAULTS.theme;
-    state.fontSize=clamp(Number(state.fontSize),24,320);
-    state.speed=clamp(Number(state.speed),2,120);
-    state.rotation=clamp(Number(state.rotation),-15,15);
-    state.gap=clamp(Number(state.gap),0,300);
-    state.shadow=clamp(Number(state.shadow),0,30);
+    if (state.theme !== "custom" && !THEMES[state.theme]) {
+      state.theme = DEFAULTS.theme;
+    }
+
+    if (state.theme === "custom" && !state.customTheme) {
+      state.theme = DEFAULTS.theme;
+    }
+
+    state.fontSize = clamp(Number(state.fontSize), 24, 320);
+    state.speed = clamp(Number(state.speed), 2, 120);
+    state.rotation = clamp(Number(state.rotation), -15, 15);
+    state.gap = clamp(Number(state.gap), 0, 300);
+    state.shadow = clamp(Number(state.shadow), 0, 30);
+    state.rows = clamp(Number(state.rows), 1, 8);
+    state.direction = state.direction === "same" ? "same" : "alternate";
+
+    if (
+      !state.backgroundOverride ||
+      typeof state.backgroundOverride !== "object" ||
+      !state.backgroundOverride.bgA ||
+      !state.backgroundOverride.bgB
+    ) {
+      state.backgroundOverride = null;
+    }
   }
 
-  function setVariable(name,value){root.style.setProperty(name,value);}
-
-  function updateMarqueeText(){
-    const text=String(state.text||"BoyOz").trim()||"BoyOz";
-    state.text=text;
-    $$(".theme-button").forEach(button=>button.textContent=text);
+  function setVariable(name, value) {
+    root.style.setProperty(name, value);
   }
 
-  function loadGoogleFont(fontName){
-    if(!FONT_NAMES.includes(fontName)) fontName=DEFAULTS.font;
-    const encoded=encodeURIComponent(fontName).replace(/%20/g,"+");
-    if(els.googleFontStylesheet){
+  function createMarqueeGroup(hidden = false) {
+    const group = document.createElement("div");
+    group.className = "marquee-group";
+
+    if (hidden) group.setAttribute("aria-hidden", "true");
+
+    for (let i = 0; i < 4; i += 1) {
+      const button = document.createElement("button");
+      button.className = "theme-button";
+      button.type = "button";
+      button.textContent = state.text;
+
+      if (hidden) button.tabIndex = -1;
+
+      group.append(button);
+
+      const separator = document.createElement("span");
+      separator.className = "separator";
+      separator.setAttribute("aria-hidden", "true");
+      group.append(separator);
+    }
+
+    return group;
+  }
+
+  function renderMarqueeRows() {
+    if (!els.marqueeRows) return;
+
+    const fragment = document.createDocumentFragment();
+
+    for (let rowIndex = 0; rowIndex < state.rows; rowIndex += 1) {
+      const row = document.createElement("div");
+      row.className = "marquee-row";
+
+      const track = document.createElement("div");
+      track.className = "marquee-track";
+
+      const reverse = state.direction === "alternate" && rowIndex % 2 === 1;
+      if (reverse) track.classList.add("reverse");
+
+      track.append(createMarqueeGroup(false), createMarqueeGroup(true));
+      row.append(track);
+      fragment.append(row);
+    }
+
+    els.marqueeRows.replaceChildren(fragment);
+  }
+
+  function updateMarqueeText() {
+    const text = String(state.text || "BoyOz").trim() || "BoyOz";
+    state.text = text;
+    $$(".theme-button", els.marqueeRows || document).forEach(button => {
+      button.textContent = text;
+    });
+  }
+
+  function loadGoogleFont(fontName) {
+    if (!FONT_NAMES.includes(fontName)) fontName = DEFAULTS.font;
+
+    const encoded = encodeURIComponent(fontName).replace(/%20/g, "+");
+
+    if (els.googleFontStylesheet) {
       els.googleFontStylesheet.href =
         `https://fonts.googleapis.com/css2?family=${encoded}:wght@400;500;600;700;800&display=swap`;
     }
-    setVariable("--font-family",`"${fontName}"`);
-    state.font=fontName;
+
+    setVariable("--font-family", `"${fontName}"`);
+    state.font = fontName;
   }
 
-  function applyTheme(name,save=true){
-    const theme=THEMES[name];
-    if(!theme) return;
-    state.theme=name;
-    setVariable("--bg-a",theme.bgA);
-    setVariable("--bg-b",theme.bgB);
-    setVariable("--text",theme.text);
-    setVariable("--accent",theme.accent);
-    setVariable("--shadow",theme.shadow);
-    setVariable("--shadow-opacity",theme.shadowOpacity);
-    setVariable("--glow",theme.glow);
-    if(els.themePicker) els.themePicker.value=name;
-    if(save) localStorage.setItem(STORAGE.theme,name);
+  function applyBaseTheme(theme) {
+    setVariable("--bg-a", theme.bgA);
+    setVariable("--bg-b", theme.bgB);
+    setVariable("--text", theme.text);
+    setVariable("--accent", theme.accent);
+    setVariable("--shadow", theme.shadow);
+    setVariable("--shadow-opacity", theme.shadowOpacity);
+    setVariable("--glow", theme.glow);
+  }
+
+  function applyBackgroundOverride(override) {
+    if (!override) return;
+    setVariable("--bg-a", override.bgA);
+    setVariable("--bg-b", override.bgB);
+  }
+
+  function applyTheme(name, save = true, clearBackground = true) {
+    const theme = THEMES[name];
+    if (!theme) return;
+
+    state.theme = name;
+
+    if (clearBackground) state.backgroundOverride = null;
+
+    applyBaseTheme(theme);
+
+    if (els.themePicker) els.themePicker.value = name;
+
+    if (clearBackground && els.themePicker) {
+      els.customTheme.hidden = true;
+    }
+
+    if (save) saveState();
+
     playThemeFlash();
   }
 
-  function playThemeFlash(){
-    if(!els.themeFlash) return;
+  function playThemeFlash() {
+    if (!els.themeFlash) return;
     els.themeFlash.classList.remove("play");
     void els.themeFlash.offsetWidth;
     els.themeFlash.classList.add("play");
-    setTimeout(()=>els.themeFlash.classList.remove("play"),500);
+    setTimeout(() => els.themeFlash.classList.remove("play"), 500);
   }
 
-  function hsl(h,s,l){return `hsl(${Math.round(h)} ${Math.round(s)}% ${Math.round(l)}%)`;}
-
-  function hslToRgb(h,s,l){
-    s/=100;l/=100;
-    const k=n=>(n+h/30)%12;
-    const a=s*Math.min(l,1-l);
-    const f=n=>l-a*Math.max(-1,Math.min(k(n)-3,Math.min(9-k(n),1)));
-    return [Math.round(255*f(0)),Math.round(255*f(8)),Math.round(255*f(4))];
+  function hsl(h, s, l) {
+    return `hsl(${Math.round(h)} ${Math.round(s)}% ${Math.round(l)}%)`;
   }
 
-  function generateRandomTheme(){
-    const isLight=Math.random()>.5;
-    const hue=Math.floor(Math.random()*360);
-    let bgA,bgB,accent,text,shadow,shadowOpacity;
+  function hslToRgb(h, s, l) {
+    s /= 100;
+    l /= 100;
 
-    if(isLight){
-      bgA=hsl(hue,18+Math.random()*24,74+Math.random()*15);
-      bgB=hsl((hue+Math.random()*25)%360,15+Math.random()*20,88+Math.random()*10);
-      accent=hsl((hue+25+Math.random()*50)%360,45+Math.random()*33,35+Math.random()*22);
-      text="#17202a";
-      shadow=hsl(hue,15+Math.random()*20,55+Math.random()*15);
-      shadowOpacity=(.24+Math.random()*.14).toFixed(2);
-    }else{
-      bgA=hsl(hue,35+Math.random()*30,5+Math.random()*10);
-      bgB=hsl((hue+Math.random()*30)%360,35+Math.random()*30,15+Math.random()*14);
-      accent=hsl((hue+20+Math.random()*60)%360,58+Math.random()*32,58+Math.random()*20);
-      text="#f7f7f7";
-      shadow=hsl(hue,30+Math.random()*35,2+Math.random()*7);
-      shadowOpacity=(.78+Math.random()*.16).toFixed(2);
+    const k = n => (n + h / 30) % 12;
+    const a = s * Math.min(l, 1 - l);
+    const f = n => l - a * Math.max(-1, Math.min(k(n) - 3, Math.min(9 - k(n), 1)));
+
+    return [
+      Math.round(255 * f(0)),
+      Math.round(255 * f(8)),
+      Math.round(255 * f(4))
+    ];
+  }
+
+  function hslToHex(h, s, l) {
+    return "#" + hslToRgb(h, s, l).map(value => value.toString(16).padStart(2, "0")).join("");
+  }
+
+  function generateRandomTheme() {
+    const isLight = Math.random() > .5;
+    const hue = Math.floor(Math.random() * 360);
+
+    let bgA, bgB, accent, text, shadow, shadowOpacity;
+
+    if (isLight) {
+      bgA = hsl(hue, 18 + Math.random() * 24, 74 + Math.random() * 15);
+      bgB = hsl((hue + Math.random() * 25) % 360, 15 + Math.random() * 20, 88 + Math.random() * 10);
+      accent = hsl((hue + 25 + Math.random() * 50) % 360, 45 + Math.random() * 33, 35 + Math.random() * 22);
+      text = "#17202a";
+      shadow = hsl(hue, 15 + Math.random() * 20, 55 + Math.random() * 15);
+      shadowOpacity = (.24 + Math.random() * .14).toFixed(2);
+    } else {
+      bgA = hsl(hue, 35 + Math.random() * 30, 5 + Math.random() * 10);
+      bgB = hsl((hue + Math.random() * 30) % 360, 35 + Math.random() * 30, 15 + Math.random() * 14);
+      accent = hsl((hue + 20 + Math.random() * 60) % 360, 58 + Math.random() * 32, 58 + Math.random() * 20);
+      text = "#f7f7f7";
+      shadow = hsl(hue, 30 + Math.random() * 35, 2 + Math.random() * 7);
+      shadowOpacity = (.78 + Math.random() * .16).toFixed(2);
     }
 
-    const glow=isLight
-      ? `rgba(255,255,255,${(.48+Math.random()*.22).toFixed(2)})`
-      : `rgba(255,255,255,${(.10+Math.random()*.12).toFixed(2)})`;
+    const glow = isLight
+      ? "rgba(255,255,255,.62)"
+      : "rgba(255,255,255,.16)";
 
-    applyCustomTheme({bgA,bgB,text,accent,shadow,shadowOpacity,glow});
-  }
+    const glowHex = isLight
+      ? "#ffffff"
+      : hslToHex(hue, 25, 80);
 
-  function applyCustomTheme(theme,save=true){
-    state.customTheme={...state.customTheme,...theme};
-    setVariable("--bg-a",theme.bgA);
-    setVariable("--bg-b",theme.bgB);
-    setVariable("--text",theme.text);
-    setVariable("--accent",theme.accent);
-    setVariable("--shadow",theme.shadow);
-    setVariable("--shadow-opacity",theme.shadowOpacity);
-    setVariable("--glow",theme.glow);
-    state.theme="custom";
-    if(els.themePicker) els.themePicker.value="";
-    try{localStorage.setItem(STORAGE.theme,"custom");if(save&&state.customTheme)localStorage.setItem("boyoz-marquee-custom-theme-v1",JSON.stringify(state.customTheme));}catch{}
-    syncCustomColorControls();playThemeFlash();
-  }
-
-  function hexToRgba(hex,opacity){
-    const n=parseInt(String(hex).replace("#",""),16);
-    return `rgba(${(n>>16)&255}, ${(n>>8)&255}, ${n&255}, ${(opacity/100).toFixed(2)})`;
-  }
-
-  function syncCustomColorControls(){
-    const t=state.customTheme;
-    if(!t)return;
-    [["colorBgA","bgA"],["colorBgB","bgB"],["colorText","text"],["colorAccent","accent"],["colorShadow","shadow"]].forEach(([id,key])=>{
-      if(els[id]&&t[key])els[id].value=t[key];
-      const o=$("#"+id+"Value");if(o)o.textContent=(t[key]||"#000000").toUpperCase();
+    applyCustomTheme({
+      bgA,
+      bgB,
+      text,
+      accent,
+      shadow,
+      shadowOpacity,
+      glow,
+      glowHex,
+      glowOpacity: isLight ? 62 : 16
     });
-    const glow=t.glowHex||"#d7b77c",opacity=Number(t.glowOpacity??18);
-    if(els.colorGlow)els.colorGlow.value=glow;
-    if($("#colorGlowValue"))$("#colorGlowValue").textContent=glow.toUpperCase();
-    if(els.glowOpacity)els.glowOpacity.value=opacity;
-    if($("#glowOpacityValue"))$("#glowOpacityValue").textContent=opacity+"%";
   }
 
-  function showCustomTheme(){
-    if(!els.customTheme||!els.themePicker)return;
-    const active=els.themePicker.value==="";
-    els.customTheme.hidden=!active;
-    if(active){
-      if(!state.customTheme)state.customTheme={bgA:"#080808",bgB:"#211d19",text:"#f5f1e8",accent:"#d7b77c",shadow:"#070707",glowHex:"#d7b77c",glowOpacity:18};
+  function applyCustomTheme(theme, save = true, clearBackground = true) {
+    state.customTheme = {
+      ...state.customTheme,
+      ...theme
+    };
+
+    if (clearBackground) state.backgroundOverride = null;
+
+    applyBaseTheme(state.customTheme);
+
+    state.theme = "custom";
+
+    if (els.themePicker) els.themePicker.value = "";
+
+    if (save) saveState();
+
+    syncCustomColorControls();
+    showCustomTheme();
+    playThemeFlash();
+  }
+
+  function hexToRgba(hex, opacity) {
+    const n = parseInt(String(hex).replace("#", ""), 16);
+    return `rgba(${(n >> 16) & 255}, ${(n >> 8) & 255}, ${n & 255}, ${(opacity / 100).toFixed(2)})`;
+  }
+
+  function syncCustomColorControls() {
+    const theme = state.customTheme;
+    if (!theme) return;
+
+    [
+      ["colorBgA", "bgA"],
+      ["colorBgB", "bgB"],
+      ["colorText", "text"],
+      ["colorAccent", "accent"],
+      ["colorShadow", "shadow"]
+    ].forEach(([id, key]) => {
+      if (els[id] && theme[key] && /^#[0-9a-f]{6}$/i.test(theme[key])) {
+        els[id].value = theme[key];
+      }
+
+      const output = $(`#${id}Value`);
+      if (output) output.textContent = (theme[key] || "#000000").toUpperCase();
+    });
+
+    const glow = theme.glowHex || "#d7b77c";
+    const opacity = Number(theme.glowOpacity ?? 18);
+
+    if (els.colorGlow) els.colorGlow.value = /^#[0-9a-f]{6}$/i.test(glow) ? glow : "#d7b77c";
+    if ($("#colorGlowValue")) $("#colorGlowValue").textContent = glow.toUpperCase();
+    if (els.glowOpacity) els.glowOpacity.value = clamp(opacity, 0, 100);
+    if ($("#glowOpacityValue")) $("#glowOpacityValue").textContent = `${clamp(opacity, 0, 100)}%`;
+  }
+
+  function showCustomTheme() {
+    if (!els.customTheme || !els.themePicker) return;
+
+    const active = els.themePicker.value === "";
+    els.customTheme.hidden = !active;
+
+    if (active) {
+      if (!state.customTheme) {
+        state.customTheme = {
+          bgA: "#080808",
+          bgB: "#211d19",
+          text: "#f5f1e8",
+          accent: "#d7b77c",
+          shadow: "#070707",
+          shadowOpacity: ".88",
+          glowHex: "#d7b77c",
+          glowOpacity: 18,
+          glow: "rgba(215,183,124,.18)"
+        };
+      }
+
       syncCustomColorControls();
     }
   }
 
-  function updateCustomControls(){
-    state.customTheme={
-      bgA:els.colorBgA.value,bgB:els.colorBgB.value,text:els.colorText.value,
-      accent:els.colorAccent.value,shadow:els.colorShadow.value,glowHex:els.colorGlow.value,
-      glowOpacity:Number(els.glowOpacity.value)
+  function updateCustomControls() {
+    state.customTheme = {
+      ...state.customTheme,
+      bgA: els.colorBgA.value,
+      bgB: els.colorBgB.value,
+      text: els.colorText.value,
+      accent: els.colorAccent.value,
+      shadow: els.colorShadow.value,
+      glowHex: els.colorGlow.value,
+      glowOpacity: Number(els.glowOpacity.value)
     };
-    [["colorBgA","bgA"],["colorBgB","bgB"],["colorText","text"],["colorAccent","accent"],["colorShadow","shadow"],["colorGlow","glowHex"]].forEach(([id,key])=>{
-      const o=$("#"+id+"Value");if(o)o.textContent=state.customTheme[key].toUpperCase();
+
+    [
+      ["colorBgA", "bgA"],
+      ["colorBgB", "bgB"],
+      ["colorText", "text"],
+      ["colorAccent", "accent"],
+      ["colorShadow", "shadow"],
+      ["colorGlow", "glowHex"]
+    ].forEach(([id, key]) => {
+      const output = $(`#${id}Value`);
+      if (output) output.textContent = state.customTheme[key].toUpperCase();
     });
-    if($("#glowOpacityValue"))$("#glowOpacityValue").textContent=state.customTheme.glowOpacity+"%";
+
+    if ($("#glowOpacityValue")) {
+      $("#glowOpacityValue").textContent = `${state.customTheme.glowOpacity}%`;
+    }
   }
 
-  function applyCustomFromControls(){
+  function applyCustomFromControls() {
     updateCustomControls();
-    const t=state.customTheme;
-    applyCustomTheme({bgA:t.bgA,bgB:t.bgB,text:t.text,accent:t.accent,shadow:t.shadow,shadowOpacity:".88",glow:hexToRgba(t.glowHex,t.glowOpacity)});
+
+    const theme = state.customTheme;
+
+    applyCustomTheme({
+      bgA: theme.bgA,
+      bgB: theme.bgB,
+      text: theme.text,
+      accent: theme.accent,
+      shadow: theme.shadow,
+      shadowOpacity: theme.shadowOpacity || ".88",
+      glow: hexToRgba(theme.glowHex, theme.glowOpacity)
+    });
+  }
+
+  function colorLuminance(value) {
+    const probe = document.createElement("span");
+    probe.style.color = value;
+    probe.style.position = "fixed";
+    probe.style.left = "-9999px";
+    probe.style.visibility = "hidden";
+    document.body.append(probe);
+
+    const rgb = getComputedStyle(probe).color.match(/\d+(?:\.\d+)?/g)?.slice(0, 3).map(Number) || [0, 0, 0];
+    probe.remove();
+
+    const srgb = rgb.map(channel => channel / 255);
+    const linear = srgb.map(channel => channel <= .03928
+      ? channel / 12.92
+      : Math.pow((channel + .055) / 1.055, 2.4)
+    );
+
+    return .2126 * linear[0] + .7152 * linear[1] + .0722 * linear[2];
+  }
+
+  function generateRandomBackground() {
+    const hue = Math.floor(Math.random() * 360);
+    const textIsLight = colorLuminance(getComputedStyle(root).getPropertyValue("--text").trim()) > .55;
+
+    let bgA, bgB;
+
+    if (textIsLight) {
+      bgA = hsl(hue, 38 + Math.random() * 32, 5 + Math.random() * 9);
+      bgB = hsl((hue + 8 + Math.random() * 34) % 360, 32 + Math.random() * 34, 15 + Math.random() * 13);
+    } else {
+      bgA = hsl(hue, 18 + Math.random() * 28, 76 + Math.random() * 13);
+      bgB = hsl((hue + 8 + Math.random() * 32) % 360, 12 + Math.random() * 24, 89 + Math.random() * 8);
+    }
+
+    state.backgroundOverride = {bgA, bgB};
+    applyBackgroundOverride(state.backgroundOverride);
     saveState();
+    playThemeFlash();
   }
 
-  function updateRangeLabels(){
-    const values={
-      fontSize:$("#fontSizeValue"),
-      speed:$("#speedValue"),
-      rotation:$("#rotationValue"),
-      gap:$("#gapValue"),
-      shadow:$("#shadowValue")
+  function updateRangeLabels() {
+    const values = {
+      fontSize: $("#fontSizeValue"),
+      speed: $("#speedValue"),
+      rotation: $("#rotationValue"),
+      gap: $("#gapValue"),
+      shadow: $("#shadowValue"),
+      rows: $("#rowsValue")
     };
-    if(values.fontSize) values.fontSize.textContent=`${state.fontSize}px`;
-    if(values.speed) values.speed.textContent=`${state.speed}s`;
-    if(values.rotation) values.rotation.textContent=`${state.rotation}°`;
-    if(values.gap) values.gap.textContent=`${state.gap}px`;
-    if(values.shadow) values.shadow.textContent=`${state.shadow}px`;
+
+    if (values.fontSize) values.fontSize.textContent = `${state.fontSize}px`;
+    if (values.speed) values.speed.textContent = `${state.speed}s`;
+    if (values.rotation) values.rotation.textContent = `${state.rotation}°`;
+    if (values.gap) values.gap.textContent = `${state.gap}px`;
+    if (values.shadow) values.shadow.textContent = `${state.shadow}px`;
+    if (values.rows) values.rows.textContent = String(state.rows);
   }
 
-  function syncControls(){
-    if(els.textInput) els.textInput.value=state.text;
-    if(els.fontPicker) els.fontPicker.value=state.font;
-    if(els.fontSize) els.fontSize.value=state.fontSize;
-    if($("#fontSizeNumber"))$("#fontSizeNumber").value=state.fontSize;
-    if(els.speed) els.speed.value=state.speed;
-    if($("#speedNumber"))$("#speedNumber").value=state.speed;
-    if(els.rotation) els.rotation.value=state.rotation;
-    if($("#rotationNumber"))$("#rotationNumber").value=state.rotation;
-    if(els.gap) els.gap.value=state.gap;
-    if($("#gapNumber"))$("#gapNumber").value=state.gap;
-    if(els.shadow) els.shadow.value=state.shadow;
-    if($("#shadowNumber"))$("#shadowNumber").value=state.shadow;
-    if(els.themePicker)els.themePicker.value=THEMES[state.theme]?state.theme:"";
+  function syncControls() {
+    if (els.textInput) els.textInput.value = state.text;
+    if (els.fontPicker) els.fontPicker.value = state.font;
+
+    if (els.fontSize) els.fontSize.value = state.fontSize;
+    if ($("#fontSizeNumber")) $("#fontSizeNumber").value = state.fontSize;
+
+    if (els.rows) els.rows.value = state.rows;
+    if ($("#rowsNumber")) $("#rowsNumber").value = state.rows;
+    if (els.direction) els.direction.value = state.direction;
+
+    if (els.speed) els.speed.value = state.speed;
+    if ($("#speedNumber")) $("#speedNumber").value = state.speed;
+
+    if (els.rotation) els.rotation.value = state.rotation;
+    if ($("#rotationNumber")) $("#rotationNumber").value = state.rotation;
+
+    if (els.gap) els.gap.value = state.gap;
+    if ($("#gapNumber")) $("#gapNumber").value = state.gap;
+
+    if (els.shadow) els.shadow.value = state.shadow;
+    if ($("#shadowNumber")) $("#shadowNumber").value = state.shadow;
+
+    if (els.themePicker) {
+      els.themePicker.value = THEMES[state.theme] ? state.theme : "";
+    }
+
     syncCustomColorControls();
     showCustomTheme();
     updateRangeLabels();
   }
 
-  function applySettings(){
-    setVariable("--font-size",`${state.fontSize}px`);
-    setVariable("--speed",`${state.speed}s`);
-    setVariable("--rotation",`${state.rotation}deg`);
-    setVariable("--gap",`${state.gap}px`);
-    setVariable("--shadow-depth",`${state.shadow}px`);
+  function applySettings() {
+    setVariable("--font-size", `${state.fontSize}px`);
+    setVariable("--speed", `${state.speed}s`);
+    setVariable("--rotation", `${state.rotation}deg`);
+    setVariable("--gap", `${state.gap}px`);
+    setVariable("--shadow-depth", `${state.shadow}px`);
+
     updateMarqueeText();
     loadGoogleFont(state.font);
     updateRangeLabels();
   }
 
-  let previousFocus=null;
+  let previousFocus = null;
 
-  function openSettings(){
-    previousFocus=document.activeElement;
+  function openSettings() {
+    previousFocus = document.activeElement;
+
     els.settingsPanel?.classList.add("open");
     els.settingsOverlay?.classList.add("open");
-    els.settingsToggle?.setAttribute("aria-expanded","true");
-    els.settingsPanel?.setAttribute("aria-hidden","false");
-    setTimeout(()=>els.textInput?.focus(),80);
+    els.settingsToggle?.setAttribute("aria-expanded", "true");
+    els.settingsPanel?.setAttribute("aria-hidden", "false");
+
+    setTimeout(() => els.textInput?.focus(), 80);
   }
 
-  function closeSettings(){
+  function closeSettings() {
     els.settingsPanel?.classList.remove("open");
     els.settingsOverlay?.classList.remove("open");
-    els.settingsToggle?.setAttribute("aria-expanded","false");
-    els.settingsPanel?.setAttribute("aria-hidden","true");
-    if(previousFocus && typeof previousFocus.focus==="function") previousFocus.focus();
+    els.settingsToggle?.setAttribute("aria-expanded", "false");
+    els.settingsPanel?.setAttribute("aria-hidden", "true");
+
+    if (previousFocus && typeof previousFocus.focus === "function") {
+      previousFocus.focus();
+    }
   }
 
-  function resetAll(){
-    state={...DEFAULTS,customTheme:null};
-    try{
+  function resetAll() {
+    state = {
+      ...DEFAULTS,
+      customTheme: null,
+      backgroundOverride: null
+    };
+
+    try {
       localStorage.removeItem(STORAGE.settings);
       localStorage.removeItem(STORAGE.font);
       localStorage.removeItem(STORAGE.theme);
-      localStorage.removeItem("boyoz-marquee-custom-theme-v1");
-    }catch{}
-    applyTheme(DEFAULTS.theme,false);
+      localStorage.removeItem(STORAGE.customTheme);
+    } catch {}
+
+    renderMarqueeRows();
+    applyTheme(DEFAULTS.theme, false, true);
     applySettings();
     syncControls();
+    saveState();
   }
 
-  function bindEvents(){
-    els.settingsToggle?.addEventListener("click",()=>{
+  function bindEvents() {
+    els.settingsToggle?.addEventListener("click", () => {
       els.settingsPanel?.classList.contains("open") ? closeSettings() : openSettings();
     });
 
-    els.settingsOverlay?.addEventListener("click",closeSettings);
-    $(".close-settings")?.addEventListener("click",closeSettings);
+    els.settingsOverlay?.addEventListener("click", closeSettings);
+    $(".close-settings")?.addEventListener("click", closeSettings);
 
-    document.addEventListener("keydown",event=>{
-      if(event.key==="Escape" && els.settingsPanel?.classList.contains("open")) closeSettings();
+    document.addEventListener("keydown", event => {
+      if (event.key === "Escape" && els.settingsPanel?.classList.contains("open")) {
+        closeSettings();
+      }
     });
 
-    $$(".theme-button").forEach(button=>{
-      button.addEventListener("click",generateRandomTheme);
+    els.marqueeRows?.addEventListener("click", event => {
+      if (event.target.closest(".theme-button")) {
+        generateRandomTheme();
+      }
     });
 
-    els.textInput?.addEventListener("input",event=>{
-      state.text=event.target.value;
+    document.addEventListener("click", event => {
+      if (els.settingsPanel?.classList.contains("open")) return;
+
+      if (
+        event.target.closest(
+          ".theme-button,.separator,.settings-toggle,.settings-panel,.settings-overlay,button,input,select,label"
+        )
+      ) {
+        return;
+      }
+
+      const target = event.target;
+      const isBackground =
+        target === document.body ||
+        target === els.scene ||
+        target === els.marquee ||
+        target === els.marqueeRows ||
+        target.classList?.contains("marquee-row");
+
+      if (isBackground) {
+        generateRandomBackground();
+      }
+    });
+
+    els.textInput?.addEventListener("input", event => {
+      state.text = event.target.value;
       updateMarqueeText();
       saveState();
     });
 
-    els.fontPicker?.addEventListener("change",event=>{
-      state.font=event.target.value;
+    els.fontPicker?.addEventListener("change", event => {
+      state.font = event.target.value;
       loadGoogleFont(state.font);
       saveState();
     });
 
-    const ranges=[
-      ["fontSize",24,320,"--font-size","px","fontSizeNumber"],
-      ["speed",2,120,"--speed","s","speedNumber"],
-      ["rotation",-360,360,"--rotation","deg","rotationNumber"],
-      ["gap",0,300,"--gap","px","gapNumber"],
-      ["shadow",0,30,"--shadow-depth","px","shadowNumber"]
+    const ranges = [
+      ["fontSize", 24, 320, "--font-size", "px", "fontSizeNumber"],
+      ["speed", 2, 120, "--speed", "s", "speedNumber"],
+      ["rotation", -15, 15, "--rotation", "deg", "rotationNumber"],
+      ["gap", 0, 300, "--gap", "px", "gapNumber"],
+      ["shadow", 0, 30, "--shadow-depth", "px", "shadowNumber"]
     ];
 
-    ranges.forEach(([key,min,max,variable,suffix,numberId])=>{
-      els[key]?.addEventListener("input",event=>{
-        state[key]=clamp(Number(event.target.value),min,max);
-        setVariable(variable,state[key]+suffix);
-        const n=$("#"+numberId);if(n)n.value=state[key];
+    ranges.forEach(([key, min, max, variable, suffix, numberId]) => {
+      els[key]?.addEventListener("input", event => {
+        state[key] = clamp(Number(event.target.value), min, max);
+        setVariable(variable, state[key] + suffix);
+
+        const numberInput = $("#"+numberId);
+        if (numberInput) numberInput.value = state[key];
+
         updateRangeLabels();
         saveState();
       });
     });
 
-    els.themePicker?.addEventListener("change",event=>{
-      if(THEMES[event.target.value]){applyTheme(event.target.value);showCustomTheme();}else showCustomTheme();
+    els.rows?.addEventListener("input", event => {
+      state.rows = clamp(Number(event.target.value), 1, 8);
+      els.rows.value = state.rows;
+
+      const numberInput = $("#rowsNumber");
+      if (numberInput) numberInput.value = state.rows;
+
+      renderMarqueeRows();
+      updateMarqueeText();
+      updateRangeLabels();
+      saveState();
     });
 
-    const numberInputs=[["fontSizeNumber","fontSize",24,320,"--font-size","px"],["speedNumber","speed",2,120,"--speed","s"],["rotationNumber","rotation",-15,15,"--rotation","deg"],["gapNumber","gap",0,300,"--gap","px"],["shadowNumber","shadow",0,30,"--shadow-depth","px"]];
-    numberInputs.forEach(([id,key,min,max,variable,suffix])=>{
-      $("#"+id)?.addEventListener("input",e=>{
-        const raw=Number(e.target.value);if(!Number.isFinite(raw))return;
-        state[key]=clamp(raw,min,max);e.target.value=state[key];
-        if(els[key])els[key].value=state[key];setVariable(variable,state[key]+suffix);updateRangeLabels();saveState();
+    els.direction?.addEventListener("change", event => {
+      state.direction = event.target.value === "same" ? "same" : "alternate";
+      renderMarqueeRows();
+      updateMarqueeText();
+      saveState();
+    });
+
+    els.themePicker?.addEventListener("change", event => {
+      if (THEMES[event.target.value]) {
+        applyTheme(event.target.value, true, true);
+      } else {
+        showCustomTheme();
+      }
+    });
+
+    const numberInputs = [
+      ["fontSizeNumber", "fontSize", 24, 320, "--font-size", "px"],
+      ["speedNumber", "speed", 2, 120, "--speed", "s"],
+      ["rotationNumber", "rotation", -15, 15, "--rotation", "deg"],
+      ["gapNumber", "gap", 0, 300, "--gap", "px"],
+      ["shadowNumber", "shadow", 0, 30, "--shadow-depth", "px"]
+    ];
+
+    numberInputs.forEach(([id, key, min, max, variable, suffix]) => {
+      $("#"+id)?.addEventListener("input", event => {
+        const raw = Number(event.target.value);
+        if (!Number.isFinite(raw)) return;
+
+        state[key] = clamp(raw, min, max);
+        event.target.value = state[key];
+
+        if (els[key]) els[key].value = state[key];
+
+        setVariable(variable, state[key] + suffix);
+        updateRangeLabels();
+        saveState();
       });
     });
-    ["colorBgA","colorBgB","colorText","colorAccent","colorShadow","colorGlow"].forEach(id=>els[id]?.addEventListener("input",updateCustomControls));
-    els.glowOpacity?.addEventListener("input",updateCustomControls);
-    els.applyCustomTheme?.addEventListener("click",applyCustomFromControls);
 
+    $("#rowsNumber")?.addEventListener("input", event => {
+      const raw = Number(event.target.value);
+      if (!Number.isFinite(raw)) return;
 
+      state.rows = clamp(raw, 1, 8);
+      event.target.value = state.rows;
 
-    els.randomTheme?.addEventListener("click",generateRandomTheme);
-    els.reset?.addEventListener("click",resetAll);
+      if (els.rows) els.rows.value = state.rows;
+
+      renderMarqueeRows();
+      updateMarqueeText();
+      updateRangeLabels();
+      saveState();
+    });
+
+    [
+      "colorBgA",
+      "colorBgB",
+      "colorText",
+      "colorAccent",
+      "colorShadow",
+      "colorGlow"
+    ].forEach(id => {
+      els[id]?.addEventListener("input", updateCustomControls);
+    });
+
+    els.glowOpacity?.addEventListener("input", updateCustomControls);
+    els.applyCustomTheme?.addEventListener("click", applyCustomFromControls);
+    els.randomTheme?.addEventListener("click", generateRandomTheme);
+    els.reset?.addEventListener("click", resetAll);
   }
 
-  function initializeIcons(){
-    if(window.lucide && typeof window.lucide.createIcons==="function"){
-      window.lucide.createIcons({attrs:{"aria-hidden":"true"}});
+  function initializeIcons() {
+    if (window.lucide && typeof window.lucide.createIcons === "function") {
+      window.lucide.createIcons({attrs: {"aria-hidden": "true"}});
       return;
     }
-    setTimeout(initializeIcons,100);
+
+    setTimeout(initializeIcons, 100);
   }
 
-  function init(){
+  function init() {
     loadState();
-    if(state.theme==="custom"&&state.customTheme){applyCustomTheme(state.customTheme,false);}else{applyTheme(state.theme,false);}
+
+    const initialBackground = state.backgroundOverride;
+
+    if (state.theme === "custom" && state.customTheme) {
+      applyCustomTheme(state.customTheme, false, false);
+    } else {
+      applyTheme(state.theme, false, false);
+    }
+
+    if (initialBackground) {
+      state.backgroundOverride = initialBackground;
+      applyBackgroundOverride(initialBackground);
+    }
+
+    renderMarqueeRows();
     applySettings();
     syncControls();
     bindEvents();
     initializeIcons();
   }
 
-  if(document.readyState==="loading"){
-    document.addEventListener("DOMContentLoaded",init,{once:true});
-  }else{
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", init, {once: true});
+  } else {
     init();
   }
 })();

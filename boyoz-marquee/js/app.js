@@ -15,7 +15,8 @@
     rotation: -2,
     gap: 96,
     shadow: 8,
-    theme: "elegant"
+    theme: "elegant",
+    customTheme: null
   };
 
   const THEMES = {
@@ -53,6 +54,11 @@
     gap: $("#gap"),
     shadow: $("#shadow"),
     themePicker: $("#themePicker"),
+    customTheme: $("#customTheme"),
+    applyCustomTheme: $("#applyCustomTheme"),
+    colorBgA: $("#colorBgA"), colorBgB: $("#colorBgB"), colorText: $("#colorText"),
+    colorAccent: $("#colorAccent"), colorShadow: $("#colorShadow"), colorGlow: $("#colorGlow"),
+    glowOpacity: $("#glowOpacity"),
     randomTheme: $("#randomTheme"),
     reset: $("#reset"),
     settingsToggle: $("#settingsToggle"),
@@ -80,6 +86,7 @@
         rotation:state.rotation,gap:state.gap,shadow:state.shadow
       }));
       localStorage.setItem(STORAGE.font,state.font);
+      if(state.customTheme) localStorage.setItem("boyoz-marquee-custom-theme-v1",JSON.stringify(state.customTheme));
     } catch {}
   }
 
@@ -89,15 +96,16 @@
       ...DEFAULTS,
       ...settings,
       font: localStorage.getItem(STORAGE.font) || DEFAULTS.font,
-      theme: localStorage.getItem(STORAGE.theme) || DEFAULTS.theme
+      theme: localStorage.getItem(STORAGE.theme) || DEFAULTS.theme,
+      customTheme: readJSON("boyoz-marquee-custom-theme-v1", null)
     };
 
     if(!THEMES[state.theme]) state.theme = DEFAULTS.theme;
-    state.fontSize=clamp(Number(state.fontSize),42,260);
-    state.speed=clamp(Number(state.speed),4,60);
-    state.rotation=clamp(Number(state.rotation),-12,12);
-    state.gap=clamp(Number(state.gap),20,180);
-    state.shadow=clamp(Number(state.shadow),0,20);
+    state.fontSize=clamp(Number(state.fontSize),24,320);
+    state.speed=clamp(Number(state.speed),2,120);
+    state.rotation=clamp(Number(state.rotation),-15,15);
+    state.gap=clamp(Number(state.gap),0,300);
+    state.shadow=clamp(Number(state.shadow),0,30);
   }
 
   function setVariable(name,value){root.style.setProperty(name,value);}
@@ -181,7 +189,8 @@
     applyCustomTheme({bgA,bgB,text,accent,shadow,shadowOpacity,glow});
   }
 
-  function applyCustomTheme(theme){
+  function applyCustomTheme(theme,save=true){
+    state.customTheme={...state.customTheme,...theme};
     setVariable("--bg-a",theme.bgA);
     setVariable("--bg-b",theme.bgB);
     setVariable("--text",theme.text);
@@ -191,8 +200,56 @@
     setVariable("--glow",theme.glow);
     state.theme="custom";
     if(els.themePicker) els.themePicker.value="";
-    try{localStorage.setItem(STORAGE.theme,"custom");}catch{}
-    playThemeFlash();
+    try{localStorage.setItem(STORAGE.theme,"custom");if(save&&state.customTheme)localStorage.setItem("boyoz-marquee-custom-theme-v1",JSON.stringify(state.customTheme));}catch{}
+    syncCustomColorControls();playThemeFlash();
+  }
+
+  function hexToRgba(hex,opacity){
+    const n=parseInt(String(hex).replace("#",""),16);
+    return `rgba(${(n>>16)&255}, ${(n>>8)&255}, ${n&255}, ${(opacity/100).toFixed(2)})`;
+  }
+
+  function syncCustomColorControls(){
+    const t=state.customTheme;
+    if(!t)return;
+    [["colorBgA","bgA"],["colorBgB","bgB"],["colorText","text"],["colorAccent","accent"],["colorShadow","shadow"]].forEach(([id,key])=>{
+      if(els[id]&&t[key])els[id].value=t[key];
+      const o=$("#"+id+"Value");if(o)o.textContent=(t[key]||"#000000").toUpperCase();
+    });
+    const glow=t.glowHex||"#d7b77c",opacity=Number(t.glowOpacity??18);
+    if(els.colorGlow)els.colorGlow.value=glow;
+    if($("#colorGlowValue"))$("#colorGlowValue").textContent=glow.toUpperCase();
+    if(els.glowOpacity)els.glowOpacity.value=opacity;
+    if($("#glowOpacityValue"))$("#glowOpacityValue").textContent=opacity+"%";
+  }
+
+  function showCustomTheme(){
+    if(!els.customTheme||!els.themePicker)return;
+    const active=els.themePicker.value==="";
+    els.customTheme.hidden=!active;
+    if(active){
+      if(!state.customTheme)state.customTheme={bgA:"#080808",bgB:"#211d19",text:"#f5f1e8",accent:"#d7b77c",shadow:"#070707",glowHex:"#d7b77c",glowOpacity:18};
+      syncCustomColorControls();
+    }
+  }
+
+  function updateCustomControls(){
+    state.customTheme={
+      bgA:els.colorBgA.value,bgB:els.colorBgB.value,text:els.colorText.value,
+      accent:els.colorAccent.value,shadow:els.colorShadow.value,glowHex:els.colorGlow.value,
+      glowOpacity:Number(els.glowOpacity.value)
+    };
+    [["colorBgA","bgA"],["colorBgB","bgB"],["colorText","text"],["colorAccent","accent"],["colorShadow","shadow"],["colorGlow","glowHex"]].forEach(([id,key])=>{
+      const o=$("#"+id+"Value");if(o)o.textContent=state.customTheme[key].toUpperCase();
+    });
+    if($("#glowOpacityValue"))$("#glowOpacityValue").textContent=state.customTheme.glowOpacity+"%";
+  }
+
+  function applyCustomFromControls(){
+    updateCustomControls();
+    const t=state.customTheme;
+    applyCustomTheme({bgA:t.bgA,bgB:t.bgB,text:t.text,accent:t.accent,shadow:t.shadow,shadowOpacity:".88",glow:hexToRgba(t.glowHex,t.glowOpacity)});
+    saveState();
   }
 
   function updateRangeLabels(){
@@ -214,11 +271,18 @@
     if(els.textInput) els.textInput.value=state.text;
     if(els.fontPicker) els.fontPicker.value=state.font;
     if(els.fontSize) els.fontSize.value=state.fontSize;
+    if($("#fontSizeNumber"))$("#fontSizeNumber").value=state.fontSize;
     if(els.speed) els.speed.value=state.speed;
+    if($("#speedNumber"))$("#speedNumber").value=state.speed;
     if(els.rotation) els.rotation.value=state.rotation;
+    if($("#rotationNumber"))$("#rotationNumber").value=state.rotation;
     if(els.gap) els.gap.value=state.gap;
+    if($("#gapNumber"))$("#gapNumber").value=state.gap;
     if(els.shadow) els.shadow.value=state.shadow;
-    if(els.themePicker && THEMES[state.theme]) els.themePicker.value=state.theme;
+    if($("#shadowNumber"))$("#shadowNumber").value=state.shadow;
+    if(els.themePicker)els.themePicker.value=THEMES[state.theme]?state.theme:"";
+    syncCustomColorControls();
+    showCustomTheme();
     updateRangeLabels();
   }
 
@@ -253,11 +317,12 @@
   }
 
   function resetAll(){
-    state={...DEFAULTS};
+    state={...DEFAULTS,customTheme:null};
     try{
       localStorage.removeItem(STORAGE.settings);
       localStorage.removeItem(STORAGE.font);
       localStorage.removeItem(STORAGE.theme);
+      localStorage.removeItem("boyoz-marquee-custom-theme-v1");
     }catch{}
     applyTheme(DEFAULTS.theme,false);
     applySettings();
@@ -293,25 +358,40 @@
     });
 
     const ranges=[
-      ["fontSize",42,260,"--font-size","px"],
-      ["speed",4,60,"--speed","s"],
-      ["rotation",-12,12,"--rotation","deg"],
-      ["gap",20,180,"--gap","px"],
-      ["shadow",0,20,"--shadow-depth","px"]
+      ["fontSize",24,320,"--font-size","px","fontSizeNumber"],
+      ["speed",2,120,"--speed","s","speedNumber"],
+      ["rotation",-15,15,"--rotation","deg","rotationNumber"],
+      ["gap",0,300,"--gap","px","gapNumber"],
+      ["shadow",0,30,"--shadow-depth","px","shadowNumber"]
     ];
 
-    ranges.forEach(([key,min,max,variable,suffix])=>{
+    ranges.forEach(([key,min,max,variable,suffix,numberId])=>{
       els[key]?.addEventListener("input",event=>{
         state[key]=clamp(Number(event.target.value),min,max);
-        setVariable(variable,`${state[key]}${suffix}`);
+        setVariable(variable,state[key]+suffix);
+        const n=$("#"+numberId);if(n)n.value=state[key];
         updateRangeLabels();
         saveState();
       });
     });
 
     els.themePicker?.addEventListener("change",event=>{
-      if(THEMES[event.target.value]) applyTheme(event.target.value);
+      if(THEMES[event.target.value]){applyTheme(event.target.value);showCustomTheme();}else showCustomTheme();
     });
+
+    const numberInputs=[["fontSizeNumber","fontSize",24,320,"--font-size","px"],["speedNumber","speed",2,120,"--speed","s"],["rotationNumber","rotation",-15,15,"--rotation","deg"],["gapNumber","gap",0,300,"--gap","px"],["shadowNumber","shadow",0,30,"--shadow-depth","px"]];
+    numberInputs.forEach(([id,key,min,max,variable,suffix])=>{
+      $("#"+id)?.addEventListener("input",e=>{
+        const raw=Number(e.target.value);if(!Number.isFinite(raw))return;
+        state[key]=clamp(raw,min,max);e.target.value=state[key];
+        if(els[key])els[key].value=state[key];setVariable(variable,state[key]+suffix);updateRangeLabels();saveState();
+      });
+    });
+    ["colorBgA","colorBgB","colorText","colorAccent","colorShadow","colorGlow"].forEach(id=>els[id]?.addEventListener("input",updateCustomControls));
+    els.glowOpacity?.addEventListener("input",updateCustomControls);
+    els.applyCustomTheme?.addEventListener("click",applyCustomFromControls);
+
+
 
     els.randomTheme?.addEventListener("click",generateRandomTheme);
     els.reset?.addEventListener("click",resetAll);
@@ -327,11 +407,7 @@
 
   function init(){
     loadState();
-    if(state.theme==="custom"){
-      generateRandomTheme();
-    }else{
-      applyTheme(state.theme,false);
-    }
+    if(state.theme==="custom"&&state.customTheme){applyCustomTheme(state.customTheme,false);}else{applyTheme(state.theme,false);}
     applySettings();
     syncControls();
     bindEvents();

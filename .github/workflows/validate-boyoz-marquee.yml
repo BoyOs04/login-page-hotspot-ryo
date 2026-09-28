@@ -120,6 +120,16 @@ jobs:
             append(...items) {
               for (const item of items) {
                 if (!item) continue;
+
+                if (item instanceof FakeDocumentFragment) {
+                  for (const child of [...item.children]) {
+                    child.parentNode = this;
+                    this.children.push(child);
+                  }
+                  item.children = [];
+                  continue;
+                }
+
                 item.parentNode = this;
                 this.children.push(item);
               }

@@ -15,11 +15,8 @@
     rotation: -2,
     gap: 96,
     shadow: 8,
-    rows: 1,
-    direction: "alternate",
     theme: "elegant",
-    customTheme: null,
-    backgroundOverride: null
+    customTheme: null
   };
 
   const THEMES = {
@@ -68,11 +65,7 @@
     settingsPanel: $("#settingsPanel"),
     settingsOverlay: $("#settingsOverlay"),
     themeFlash: $("#themeFlash"),
-    googleFontStylesheet: $("#googleFontStylesheet"),
-    scene: $(".scene"),
-    marqueeRows: $("#marqueeRows"),
-    rows: $("#rows"),
-    direction: $("#direction")
+    googleFontStylesheet: $("#googleFontStylesheet")
   };
 
   let state = {...DEFAULTS};
@@ -90,8 +83,7 @@
     try {
       localStorage.setItem(STORAGE.settings,JSON.stringify({
         text:state.text,fontSize:state.fontSize,speed:state.speed,
-        rotation:state.rotation,gap:state.gap,shadow:state.shadow,
-        rows:state.rows,direction:state.direction,backgroundOverride:state.backgroundOverride
+        rotation:state.rotation,gap:state.gap,shadow:state.shadow
       }));
       localStorage.setItem(STORAGE.font,state.font);
       if(state.customTheme) localStorage.setItem("boyoz-marquee-custom-theme-v1",JSON.stringify(state.customTheme));
@@ -114,11 +106,6 @@
     state.rotation=clamp(Number(state.rotation),-15,15);
     state.gap=clamp(Number(state.gap),0,300);
     state.shadow=clamp(Number(state.shadow),0,30);
-    state.rows=clamp(Number(state.rows)||1,1,8);
-    state.direction=state.direction==="same"?"same":"alternate";
-    if(!state.backgroundOverride || typeof state.backgroundOverride!=="object"){
-      state.backgroundOverride=null;
-    }
   }
 
   function setVariable(name,value){root.style.setProperty(name,value);}
@@ -126,53 +113,7 @@
   function updateMarqueeText(){
     const text=String(state.text||"BoyOz").trim()||"BoyOz";
     state.text=text;
-    $(".theme-button").forEach(button=>button.textContent=text);
-  }
-
-  function createMarqueeGroup(hidden=false){
-    const group=document.createElement("div");
-    group.className="marquee-group";
-    if(hidden) group.setAttribute("aria-hidden","true");
-
-    for(let i=0;i<4;i++){
-      const button=document.createElement("button");
-      button.className="theme-button";
-      button.type="button";
-      button.textContent=state.text||"BoyOz";
-      if(hidden) button.tabIndex=-1;
-      group.append(button);
-
-      const separator=document.createElement("span");
-      separator.className="separator";
-      separator.setAttribute("aria-hidden","true");
-      group.append(separator);
-    }
-
-    return group;
-  }
-
-  function renderMarqueeRows(){
-    if(!els.marqueeRows)return;
-
-    const fragment=document.createDocumentFragment();
-    for(let rowIndex=0;rowIndex<state.rows;rowIndex++){
-      const row=document.createElement("div");
-      row.className="marquee-row";
-      row.dataset.row=String(rowIndex);
-
-      const track=document.createElement("div");
-      track.className="marquee-track";
-      if(state.direction==="alternate" && rowIndex%2===1){
-        track.classList.add("reverse");
-      }
-
-      track.append(createMarqueeGroup(false),createMarqueeGroup(true));
-      row.append(track);
-      fragment.append(row);
-    }
-
-    els.marqueeRows.replaceChildren(fragment);
-    updateMarqueeText();
+    $$(".theme-button").forEach(button=>button.textContent=text);
   }
 
   function loadGoogleFont(fontName){
@@ -197,12 +138,8 @@
     setVariable("--shadow",theme.shadow);
     setVariable("--shadow-opacity",theme.shadowOpacity);
     setVariable("--glow",theme.glow);
-    state.backgroundOverride=null;
     if(els.themePicker) els.themePicker.value=name;
-    if(save){
-      localStorage.setItem(STORAGE.theme,name);
-      saveState();
-    }
+    if(save) localStorage.setItem(STORAGE.theme,name);
     playThemeFlash();
   }
 
@@ -262,62 +199,11 @@
     setVariable("--shadow-opacity",theme.shadowOpacity);
     setVariable("--glow",theme.glow);
     state.theme="custom";
-    state.backgroundOverride=null;
     if(els.themePicker) els.themePicker.value="";
-    try{
-      localStorage.setItem(STORAGE.theme,"custom");
-      if(save&&state.customTheme)localStorage.setItem("boyoz-marquee-custom-theme-v1",JSON.stringify(state.customTheme));
-      if(save)saveState();
-    }catch{}
+    try{localStorage.setItem(STORAGE.theme,"custom");if(save&&state.customTheme)localStorage.setItem("boyoz-marquee-custom-theme-v1",JSON.stringify(state.customTheme));}catch{}
     syncCustomColorControls();playThemeFlash();
   }
 
-  function parseHexColor(hex){
-    const value=String(hex||"").replace("#","");
-    if(!/^[0-9a-f]{6}$/i.test(value))return null;
-    const n=parseInt(value,16);
-    return {r:(n>>16)&255,g:(n>>8)&255,b:n&255};
-  }
-
-  function colorLuminance(hex){
-    const rgb=parseHexColor(hex);
-    if(!rgb)return .5;
-    const channels=[rgb.r,rgb.g,rgb.b].map(v=>{
-      const c=v/255;
-      return c<=.03928?c/12.92:Math.pow((c+.055)/1.055,2.4);
-    });
-    return .2126*channels[0]+.7152*channels[1]+.0722*channels[2];
-  }
-
-  function generateRandomBackground(){
-    const hue=Math.floor(Math.random()*360);
-    const textIsLight=colorLuminance(getCurrentTextColor())>.55;
-    let bgA,bgB;
-
-    if(textIsLight){
-      bgA=hsl(hue,38+Math.random()*32,5+Math.random()*9);
-      bgB=hsl((hue+8+Math.random()*34)%360,32+Math.random()*34,15+Math.random()*13);
-    }else{
-      bgA=hsl(hue,18+Math.random()*28,76+Math.random()*13);
-      bgB=hsl((hue+8+Math.random()*32)%360,12+Math.random()*24,89+Math.random()*8);
-    }
-
-    state.backgroundOverride={bgA,bgB};
-    setVariable("--bg-a",bgA);
-    setVariable("--bg-b",bgB);
-
-    try{localStorage.setItem(STORAGE.settings,JSON.stringify({
-      text:state.text,fontSize:state.fontSize,speed:state.speed,
-      rotation:state.rotation,gap:state.gap,shadow:state.shadow,
-      rows:state.rows,direction:state.direction,backgroundOverride:state.backgroundOverride
-    }));}catch{}
-
-    playThemeFlash();
-  }
-
-  function getCurrentTextColor(){
-    return getComputedStyle(root).getPropertyValue("--text").trim() || "#f5f1e8";
-  }
   function hexToRgba(hex,opacity){
     const n=parseInt(String(hex).replace("#",""),16);
     return `rgba(${(n>>16)&255}, ${(n>>8)&255}, ${n&255}, ${(opacity/100).toFixed(2)})`;
@@ -379,15 +265,10 @@
     if(values.rotation) values.rotation.textContent=`${state.rotation}°`;
     if(values.gap) values.gap.textContent=`${state.gap}px`;
     if(values.shadow) values.shadow.textContent=`${state.shadow}px`;
-    const rowsValue=$("#rowsValue");
-    if(rowsValue) rowsValue.textContent=String(state.rows);
   }
 
   function syncControls(){
     if(els.textInput) els.textInput.value=state.text;
-    if(els.rows) els.rows.value=state.rows;
-    if($("#rowsNumber")) $("#rowsNumber").value=state.rows;
-    if(els.direction) els.direction.value=state.direction;
     if(els.fontPicker) els.fontPicker.value=state.font;
     if(els.fontSize) els.fontSize.value=state.fontSize;
     if($("#fontSizeNumber"))$("#fontSizeNumber").value=state.fontSize;
@@ -411,12 +292,8 @@
     setVariable("--rotation",`${state.rotation}deg`);
     setVariable("--gap",`${state.gap}px`);
     setVariable("--shadow-depth",`${state.shadow}px`);
-    renderMarqueeRows();
+    updateMarqueeText();
     loadGoogleFont(state.font);
-    if(state.backgroundOverride){
-      setVariable("--bg-a",state.backgroundOverride.bgA);
-      setVariable("--bg-b",state.backgroundOverride.bgB);
-    }
     updateRangeLabels();
   }
 
@@ -440,7 +317,7 @@
   }
 
   function resetAll(){
-    state={...DEFAULTS,customTheme:null,backgroundOverride:null};
+    state={...DEFAULTS,customTheme:null};
     try{
       localStorage.removeItem(STORAGE.settings);
       localStorage.removeItem(STORAGE.font);
@@ -464,9 +341,8 @@
       if(event.key==="Escape" && els.settingsPanel?.classList.contains("open")) closeSettings();
     });
 
-    els.marqueeRows?.addEventListener("click",event=>{
-      const button=event.target.closest(".theme-button");
-      if(button) generateRandomTheme();
+    $$(".theme-button").forEach(button=>{
+      button.addEventListener("click",generateRandomTheme);
     });
 
     els.textInput?.addEventListener("input",event=>{
@@ -484,7 +360,7 @@
     const ranges=[
       ["fontSize",24,320,"--font-size","px","fontSizeNumber"],
       ["speed",2,120,"--speed","s","speedNumber"],
-      ["rotation",-15,15,"--rotation","deg","rotationNumber"],
+      ["rotation",-360,360,"--rotation","deg","rotationNumber"],
       ["gap",0,300,"--gap","px","gapNumber"],
       ["shadow",0,30,"--shadow-depth","px","shadowNumber"]
     ];
@@ -499,46 +375,16 @@
       });
     });
 
-    els.rows?.addEventListener("input",event=>{
-      state.rows=clamp(Number(event.target.value)||1,1,8);
-      if($("#rowsNumber"))$("#rowsNumber").value=state.rows;
-      renderMarqueeRows();
-      updateRangeLabels();
-      saveState();
-    });
-
     els.themePicker?.addEventListener("change",event=>{
-      if(THEMES[event.target.value]){
-        applyTheme(event.target.value);
-        showCustomTheme();
-        if(state.backgroundOverride===null){
-          setVariable("--bg-a",THEMES[event.target.value].bgA);
-          setVariable("--bg-b",THEMES[event.target.value].bgB);
-        }
-      }else{
-        showCustomTheme();
-      }
+      if(THEMES[event.target.value]){applyTheme(event.target.value);showCustomTheme();}else showCustomTheme();
     });
 
-    els.direction?.addEventListener("change",event=>{
-      state.direction=event.target.value==="same"?"same":"alternate";
-      renderMarqueeRows();
-      saveState();
-    });
-
-    const numberInputs=[["fontSizeNumber","fontSize",24,320,"--font-size","px"],["speedNumber","speed",2,120,"--speed","s"],["rotationNumber","rotation",-15,15,"--rotation","deg"],["gapNumber","gap",0,300,"--gap","px"],["shadowNumber","shadow",0,30,"--shadow-depth","px"],["rowsNumber","rows",1,8,"",""]];
+    const numberInputs=[["fontSizeNumber","fontSize",24,320,"--font-size","px"],["speedNumber","speed",2,120,"--speed","s"],["rotationNumber","rotation",-15,15,"--rotation","deg"],["gapNumber","gap",0,300,"--gap","px"],["shadowNumber","shadow",0,30,"--shadow-depth","px"]];
     numberInputs.forEach(([id,key,min,max,variable,suffix])=>{
       $("#"+id)?.addEventListener("input",e=>{
         const raw=Number(e.target.value);if(!Number.isFinite(raw))return;
         state[key]=clamp(raw,min,max);e.target.value=state[key];
-        if(els[key])els[key].value=state[key];
-        if(key==="rows"){
-          renderMarqueeRows();
-          updateRangeLabels();
-          saveState();
-          return;
-        }
-        setVariable(variable,state[key]+suffix);updateRangeLabels();saveState();
+        if(els[key])els[key].value=state[key];setVariable(variable,state[key]+suffix);updateRangeLabels();saveState();
       });
     });
     ["colorBgA","colorBgB","colorText","colorAccent","colorShadow","colorGlow"].forEach(id=>els[id]?.addEventListener("input",updateCustomControls));

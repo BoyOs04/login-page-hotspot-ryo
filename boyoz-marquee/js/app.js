@@ -17,6 +17,7 @@
     gap: 96,
     shadow: 8,
     rows: 1,
+    rowDirection: "alternate",
     theme: "elegant",
     customTheme: null,
   };
@@ -59,6 +60,7 @@
     gap: $("#gap"),
     shadow: $("#shadow"),
     rows: $("#rows"),
+    rowDirection: $("#rowDirection"),
     themePicker: $("#themePicker"),
     customTheme: $("#customTheme"),
     applyCustomTheme: $("#applyCustomTheme"),
@@ -103,6 +105,7 @@
         gap: state.gap,
         shadow: state.shadow,
         rows: state.rows,
+        rowDirection: state.rowDirection
       }));
       localStorage.setItem(STORAGE.font, state.font);
       localStorage.setItem(STORAGE.theme, state.theme);
@@ -136,7 +139,11 @@
     state.rotation = clamp(Number(state.rotation),-15,15);
     state.gap = clamp(Number(state.gap),0,300);
     state.shadow = clamp(Number(state.shadow),0,30);
-    state.rows = clamp(Number(state.rows),1,8);
+    state.rows = clamp(Math.round(Number(state.rows)), 1, 8);
+
+    if (!["alternate", "same"].includes(state.rowDirection)) {
+      state.rowDirection = DEFAULTS.rowDirection;
+    }
   }
 
   function setVariable(name, value) {
@@ -168,6 +175,27 @@
     return group;
   }
 
+  function applyRowDirections() {
+    if (!els.marqueeRows) return;
+
+    els.marqueeRows.classList.toggle(
+      "mode-alternate",
+      state.rowDirection === "alternate"
+    );
+    els.marqueeRows.classList.toggle(
+      "mode-same",
+      state.rowDirection === "same"
+    );
+
+    $(".marquee-track", els.marqueeRows).forEach((track, rowIndex) => {
+      const direction = state.rowDirection === "alternate"
+        ? (rowIndex % 2 === 0 ? "reverse" : "normal")
+        : "normal";
+
+      track.style.animationDirection = direction;
+    });
+  }
+
   function renderMarqueeRows() {
     if (!els.marqueeRows) return;
 
@@ -190,6 +218,7 @@
     }
 
     els.marqueeRows.replaceChildren(fragment);
+    applyRowDirections();
   }
 
   function updateMarqueeText() {
@@ -268,6 +297,77 @@
 
   function hslToHex(h, s, l) {
     return "#" + hslToRgb(h, s, l).map(value => value.toString(16).padStart(2, "0")).join("");
+  }
+
+  function hexToRgb(hex) {
+    const match = String(hex).trim().match(/^#([0-9a-f]{6})$/i);
+    if (!match) return null;
+
+    const value = parseInt(match[1], 16);
+
+    return {
+      r: (value >> 16) & 255,
+      g: (value >> 8) & 255,
+      b: value & 255
+    };
+  }
+
+  function getActiveThemeColors() {
+    if (state.theme === "custom" && state.customTheme) {
+      return state.customTheme;
+    }
+
+    return THEMES[state.theme] || THEMES[DEFAULTS.theme];
+  }
+
+  function isLightColor(color) {
+    const rgb = hexToRgb(color);
+    if (!rgb) return false;
+
+    const luminance = (
+      0.2126 * rgb.r +
+      0.7152 * rgb.g +
+      0.0722 * rgb.b
+    ) / 255;
+
+    return luminance > 0.58;
+  }
+
+  function generateRandomBackground() {
+    const activeTheme = getActiveThemeColors();
+    const keep = {
+      ...activeTheme
+    };
+
+    const textIsLight = isLightColor(keep.text);
+    const hue = Math.floor(Math.random() * 360);
+    const hueB = (hue + 12 + Math.random() * 35) % 360;
+
+    if (textIsLight) {
+      keep.bgA = hsl(
+        hue,
+        34 + Math.random() * 34,
+        4 + Math.random() * 9
+      );
+      keep.bgB = hsl(
+        hueB,
+        30 + Math.random() * 35,
+        11 + Math.random() * 12
+      );
+    } else {
+      keep.bgA = hsl(
+        hue,
+        18 + Math.random() * 28,
+        76 + Math.random() * 13
+      );
+      keep.bgB = hsl(
+        hueB,
+        12 + Math.random() * 24,
+        89 + Math.random() * 8
+      );
+    }
+
+    applyCustomTheme(keep);
   }
 
   function generateRandomTheme() {
@@ -462,6 +562,9 @@
     if (els.rows) els.rows.value = state.rows;
     if ($("#rowsNumber")) $("#rowsNumber").value = state.rows;
 
+    if (els.rowDirection) els.rowDirection.value = state.rowDirection;
+    applyRowDirections();
+
     if (els.speed) els.speed.value = state.speed;
     if ($("#speedNumber")) $("#speedNumber").value = state.speed;
 
@@ -554,15 +657,19 @@
     });
 
     els.marqueeRows?.addEventListener("click", event => {
-      if (event.target.closest(".theme-button")) {
-        generateRandomTheme();
-      }
+      const button = event.target.closest(".theme-button");
+
+      if (!button) return;
+
+      generateRandomTheme();
     });
 
-    els.marqueeRows?.addEventListener("click", event => {
-      if (event.target.closest(".theme-button")) {
-        generateRandomTheme();
+    els.scene?.addEventListener("click", event => {
+      if (event.target.closest(".theme-button, .separator")) {
+        return;
       }
+
+      generateRandomBackground();
     });
 
     els.textInput?.addEventListener("input", event => {
@@ -599,7 +706,7 @@
     });
 
     els.rows?.addEventListener("input", event => {
-      state.rows = clamp(Number(event.target.value), 1, 8);
+      state.rows = clamp(Math.round(Number(event.target.value)), 1, 8);
       els.rows.value = state.rows;
 
       const numberInput = $("#rowsNumber");
@@ -639,7 +746,7 @@
       const raw = Number(event.target.value);
       if (!Number.isFinite(raw)) return;
 
-      state.rows = clamp(raw, 1, 8);
+      state.rows = clamp(Math.round(raw), 1, 8);
       event.target.value = state.rows;
 
       if (els.rows) els.rows.value = state.rows;
@@ -647,6 +754,15 @@
       renderMarqueeRows();
       updateMarqueeText();
       updateRangeLabels();
+      saveState();
+    });
+
+    els.rowDirection?.addEventListener("change", event => {
+      state.rowDirection = ["alternate", "same"].includes(event.target.value)
+        ? event.target.value
+        : DEFAULTS.rowDirection;
+
+      applyRowDirections();
       saveState();
     });
 

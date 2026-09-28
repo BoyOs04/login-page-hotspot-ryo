@@ -199,7 +199,10 @@
     setVariable("--glow",theme.glow);
     state.backgroundOverride=null;
     if(els.themePicker) els.themePicker.value=name;
-    if(save) localStorage.setItem(STORAGE.theme,name);
+    if(save){
+      localStorage.setItem(STORAGE.theme,name);
+      saveState();
+    }
     playThemeFlash();
   }
 
@@ -261,7 +264,11 @@
     state.theme="custom";
     state.backgroundOverride=null;
     if(els.themePicker) els.themePicker.value="";
-    try{localStorage.setItem(STORAGE.theme,"custom");if(save&&state.customTheme)localStorage.setItem("boyoz-marquee-custom-theme-v1",JSON.stringify(state.customTheme));}catch{}
+    try{
+      localStorage.setItem(STORAGE.theme,"custom");
+      if(save&&state.customTheme)localStorage.setItem("boyoz-marquee-custom-theme-v1",JSON.stringify(state.customTheme));
+      if(save)saveState();
+    }catch{}
     syncCustomColorControls();playThemeFlash();
   }
 
@@ -479,8 +486,7 @@
       ["speed",2,120,"--speed","s","speedNumber"],
       ["rotation",-15,15,"--rotation","deg","rotationNumber"],
       ["gap",0,300,"--gap","px","gapNumber"],
-      ["shadow",0,30,"--shadow-depth","px","shadowNumber"],
-      ["rows",1,8,"", "", "rowsNumber"]
+      ["shadow",0,30,"--shadow-depth","px","shadowNumber"]
     ];
 
     ranges.forEach(([key,min,max,variable,suffix,numberId])=>{
@@ -491,6 +497,14 @@
         updateRangeLabels();
         saveState();
       });
+    });
+
+    els.rows?.addEventListener("input",event=>{
+      state.rows=clamp(Number(event.target.value)||1,1,8);
+      if($("#rowsNumber"))$("#rowsNumber").value=state.rows;
+      renderMarqueeRows();
+      updateRangeLabels();
+      saveState();
     });
 
     els.themePicker?.addEventListener("change",event=>{

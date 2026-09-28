@@ -72,6 +72,7 @@
     colorGlow: $("#colorGlow"),
     glowOpacity: $("#glowOpacity"),
     randomTheme: $("#randomTheme"),
+    randomBackground: $("#randomBackground"),
     reset: $("#reset"),
     settingsToggle: $("#settingsToggle"),
     settingsPanel: $("#settingsPanel"),
@@ -266,11 +267,22 @@
   }
 
   function playThemeFlash() {
+    playInteractionFlash("theme");
+  }
+
+  function playInteractionFlash(type = "theme") {
     if (!els.themeFlash) return;
-    els.themeFlash.classList.remove("play");
+
+    els.themeFlash.classList.remove("play", "background-play");
     void els.themeFlash.offsetWidth;
-    els.themeFlash.classList.add("play");
-    setTimeout(() => els.themeFlash.classList.remove("play"), 500);
+
+    els.themeFlash.classList.add(
+      type === "background" ? "background-play" : "play"
+    );
+
+    setTimeout(() => {
+      els.themeFlash.classList.remove("play", "background-play");
+    }, 650);
   }
 
   function hsl(h, s, l) {
@@ -333,12 +345,26 @@
   function generateRandomBackground() {
     const activeTheme = getActiveThemeColors();
     const keep = {
-      ...activeTheme
+      bgA: activeTheme.bgA,
+      bgB: activeTheme.bgB,
+      text: activeTheme.text,
+      accent: activeTheme.accent,
+      shadow: activeTheme.shadow,
+      shadowOpacity: activeTheme.shadowOpacity,
+      glowHex: activeTheme.glowHex || "#d7b77c",
+      glowOpacity: clampNumber(activeTheme.glowOpacity, 0, 100, 18)
     };
 
     const textIsLight = isLightColor(keep.text);
-    const hue = Math.floor(Math.random() * 360);
-    const hueB = (hue + 12 + Math.random() * 35) % 360;
+    const currentRgb = hexToRgb(keep.bgA);
+    let hue = Math.floor(Math.random() * 360);
+
+    if (currentRgb) {
+      const currentHue = rgbToHue(currentRgb.r, currentRgb.g, currentRgb.b);
+      hue = (currentHue + 45 + Math.floor(Math.random() * 270)) % 360;
+    }
+
+    const hueB = (hue + 14 + Math.random() * 32) % 360;
 
     if (textIsLight) {
       keep.bgA = hslToHex(
@@ -364,38 +390,70 @@
       );
     }
 
+    keep.glowHex = hslToHex(hue, textIsLight ? 55 : 42, textIsLight ? 76 : 68);
+    keep.glow = hexToRgba(keep.glowHex, keep.glowOpacity);
+
     applyCustomTheme(keep);
+    playInteractionFlash("background");
+  }
+
+  function rgbToHue(r, g, b) {
+    r /= 255;
+    g /= 255;
+    b /= 255;
+
+    const max = Math.max(r, g, b);
+    const min = Math.min(r, g, b);
+    const delta = max - min;
+
+    if (delta === 0) return 0;
+
+    let hue;
+
+    if (max === r) {
+      hue = ((g - b) / delta) % 6;
+    } else if (max === g) {
+      hue = (b - r) / delta + 2;
+    } else {
+      hue = (r - g) / delta + 4;
+    }
+
+    return Math.round(hue * 60 + (hue < 0 ? 360 : 0));
   }
 
   function generateRandomTheme() {
-    const isLight = Math.random() > .5;
+    const isLight = Math.random() > 0.5;
     const hue = Math.floor(Math.random() * 360);
 
-    let bgA, bgB, accent, text, shadow, shadowOpacity;
+    let bgA;
+    let bgB;
+    let accent;
+    let text;
+    let shadow;
+    let shadowOpacity;
 
     if (isLight) {
-      bgA = hsl(hue, 18 + Math.random() * 24, 74 + Math.random() * 15);
-      bgB = hsl((hue + Math.random() * 25) % 360, 15 + Math.random() * 20, 88 + Math.random() * 10);
-      accent = hsl((hue + 25 + Math.random() * 50) % 360, 45 + Math.random() * 33, 35 + Math.random() * 22);
+      bgA = hslToHex(hue, 18 + Math.random() * 24, 74 + Math.random() * 15);
+      bgB = hslToHex((hue + Math.random() * 25) % 360, 15 + Math.random() * 20, 88 + Math.random() * 10);
+      accent = hslToHex((hue + 25 + Math.random() * 50) % 360, 45 + Math.random() * 33, 35 + Math.random() * 22);
       text = "#17202a";
-      shadow = hsl(hue, 15 + Math.random() * 20, 55 + Math.random() * 15);
+      shadow = hslToHex(hue, 15 + Math.random() * 20, 55 + Math.random() * 15);
       shadowOpacity = (.24 + Math.random() * .14).toFixed(2);
     } else {
-      bgA = hsl(hue, 35 + Math.random() * 30, 5 + Math.random() * 10);
-      bgB = hsl((hue + Math.random() * 30) % 360, 35 + Math.random() * 30, 15 + Math.random() * 14);
-      accent = hsl((hue + 20 + Math.random() * 60) % 360, 58 + Math.random() * 32, 58 + Math.random() * 20);
+      bgA = hslToHex(hue, 35 + Math.random() * 30, 5 + Math.random() * 10);
+      bgB = hslToHex((hue + Math.random() * 30) % 360, 35 + Math.random() * 30, 15 + Math.random() * 14);
+      accent = hslToHex((hue + 20 + Math.random() * 60) % 360, 58 + Math.random() * 32, 58 + Math.random() * 20);
       text = "#f7f7f7";
-      shadow = hsl(hue, 30 + Math.random() * 35, 2 + Math.random() * 7);
+      shadow = hslToHex(hue, 30 + Math.random() * 35, 2 + Math.random() * 7);
       shadowOpacity = (.78 + Math.random() * .16).toFixed(2);
     }
 
-    const glow = isLight
-      ? "rgba(255,255,255,.62)"
-      : "rgba(255,255,255,.16)";
-
-    const glowHex = isLight
-      ? "#ffffff"
-      : hslToHex(hue, 25, 80);
+    const glowHex = hslToHex(
+      (hue + 12 + Math.random() * 35) % 360,
+      isLight ? 52 : 42,
+      isLight ? 76 : 69
+    );
+    const glowOpacity = isLight ? 62 : 16;
 
     applyCustomTheme({
       bgA,
@@ -404,10 +462,12 @@
       accent,
       shadow,
       shadowOpacity,
-      glow,
       glowHex,
-      glowOpacity: isLight ? 62 : 16
+      glowOpacity,
+      glow: hexToRgba(glowHex, glowOpacity)
     });
+
+    playInteractionFlash("theme");
   }
 
   function applyCustomTheme(theme, save = true) {
@@ -415,6 +475,23 @@
       ...state.customTheme,
       ...theme
     };
+
+    const glowHex = /^#[0-9a-f]{6}$/i.test(state.customTheme.glowHex || "")
+      ? state.customTheme.glowHex
+      : "#d7b77c";
+    const glowOpacity = clampNumber(
+      state.customTheme.glowOpacity,
+      0,
+      100,
+      18
+    );
+
+    state.customTheme.glowHex = glowHex;
+    state.customTheme.glowOpacity = glowOpacity;
+
+    if (!state.customTheme.glow) {
+      state.customTheme.glow = hexToRgba(glowHex, glowOpacity);
+    }
 
     applyBaseTheme(state.customTheme);
     state.theme = "custom";
@@ -658,17 +735,24 @@
     });
 
     els.marqueeRows?.addEventListener("click", event => {
-      const button = event.target.closest(".theme-button");
+      const target = event.target;
+      const button = target && typeof target.closest === "function"
+        ? target.closest(".theme-button")
+        : null;
 
       if (!button) return;
 
+      event.stopPropagation?.();
       generateRandomTheme();
     });
 
     els.scene?.addEventListener("click", event => {
-      if (event.target.closest(".theme-button, .separator")) {
-        return;
-      }
+      const target = event.target;
+      const clickedText = target && typeof target.closest === "function"
+        ? target.closest(".theme-button")
+        : null;
+
+      if (clickedText) return;
 
       generateRandomBackground();
     });
@@ -781,6 +865,7 @@
     els.glowOpacity?.addEventListener("input", updateCustomControls);
     els.applyCustomTheme?.addEventListener("click", applyCustomFromControls);
     els.randomTheme?.addEventListener("click", generateRandomTheme);
+    els.randomBackground?.addEventListener("click", generateRandomBackground);
     els.reset?.addEventListener("click", resetAll);
   }
 

@@ -260,7 +260,13 @@ jobs:
             }
           };
 
-          document.documentElement.style = { setProperty() {} };
+          const variables = new Map();
+
+          document.documentElement.style = {
+            setProperty(name, value) {
+              variables.set(name, value);
+            }
+          };
 
           const context = {
             console,
@@ -325,13 +331,6 @@ jobs:
           if (!rowsContainer.classList.contains("mode-alternate")) {
             throw new Error("Alternating direction mode was not applied.");
           }
-
-          const variables = new Map();
-          document.documentElement.style = {
-            setProperty(name, value) {
-              variables.set(name, value);
-            }
-          };
 
           const initialText = variables.get("--text");
           const initialAccent = variables.get("--accent");

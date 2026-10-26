@@ -354,9 +354,13 @@ button, input, select { font: inherit; }
 
 .theme-actions {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 9px;
   margin-top: 8px;
+}
+
+.theme-actions #reset {
+  grid-column: 1 / -1;
 }
 
 .control-button {
@@ -392,6 +396,10 @@ button, input, select { font: inherit; }
   color: var(--ui-muted);
   font-size: 10px;
   line-height: 1.55;
+}
+
+.settings-hint strong {
+  color: var(--ui-text);
 }
 
 .custom-theme {
@@ -475,10 +483,26 @@ button, input, select { font: inherit; }
 
 .theme-flash.play { animation: theme-flash .45s ease; }
 
+.theme-flash.background-play {
+  background: radial-gradient(
+    circle at 50% 50%,
+    var(--bg-b) 0%,
+    transparent 62%
+  );
+  mix-blend-mode: normal;
+  animation: background-flash .65s ease;
+}
+
 @keyframes theme-flash {
   0% { opacity: 0; }
   35% { opacity: .10; }
   100% { opacity: 0; }
+}
+
+@keyframes background-flash {
+  0% { opacity: 0; transform: scale(.92); }
+  35% { opacity: .22; transform: scale(1); }
+  100% { opacity: 0; transform: scale(1.08); }
 }
 
 @media (max-width: 700px) {
